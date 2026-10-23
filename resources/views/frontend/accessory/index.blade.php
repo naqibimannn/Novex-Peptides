@@ -2,20 +2,44 @@
 
 @section('content')
 <style>
-/* Penataan Gaya Kad Produk Mengikut Standard Paparan Utama */
-.pc{
-  padding:14px;
-  background:#fff;
+.sq{
+  display:block;
+  width:100%;
+  max-width:380px;
+  padding:12px 18px;
   border:1px solid var(--line);
-  border-radius:26px;
-  transition:transform .3s ease,box-shadow .3s ease;
+  background:var(--card);
+  border-radius:999px;
+  margin-bottom:16px;
+  font:inherit;
+  outline:none;
+  transition:border-color .2s ease;
+}
+.sq:focus{border-color:var(--green)}
+.filter{
   display:flex;
-  flex-direction:column;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:32px;
+  font-size:13px;
 }
-.pc:hover{
-  transform:translateY(-6px);
-  box-shadow:0 24px 44px -24px rgba(47,111,159,.5);
+.filter button{
+  background:none;
+  border:1px solid var(--line);
+  padding:8px 18px;
+  color:var(--ink);
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:500;
+  transition:all .2s ease;
 }
+.filter button:hover{background:var(--bg2);border-color:var(--gold)}
+.filter button.on{
+  background:var(--green);
+  color:#fff;
+  border-color:var(--green);
+}
+
 .pc .ph{
   aspect-ratio:4/5;
   border-radius:20px;
@@ -25,63 +49,6 @@
   overflow:hidden;
   padding:0;
 }
-.pc .ph img{
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
-  object-position:center !important;
-  padding:0 !important;
-  border-radius:inherit;
-  display:block;
-}
-.pc .chip{
-  position:absolute;
-  left:12px;
-  top:12px;
-  z-index:6;
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(8px);
-  color:var(--green);
-  font-size:11px;
-  font-weight:600;
-  padding:5px 12px;
-  border-radius:999px;
-  border:1px solid rgba(210,226,239,.6);
-}
-.pc .b{
-  text-align:left;
-  align-items:stretch;
-  padding:16px 8px 8px;
-  gap:8px;
-  display:flex;
-  flex-direction:column;
-  flex:1;
-}
-.pc h3{font-size:20px;line-height:1.2;color:var(--ink)}
-.pc .s{font-size:13px;color:var(--mut)}
-.pc .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
-.pc .meta span{
-  font-size:11px;
-  background:var(--bg2);
-  color:var(--ink);
-  padding:4px 10px;
-  border-radius:999px;
-}
-.btn-details{
-  background:var(--green);
-  color:#fff;
-  padding:12px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:600;
-  text-align:center;
-  margin-top:10px;
-  transition:background .2s ease;
-  text-decoration:none;
-}
-.btn-details:hover{background:#245a82}
-
-/* Sistem Slaid Gambar Produk */
 .prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:inherit;background:#fff}
 .prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:#fff}
 .prod-slide{
@@ -112,82 +79,29 @@
   display:block;
 }
 .ps-dots{position:absolute;bottom:10px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:6px}
-.ps-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:rgba(255,255,255,.75);
-  cursor:pointer;
-  transition:all .3s ease;
-  box-shadow:0 1px 4px rgba(0,0,0,.4);
-}
+.ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .ps-dot.active{background:var(--green);transform:scale(1.25)}
-
-/* Ciri-ciri Aksesori */
-.acc-features{
-  display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:20px;
-  margin-top:48px;
-}
-.acc-feat-card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:22px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.acc-feat-card small{
-  font-size:11px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-  color:var(--gold);
-}
-.acc-feat-card h4{
-  font-family:var(--serif);
-  font-size:20px;
-  color:var(--ink);
-}
-.acc-feat-card p{
-  font-size:13px;
-  color:var(--mut);
-  line-height:1.55;
-}
-
-@media(max-width:900px){
-  .acc-features{grid-template-columns:1fr 1fr}
-}
-@media(max-width:640px){
-  .acc-features{grid-template-columns:1fr}
-}
 </style>
-
-<section class="hero">
-  <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1800&q=85" alt="Research Accessories" onerror="this.src='https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=1800&q=85'">
-  <div class="wrap">
-    <div class="in">
-      <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px;display:block">Laboratory Supplies</span>
-      <h1>Precision Reconstitution &amp; Dispensing</h1>
-      <p>Individually sealed, sterile preparation sets and ultra-fine micro-syringes engineered for accurate analytical research.</p>
-    </div>
-  </div>
-</section>
 
 <section class="sec" id="cat">
   <div class="wrap">
     <div class="head">
       <div>
-        <h1 style="font-size:clamp(36px,5vw,60px)">Research Accessories</h1>
+        <h1 style="font-size:clamp(36px,5vw,60px)">Accessories</h1>
         <p>Laboratory-grade reconstitution kits, administration sets, and precision needles formulated for accurate laboratory measurement.</p>
       </div>
     </div>
 
-    <div class="g4">
-      <!-- 1. Injection Kit (ik1.webp & ik2.webp - RM15.00) -->
-      <div class="card pc">
+    <input id="q" class="sq" type="search" placeholder="Search accessories, needles or kits..." oninput="filterAccessories()">
+
+    <div class="filter" id="flt">
+      <button type="button" class="on" onclick="setCategoryFilter('All', this)">All</button>
+      <button type="button" onclick="setCategoryFilter('Injection Kit', this)">Reconstitution Sets</button>
+      <button type="button" onclick="setCategoryFilter('Syringes', this)">Precision Syringes</button>
+    </div>
+    
+    <div class="g4" id="pg">
+      <div class="card pc" data-category="Injection Kit" data-keywords="injection kit reconstitution administration set syringe 1ml alcohol swab 10x injections rm15">
         <div class="ph">
           <div class="prod-slider">
             <div class="prod-slides">
@@ -195,8 +109,8 @@
               <div class="prod-slide"><img src="{{ asset('ik2.webp') }}" alt="Injection Kit 2" onerror="this.src='https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=600'"></div>
             </div>
             <div class="ps-dots">
-              <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
-              <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
+              <span class="ps-dot active" onclick="setCardSlideCatalog(this, 0)"></span>
+              <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
           <span class="chip">Accessory</span>
@@ -209,12 +123,11 @@
             <span style="font-weight:600">1 Set (10x Injections)</span>
             <span>Laboratory Item</span>
           </div>
-          <a class="btn-details" href="{{ Route::has('accessory.show') ? route('accessory.show', 'injection-kit') : url('/accessory/injection-kit') }}">See Details</a>
+          <a class="btn-details" href="{{ route('accessory.show', 'injection-kit') }}">See Details</a>
         </div>
       </div>
 
-      <!-- 2. Insulin Needle 1 ml (ins1.webp & ins2.webp - RM55.00) -->
-      <div class="card pc">
+      <div class="card pc" data-category="Syringes" data-keywords="insulin needle 1ml disposable syringe 31g micro-syringe 100 pcs box rm55">
         <div class="ph">
           <div class="prod-slider">
             <div class="prod-slides">
@@ -222,8 +135,8 @@
               <div class="prod-slide"><img src="{{ asset('ins2.webp') }}" alt="Insulin Needle 2" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'"></div>
             </div>
             <div class="ps-dots">
-              <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
-              <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
+              <span class="ps-dot active" onclick="setCardSlideCatalog(this, 0)"></span>
+              <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
           <span class="chip">Accessory</span>
@@ -236,37 +149,32 @@
             <span style="font-weight:600">Box of 100 pcs</span>
             <span>Laboratory Item</span>
           </div>
-          <a class="btn-details" href="{{ Route::has('accessory.show') ? route('accessory.show', 'insulin-needle-1ml') : url('/accessory/insulin-needle-1ml') }}">See Details</a>
+          <a class="btn-details" href="{{ route('accessory.show', 'insulin-needle-1ml') }}">See Details</a>
         </div>
       </div>
     </div>
 
-    <div class="acc-features">
-      <div class="acc-feat-card">
-        <small>Integrity</small>
-        <h4>100% Sterile &amp; Sealed</h4>
-        <p>Each unit is ethylene oxide sterilized and individually blister-packed to ensure zero bacterial contamination.</p>
-      </div>
-      <div class="acc-feat-card">
-        <small>Measurement</small>
-        <h4>Ultra-Fine 31G Precision</h4>
-        <p>Designed with micro-beveled needle tips and crystal-clear barrel markings for minimal dead-volume fluid transfer.</p>
-      </div>
-      <div class="acc-feat-card">
-        <small>Compliance</small>
-        <h4>Laboratory Grade</h4>
-        <p>Fully compatible with standard bacteriostatic water solutions, reconstitution solvents, and laboratory protocols.</p>
-      </div>
+    <div id="noMatchMsg" style="display:none;text-align:center;padding:48px 0;color:var(--mut)">
+      <p style="font-size:16px">No accessories match your search or filter.</p>
     </div>
 
     <p style="font-size:12px;color:var(--mut);border-top:1px solid var(--line);margin-top:36px;padding-top:16px">
-      All research accessories are individually sealed, sterile, and intended strictly for laboratory and peptide preparation assays.
+      All accessories are individually sealed, sterile, and intended strictly for laboratory and peptide preparation assays.
     </p>
   </div>
 </section>
 
 <script>
-function setCardSlide(dot, idx){
+let activeCategory = 'All';
+
+function setCategoryFilter(cat, btn){
+  activeCategory = cat;
+  document.querySelectorAll('#flt button').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  filterAccessories();
+}
+
+function setCardSlideCatalog(dot, idx){
   if(window.event){
     window.event.preventDefault();
     window.event.stopPropagation();
@@ -279,12 +187,39 @@ function setCardSlide(dot, idx){
   dots.forEach((d, i) => d.classList.toggle('active', i === idx));
 }
 
+function filterAccessories(){
+  const query = (document.getElementById('q')?.value || '').trim().toLowerCase();
+  const cards = document.querySelectorAll('#pg .card');
+  let visibleCount = 0;
+
+  cards.forEach(card => {
+    const cardCat = card.getAttribute('data-category');
+    const cardKeywords = card.getAttribute('data-keywords') || '';
+    const textContent = card.innerText.toLowerCase();
+
+    const matchesCategory = (activeCategory === 'All') || (cardCat === activeCategory);
+    const matchesSearch = !query || cardKeywords.includes(query) || textContent.includes(query);
+
+    if(matchesCategory && matchesSearch){
+      card.style.display = 'flex';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const noMatch = document.getElementById('noMatchMsg');
+  if(noMatch){
+    noMatch.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+}
+
 let prodSlideTimer;
 function startProdAutoSlide(){
   clearInterval(prodSlideTimer);
   if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   prodSlideTimer = setInterval(() => {
-    document.querySelectorAll('.card .prod-slider').forEach(box => {
+    document.querySelectorAll('#pg .card .prod-slider').forEach(box => {
       const slides = box.querySelectorAll('.prod-slide');
       const dots = box.querySelectorAll('.ps-dot');
       if(slides.length < 2) return;

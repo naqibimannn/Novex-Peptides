@@ -199,7 +199,7 @@ if(is_object($reqKey)) {
 $currProd = $allProducts[$reqKey] ?? $allProducts['retatrutide'];
 $hasVariants = isset($currProd['variants']) && count($currProd['variants']) > 0;
 $isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
-$isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('accessory*');
+$isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('accessory*') || in_array($reqKey, ['injection-kit', 'insulin-needle-1ml']);
 @endphp
 
 <style>
@@ -497,6 +497,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 
 <section class="sec">
   <div class="wrap">
+    <!-- Butang Balik Dinamik: Kembali ke Accessory sekiranya item aksesori -->
     <div style="margin-bottom:24px">
       @if($isAccessory)
         <a href="{{ route('accessory') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Accessories</a>
@@ -506,6 +507,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
     </div>
 
     <div class="detail-grid">
+      <!-- 1. Galeri Slaid Mengikut Imej Spesifik Produk -->
       <div class="detail-img-wrap">
         @foreach($currProd['imgs'] as $idx => $imgFile)
           <div class="prod-slide {{ $idx === 0 ? 'active' : '' }}" id="slide{{ $idx }}">
@@ -522,6 +524,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         @endif
       </div>
 
+      <!-- 2. Maklumat Dinamik Mengikut Produk Terpilih -->
       <div class="detail-info">
         <span class="detail-badge">{{ $currProd['category'] }}</span>
         <h1 style="font-size:clamp(28px, 4vw, 42px);margin:4px 0">{{ $currProd['name'] }}</h1>
@@ -531,6 +534,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         
         <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
 
+        <!-- Pemilih Varian Dos (Sekiranya Ada) -->
         @if($hasVariants)
         <div style="background:var(--card);padding:16px;border-radius:18px;border:1px solid var(--line);margin-top:6px">
           <label style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:6px">
@@ -549,6 +553,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         </div>
         @endif
 
+        <!-- Pemilih Saiz Pakaian (Sekiranya Ada) -->
         @if($isApparel)
         <div style="margin-top:6px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -780,7 +785,7 @@ function renderCart(){
     listEl.innerHTML = `
       <div style="text-align:center;padding:48px 0;color:var(--mut)">
         <p style="font-size:16px;margin-bottom:8px">Your cart is empty.</p>
-        <a href="{{ route('products.index') }}" onclick="closeCartDrawer()" class="btn" style="padding:8px 20px;font-size:12px">Explore Products</a>
+        <a href="{{ $isAccessory ? route('accessory') : route('products.index') }}" onclick="closeCartDrawer()" class="btn" style="padding:8px 20px;font-size:12px">{{ $isAccessory ? 'Explore Accessories' : 'Explore Products' }}</a>
       </div>
     `;
     totalEl.innerText = 'RM 0.00';

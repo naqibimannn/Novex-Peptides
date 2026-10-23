@@ -83,7 +83,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .arr button{width:42px;height:42px;border-radius:50%;background:rgba(14,40,66,.35);border:1px solid rgba(255,255,255,.6);color:#fff;font-size:18px;cursor:pointer;backdrop-filter:blur(4px);transition:all .2s ease}
 .arr button:hover{background:#fff;color:var(--green)}
 
-.mq{overflow:hidden;border-block:1px solid var(--line);background:var(--card);white-space:nowrap;margin:34px 0}
+.mq{overflow:hidden;border-block:1px solid var(--line);border-top:none;background:var(--card);white-space:nowrap;margin:0}
 .mq div{display:inline-flex;gap:46px;padding:17px 0;animation:mq 34s linear infinite;font:italic 500 22px var(--serif)}
 .mq span:after{content:"✦";font-style:normal;font-size:11px;color:var(--gold);margin-left:46px}
 @keyframes mq{to{transform:translateX(-50%)}}
@@ -103,7 +103,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cat h3{font-size:20px}
 .cat p{font-size:12px;opacity:.9;margin-top:4px}
 
-/* Kad Produk & Crop Minimum Tanpa Melebarkan Gambar */
 .pc{padding:14px;background:#fff;border:1px solid var(--line);border-radius:26px;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column}
 .pc:hover{transform:translateY(-6px);box-shadow:0 24px 44px -24px rgba(47,111,159,.5)}
 .pc .ph{
@@ -133,7 +132,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .btn-details{background:var(--green);color:#fff;padding:12px;border-radius:999px;font-size:13px;font-weight:600;text-align:center;margin-top:10px;transition:background .2s}
 .btn-details:hover{background:#245a82}
 
-/* Sistem Slaid Gambar Produk (Crop Minimum dengan object-fit: cover) */
 .prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:inherit;background:#fff}
 .prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:#fff}
 .prod-slide{
@@ -148,6 +146,9 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   overflow:hidden;
   border-radius:inherit;
   background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 .prod-slide.active{opacity:1;pointer-events:auto}
 .prod-slide img{
@@ -164,17 +165,16 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .ps-dot.active{background:var(--green);transform:scale(1.25)}
 
-.t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.t-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:14px;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .25s ease}
-.t-card:hover{transform:translateY(-6px);box-shadow:0 24px 48px -20px rgba(47,111,159,.35);border-color:var(--gold)}
-.t-frame{position:relative;width:100%;aspect-ratio:3/2;border-radius:16px;overflow:hidden;background:#ffffff;border:1px solid rgba(210,226,239,.6);cursor:pointer}
-.t-frame img{width:100%;height:100%;object-fit:cover;border-radius:16px;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
-.t-card:hover .t-frame img{transform:scale(1.03)}
-.t-foot{padding:2px 6px 6px;display:flex;flex-direction:column;gap:8px;flex:1}
-.t-foot h3{font-size:21px;line-height:1.25;color:var(--ink)}
-.t-foot p{font-size:13px;color:var(--mut);line-height:1.55}
-
-.lab-meta-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);background:rgba(47,111,159,.12);padding:4px 10px;border-radius:999px;width:fit-content}
+.t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
+.t-frame-single{aspect-ratio:1.38/1;border-radius:24px;overflow:hidden;border:1px solid var(--line);background:#ffffff;cursor:pointer}
+.t-frame-single img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;display:block;transition:transform .4s ease}
+.t-frame-single:hover img{transform:scale(1.02)}
+.t-single-content{display:flex;flex-direction:column;gap:16px}
+.t-single-content h2{font-size:clamp(28px,4vw,42px);color:var(--ink)}
+.t-single-content p{font-size:15px;color:#3A4D5E;line-height:1.65}
+.t-metrics{display:flex;gap:24px;margin:8px 0 12px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.t-metrics div b{font-family:var(--serif);font-size:24px;color:var(--green);display:block}
+.t-metrics div p{font-size:12px;color:var(--mut);margin:0}
 
 .t-lightbox{position:fixed;inset:0;background:rgba(10,24,40,.88);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
 .t-lightbox.open{display:flex}
@@ -183,7 +183,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .t-lightbox-title{font-size:14px;font-weight:600;color:var(--ink);padding:4px 6px;text-align:center}
 .t-lightbox-close{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:var(--ink);font-size:22px;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
 
-/* Bahagian 2 Banner Kempen (Kurangkan Gelap Overlay) */
 .div2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .camp{position:relative;min-height:420px;color:#fff;display:flex;align-items:center;border-radius:26px;overflow:hidden;cursor:pointer}
 .camp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
@@ -215,7 +214,8 @@ footer li{list-style:none;margin-bottom:6px}
  .rt{gap:12px}
 }
 @media(max-width:960px){
- .t-grid{grid-template-columns:1fr 1fr;gap:18px}
+ .t-single-grid{grid-template-columns:1fr;gap:32px}
+ .t-frame-single{max-width:540px;margin:0 auto}
 }
 @media(max-width:900px){
  .g2,.div2,.fg{grid-template-columns:1fr}
@@ -231,9 +231,10 @@ footer li{list-style:none;margin-bottom:6px}
  .hero{min-height:480px}
  .hero .in{max-width:100%}
  .hero .btn.line{margin:10px 0 0;display:inline-block}
- .g3,.g4,.steps,.t-grid{grid-template-columns:1fr}
+ .g3,.g4,.steps{grid-template-columns:1fr}
  .g6{grid-template-columns:repeat(2,1fr);gap:12px}
  .camp{min-height:360px}
+ .t-metrics{flex-wrap:wrap;gap:16px}
 }
 </style>
 </head>
@@ -254,12 +255,11 @@ footer li{list-style:none;margin-bottom:6px}
     <div class="rt">
       <nav class="dnav">
         <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
-        <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
         <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
+        <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
       </nav>
 
       <div class="tools">
-        <!-- Butang Troli -->
         <a class="cart-trigger-btn" href="{{ route('cart') }}" aria-label="Shopping Cart">
           <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
           <span class="cart-badge" id="cartCount">0</span>
@@ -279,8 +279,8 @@ footer li{list-style:none;margin-bottom:6px}
     <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'on' : '' }}">Products</a>
     <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
     <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
-    <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
     <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
+    <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
   </nav>
 </header>
 
@@ -301,7 +301,7 @@ footer li{list-style:none;margin-bottom:6px}
         </div></div>
       </div>
       <div class="slide">
-        <img src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=1800&q=85" alt="Hero Banner 2">
+        <img src="https://images.unsplash.com/photo-1608068811588-3a67006b7489?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D" alt="Hero Banner 2">
         <div class="wrap"><div class="in">
           <h1>Certified Purity &<br>Rigorous Assay</h1>
           <p>Precision micro-pipetting, HPLC chromatographic testing, and batch-level verification.</p>
@@ -312,7 +312,7 @@ footer li{list-style:none;margin-bottom:6px}
         </div></div>
       </div>
       <div class="slide">
-        <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1800&q=85" alt="Hero Banner 3">
+        <img src="https://images.unsplash.com/photo-1614935151651-0bea6508db6b?q=80&w=1225&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D" alt="Hero Banner 3">
         <div class="wrap"><div class="in">
           <h1>State-of-the-art<br>Biomedical Lab</h1>
           <p>Synthesized under certified cGMP facilities with temperature-monitored cold chain storage.</p>
@@ -364,13 +364,12 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <section class="sec alt" id="lab-reports" style="position:relative;background:linear-gradient(rgba(233, 242, 250, 0.92), rgba(233, 242, 250, 0.95)), url('https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1800&q=85') center/cover no-repeat;padding:90px 0;">
+    <section class="sec alt" id="lab-reports" style="position:relative;background:linear-gradient(rgba(233, 242, 250, 0.92), rgba(233, 242, 250, 0.95)), url('https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1800&q=85') center/cover no-repeat;padding:52px 0;">
       <div class="wrap">
         <div class="head" style="justify-content:center;text-align:center;margin-bottom:0">
           <div style="align-items:center;text-align:center;max-width:680px;margin:0 auto">
-            <span class="lab-meta-tag">Verified Batch Integrity</span>
-            <h2 style="margin-top:10px;font-size:clamp(28px,4vw,42px)">Third-Party Lab Testing &amp; COA Analysis</h2>
-            <p style="margin:12px auto 24px;font-size:15px;color:var(--mut);line-height:1.6">
+            <h2 style="font-size:clamp(28px,4vw,42px)">Third-Party Lab Testing &amp; COA Analysis</h2>
+            <p style="margin:10px auto 20px;font-size:15px;color:var(--mut);line-height:1.6">
               Every batch is independently tested via HPLC and Mass Spectrometry to guarantee purity above 99% and authentic molecular sequence.
             </p>
             <a class="btn" href="{{ route('science') }}" style="padding:12px 32px;font-size:13px;font-weight:600">See Lab Reports →</a>
@@ -379,49 +378,45 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <section class="sec" id="testimonies"><div class="wrap">
-      <div class="head">
-        <div>
-          <h2>Real Transformations, Proven Results</h2>
-          <p>Explore real transformation journeys from our community. Interested in achieving similar results? Explore our research formulations below.</p>
+    <section class="sec" id="testimonies">
+      <div class="wrap">
+        <div class="t-single-grid">
+          <div class="t-frame-single" onclick="openLightboxModal('{{ asset('t1.webp') }}', 'Client Transformation - Weight Management & Vitality')">
+            <img src="{{ asset('t1.webp') }}" alt="Transformation" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
+          </div>
+          <div class="t-single-content">
+            <h2>Real Transformations, Proven Results</h2>
+            <p>Explore real transformation journeys from our community. Consistent protocol adherence with research-grade compounds supports sustained vitality, metabolic balance, and body composition optimisation.</p>
+            <div class="t-metrics">
+              <div>
+                <b>12 Weeks</b>
+                <p>Protocol Cycle</p>
+              </div>
+              <div>
+                <b>&gt;99%</b>
+                <p>HPLC Purity</p>
+              </div>
+              <div>
+                <b>Optimal</b>
+                <p>Metabolic Response</p>
+              </div>
+            </div>
+            <div>
+              <a class="btn" href="{{ route('products.index') }}" style="padding:14px 40px;font-size:14px;font-weight:600">Shop Now</a>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="t-grid">
-        <article class="t-card">
-          <div class="t-frame" onclick="openLightboxModal('{{ asset('t1.webp') }}', 'Client Transformation - Weight Management & Vitality')">
-            <img src="{{ asset('t1.webp') }}" alt="Transformation 1" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
-          </div>
-          <div class="t-foot">
-            <h3>Weight Management & Vitality</h3>
-            <p>Achieve a leaner physique with consistent protocol adherence.</p>
-          </div>
-        </article>
-        <article class="t-card">
-          <div class="t-frame" onclick="openLightboxModal('{{ asset('t2.webp') }}', 'Client Transformation - Stamina & Daily Endurance')">
-            <img src="{{ asset('t2.webp') }}" alt="Transformation 2" onerror="this.src='https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=700'">
-          </div>
-          <div class="t-foot">
-            <h3>Stamina & Daily Endurance</h3>
-            <p>Boost daily metabolic energy, focus and persistent recovery.</p>
-          </div>
-        </article>
-        <article class="t-card">
-          <div class="t-frame" onclick="openLightboxModal('{{ asset('t3.webp') }}', 'Client Transformation - Active Lifestyle & Confidence')">
-            <img src="{{ asset('t3.webp') }}" alt="Transformation 3" onerror="this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=700'">
-          </div>
-          <div class="t-foot">
-            <h3>Active Lifestyle & Confidence</h3>
-            <p>Revitalise metabolic resilience and support active healthy lifestyles.</p>
-          </div>
-        </article>
-      </div>
-      <div style="text-align:center;margin-top:40px">
-        <a class="btn" href="{{ route('products.index') }}" style="padding:14px 40px;font-size:14px;font-weight:600">Shop Now</a>
-      </div>
-    </div></section>
+    </section>
 
     <section class="sec alt"><div class="wrap">
-      <div class="head"><div><h2>Featured Formulations</h2></div><a class="btn line" href="{{ route('products.index') }}">View all</a></div>
+      <div class="head">
+        <div>
+          <h2>Featured Formulations</h2>
+          <p>High-purity research compounds and advanced formulations verified for laboratory excellence.</p>
+        </div>
+        <a class="btn line" href="{{ route('products.index') }}">View all</a>
+      </div>
       <div class="g4">
         <div class="card pc">
           <div class="ph">
@@ -445,7 +440,6 @@ footer li{list-style:none;margin-bottom:6px}
           </div>
           <div class="b">
             <h3>Retatrutide</h3>
-            <p class="s">Advanced Weight Management</p>
             <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM280.00 - RM980.00</div>
             <div class="meta">
               <span style="font-weight:600">10mg - 100mg</span>
@@ -471,7 +465,6 @@ footer li{list-style:none;margin-bottom:6px}
           </div>
           <div class="b">
             <h3>Retatrutide Plus (RETA PLUS)</h3>
-            <p class="s">Combination of Retatrutide + Cagrilintide</p>
             <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM590.00</div>
             <div class="meta">
               <span style="font-weight:600">40mg</span>
@@ -501,7 +494,6 @@ footer li{list-style:none;margin-bottom:6px}
           </div>
           <div class="b">
             <h3>GlutaGlow Serum</h3>
-            <p class="s">Advanced Skincare For A Brighter You</p>
             <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM59.90</div>
             <div class="meta">
               <span style="font-weight:600">10ml</span>
@@ -527,7 +519,6 @@ footer li{list-style:none;margin-bottom:6px}
           </div>
           <div class="b">
             <h3>Premium Athletic Jersey</h3>
-            <p class="s">Performance. Style. Everyday.</p>
             <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM40.00</div>
             <div class="meta">
               <span style="font-weight:600">Adult Size</span>
@@ -548,7 +539,6 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <!-- SEKSYEN PUTIH: From the bench to your door -->
     <section class="sec"><div class="wrap">
       <div class="head"><div><h2>From the bench to your door</h2><p>Four checkpoints every vial passes before it leaves us.</p></div></div>
       <div class="steps">
@@ -559,9 +549,14 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <!-- SEKSYEN BIRU: Latest Science Articles -->
     <section class="sec alt"><div class="wrap">
-      <div class="head"><div><h2>Latest Science Articles</h2></div><a class="btn line" href="{{ route('resources') }}">All articles</a></div>
+      <div class="head">
+        <div>
+          <h2>Latest Science Articles</h2>
+          <p>Carefully curated scientific literature, compound mechanisms, and laboratory research notes.</p>
+        </div>
+        <a class="btn line" href="{{ route('resources') }}">All articles</a>
+      </div>
       <div class="g4 art">
         <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
@@ -623,7 +618,7 @@ footer li{list-style:none;margin-bottom:6px}
   </div>
   <div><h4>Contact Desk</h4><p>Direct WhatsApp &amp; Inquiries:<br><b>+60 11-1208 5054</b></p></div>
  </div>
- <div class="copy"><span>© 2026 Novex Peptides. All rights reserved.</span><span>For laboratory research use only. Not for human consumption.</span></div>
+ <div class="copy"><span>© 2026 Novex Peptides. All rights reserved.</span><span>For laboratory use only. Not for human consumption.</span></div>
 </div></footer>
 
 <script>
