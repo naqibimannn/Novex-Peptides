@@ -210,7 +210,7 @@ footer li{list-style:none;margin-bottom:6px}
 
 <header>
   <div class="wrap bar">
-    <!-- Navigasi Kiri (Desktop) - Menempatkan Accessory menggantikan Science -->
+    <!-- Navigasi Kiri (Desktop) -->
     <nav class="dnav">
       <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
       <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
@@ -223,7 +223,7 @@ footer li{list-style:none;margin-bottom:6px}
     
     <!-- Bahagian Kanan Header -->
     <div class="rt">
-      <!-- Navigasi Kanan (Desktop) - Menempatkan Science menggantikan Accessory -->
+      <!-- Navigasi Kanan (Desktop) -->
       <nav class="dnav">
         <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
         <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
@@ -246,7 +246,7 @@ footer li{list-style:none;margin-bottom:6px}
     </div>
   </div>
 
-  <!-- Menu Dropdown Mobile - Ditukar susunan selari dengan desktop -->
+  <!-- Menu Dropdown Mobile -->
   <nav class="mnav" id="navM">
     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
     <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
@@ -420,6 +420,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
+    <!-- 1. GABUNGAN SEKSYEN BIRU: Featured Formulations & 2 Banner Gambar -->
     <section class="sec alt"><div class="wrap">
       <div class="head"><div><h2>Featured Formulations</h2></div><a class="btn line" href="{{ route('products.index') }}">View all</a></div>
       <div class="g4">
@@ -440,6 +441,7 @@ footer li{list-style:none;margin-bottom:6px}
             <a class="btn-details" href="{{ route('products.show', 'retatrutide') }}">See Details</a>
           </div>
         </div>
+        <!-- Retatrutide Plus -->
         <div class="card pc">
           <div class="ph">
             <img src="{{ asset('retaplus1.webp') }}" alt="Retatrutide Plus" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'">
@@ -456,6 +458,7 @@ footer li{list-style:none;margin-bottom:6px}
             <a class="btn-details" href="{{ route('products.show', 'reta-plus') }}">See Details</a>
           </div>
         </div>
+        <!-- GlutaGlow Serum -->
         <div class="card pc">
           <div class="ph">
             <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600" alt="GlutaGlow Serum">
@@ -472,6 +475,7 @@ footer li{list-style:none;margin-bottom:6px}
             <a class="btn-details" href="{{ route('products.show', 'glutaglow-serum') }}">See Details</a>
           </div>
         </div>
+        <!-- Premium Athletic Jersey -->
         <div class="card pc">
           <div class="ph">
             <img src="{{ asset('jry1.webp') }}" alt="Premium Athletic Jersey" onerror="this.src='https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600'">
@@ -489,28 +493,30 @@ footer li{list-style:none;margin-bottom:6px}
           </div>
         </div>
       </div>
-    </div></section>
 
-    <section class="sec" style="padding-top:0"><div class="wrap div2">
-      <div class="camp">
-        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85" alt="Performance Peptides">
-        <div>
-          <h2>Fuel a Higher Standard</h2>
-          <p>Science Driven Performance</p>
-          <a class="btn" style="background:#FFFFFF;color:var(--green)" href="{{ route('products.index') }}">Explore peptides</a>
+      <!-- 2 Banner Kempen (Dicantumkan terus dalam seksyen biru yang sama) -->
+      <div class="div2" style="margin-top:48px">
+        <div class="camp">
+          <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85" alt="Performance Peptides">
+          <div>
+            <h2>Fuel a Higher Standard</h2>
+            <p>Science Driven Performance</p>
+            <a class="btn" style="background:#FFFFFF;color:var(--green)" href="{{ route('products.index') }}">Explore peptides</a>
+          </div>
+        </div>
+        <div class="camp">
+          <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1000&q=85" alt="Skincare Peptides">
+          <div>
+            <h2>Radiant Skin From Within</h2>
+            <p>Advanced Peptide Skincare</p>
+            <a class="btn" style="background:#FFFFFF;color:var(--green)" href="{{ route('products.index') }}">Explore skincare</a>
+          </div>
         </div>
       </div>
-      <div class="camp">
-        <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1000&q=85" alt="Skincare Peptides">
-        <div>
-          <h2>Radiant Skin From Within</h2>
-          <p>Advanced Peptide Skincare</p>
-          <a class="btn" style="background:#FFFFFF;color:var(--green)" href="{{ route('products.index') }}">Explore skincare</a>
-        </div>
-      </div>
     </div></section>
 
-    <section class="sec alt"><div class="wrap">
+    <!-- 2. SEKSYEN PUTIH: From the bench to your door -->
+    <section class="sec"><div class="wrap">
       <div class="head"><div><h2>From the bench to your door</h2><p>Four checkpoints every vial passes before it leaves us.</p></div></div>
       <div class="steps">
         <div><b>01</b><h3>Synthesis</h3><p>Produced under certified partner cGMP conditions in the USA.</p></div>
@@ -520,28 +526,29 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <section class="sec"><div class="wrap">
+    <!-- 3. SEKSYEN BIRU: Latest Science Articles -->
+    <section class="sec alt"><div class="wrap">
       <div class="head"><div><h2>Latest Science Articles</h2></div><a class="btn line" href="{{ route('resources') }}">All articles</a></div>
       <div class="g4 art">
-        <a class="card" href="{{ route('resources') }}" style="background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=500&q=85" alt="Understanding Retatrutide">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">Understanding Retatrutide</h3></div>
         </a>
-        <a class="card" href="{{ route('resources') }}" style="background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=500&q=85" alt="The Science of GHK-Cu">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">The Science of GHK-Cu</h3></div>
         </a>
-        <a class="card" href="{{ route('resources') }}" style="background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=500&q=85" alt="Benefits of NAD+">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">Benefits of NAD+</h3></div>
         </a>
-        <a class="card" href="{{ route('resources') }}" style="background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=500&q=85" alt="What is Tesamorelin">
           </div>
