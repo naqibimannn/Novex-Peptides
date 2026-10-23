@@ -34,6 +34,7 @@ h1{font-size:clamp(34px,5.5vw,72px)}h2{font-size:clamp(26px,3.8vw,44px)}h3{font-
 header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.98);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03);margin:0}
 .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:78px;gap:20px;position:relative}
 
+/* Navigasi Desktop dengan Kesan Garisan di Bawah Teks */
 nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
 nav.dnav a{padding:6px 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
 nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
@@ -52,7 +53,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .mnav.open{display:flex;position:absolute;top:100%;left:0;right:0;background:rgba(255,255,255,.99);backdrop-filter:blur(10px);flex-direction:column;gap:0;padding:12px 24px 24px;border-bottom:1px solid var(--line);box-shadow:0 16px 32px rgba(14,40,66,.12);z-index:99}
 .mnav a{padding:14px 0;border-bottom:1px solid var(--line);font-size:15px;font-weight:500;color:var(--ink);transition:color .2s ease}
 .mnav a:hover, .mnav a.on{color:var(--green);font-weight:600}
-.mnav-shop-btn{margin-top:16px;width:100%;display:block;text-align:center;padding:13px 20px;font-size:14px;font-weight:600;border-radius:999px;background:var(--green);color:#fff !important;border-bottom:none !important}
 
 .cart-trigger-btn{position:relative;background:none;border:0;color:var(--green);padding:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease}
 .cart-trigger-btn:hover{transform:scale(1.12)}
@@ -172,7 +172,7 @@ footer li{list-style:none;margin-bottom:6px}
 
 @media(max-width:1080px){
  .bar{display:flex;justify-content:space-between;align-items:center;height:68px}
- nav.dnav,.btn-shop-desktop{display:none !important}
+ nav.dnav{display:none !important}
  .burger-btn{display:inline-flex}
  .logo{text-align:left;font-size:24px}
  .logo small{letter-spacing:.26em}
@@ -210,6 +210,7 @@ footer li{list-style:none;margin-bottom:6px}
 
 <header>
   <div class="wrap bar">
+    <!-- Navigasi Kiri (Desktop) -->
     <nav class="dnav">
       <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
       <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
@@ -217,21 +218,26 @@ footer li{list-style:none;margin-bottom:6px}
       <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
     </nav>
     
+    <!-- Logo Teks -->
     <a href="{{ route('home') }}" class="logo">NOVEX<small>PEPTIDES</small></a>
     
+    <!-- Bahagian Kanan Header -->
     <div class="rt">
+      <!-- Navigasi Kanan (Desktop) Mengandungi Resources, Contact & Accessory -->
       <nav class="dnav">
         <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
         <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
+        <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
       </nav>
+
       <div class="tools">
-        <a class="btn btn-shop-desktop" href="{{ route('accessory') }}" style="padding:10px 20px;font-size:12px">Accessory</a>
-        
+        <!-- Butang Troli -->
         <a class="cart-trigger-btn" href="{{ route('cart') }}" aria-label="Shopping Cart">
           <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
           <span class="cart-badge" id="cartCount">0</span>
         </a>
 
+        <!-- Butang 3 Garis (Hamburger Mobile) -->
         <button class="burger-btn" id="mobileBurgerBtn" onclick="toggleMobileNav()" aria-label="Toggle Menu">
           <svg class="icon-open" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
           <svg class="icon-close" style="display:none" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -240,14 +246,15 @@ footer li{list-style:none;margin-bottom:6px}
     </div>
   </div>
 
+  <!-- Menu Dropdown Mobile -->
   <nav class="mnav" id="navM">
     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
-    <a href="{{ route('about') }}">About</a>
-    <a href="{{ route('products.index') }}">Products</a>
-    <a href="{{ route('science') }}">Science</a>
-    <a href="{{ route('resources') }}">Resources</a>
-    <a href="{{ route('contact') }}">Contact</a>
-    <a class="btn mnav-shop-btn" href="{{ route('accessory') }}">Accessory</a>
+    <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
+    <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'on' : '' }}">Products</a>
+    <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
+    <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
+    <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
+    <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
   </nav>
 </header>
 
