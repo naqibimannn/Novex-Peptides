@@ -2,6 +2,104 @@
 
 @section('content')
 <style>
+.lab-meta-tag{
+  display:inline-block;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--green);
+  background:rgba(47,111,159,.12);
+  padding:4px 10px;
+  border-radius:999px;
+  width:fit-content;
+}
+.lab-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:40px;
+  max-width:1060px;
+  margin:0 auto 60px;
+  align-items:start;
+}
+.lab-item{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  width:100%;
+  max-width:500px;
+  margin:0 auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 10px 26px rgba(14,40,66,.06);
+  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.lab-item:hover{
+  transform:translateY(-5px);
+  border-color:var(--gold);
+  box-shadow:0 18px 36px rgba(47,111,159,.15);
+}
+.lab-img-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:1 / 1.414;
+  border-radius:16px;
+  overflow:hidden;
+  cursor:pointer;
+  background:#ffffff;
+  border:1px solid rgba(210,226,239,.85);
+}
+.lab-img-wrap img{
+  width:100% !important;
+  height:100% !important;
+  display:block;
+  object-fit:contain !important;
+  object-position:center !important;
+  background:#ffffff;
+  padding:4px;
+}
+.lab-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:rgba(30,45,59,.88);
+  color:#fff;
+  font-size:11px;
+  font-weight:600;
+  padding:5px 12px;
+  border-radius:999px;
+  backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  gap:5px;
+  z-index:2;
+}
+.lab-badge svg{
+  width:13px;
+  height:13px;
+  stroke:#fff;
+  flex-shrink:0;
+}
+.lab-meta{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:4px 4px 2px;
+  text-align:left;
+}
+.lab-meta h3{
+  font-size:22px;
+  color:var(--ink);
+  line-height:1.25;
+}
+.lab-meta p{
+  font-size:13.5px;
+  color:var(--mut);
+  line-height:1.6;
+}
+
 .rows>div{
   background:var(--card);
   border-radius:24px;
@@ -23,9 +121,12 @@
 @media(max-width:900px){
   .rows>div{grid-template-columns:50px 1fr}
   .rows p{grid-column:2}
+  .lab-grid{gap:28px;max-width:100%}
 }
 @media(max-width:640px){
   .gl{grid-template-columns:1fr}
+  .lab-grid{grid-template-columns:1fr;gap:20px}
+  .lab-item{padding:14px;border-radius:20px;max-width:100%}
 }
 </style>
 
@@ -44,47 +145,46 @@
   <div class="wrap">
     <div class="head">
       <div>
-        <span class="lab-meta-tag">Analytical Verification Desk</span>
         <h1 style="font-size:clamp(34px,5vw,56px);margin-top:6px">Our Science &amp; Quality Control</h1>
         <p>Complete laboratory analytical reports (COA), HPLC purity assays, and strict mass spectrometry identification.</p>
       </div>
     </div>
 
-    <div class="lab-grid" style="margin-bottom:60px">
+    <div class="lab-grid">
       <div class="lab-item">
-        <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab1.webp') }}', 'Science Page - HPLC Chromatography Analysis Certificate')">
-          <img src="{{ asset('lab1.webp') }}" alt="HPLC Report 01" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
+        <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab1.webp') }}', 'Janoshik Test Report #123459 — Retatrutide 10 MG (Batch NXP-RT-001)')">
+          <img src="{{ asset('lab1.webp') }}" alt="Janoshik Test Report Retatrutide 10 MG" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>
           </div>
         </div>
-        <div class="lab-meta" style="margin-top:10px">
-          <span class="lab-meta-tag">Certified Purity: &gt;99.2%</span>
-          <h3 style="font-size:20px;margin-top:4px">HPLC Quantitative Assay #01</h3>
-          <p style="font-size:13px;color:var(--mut)">Purity certified at &gt;99.2% single-peak resolution against reference standard markers with zero trace unreacted synthesis fragments.</p>
+        <div class="lab-meta">
+          <span class="lab-meta-tag">Purity: 99.795% • Task #123459</span>
+          <h3>Retatrutide 10 MG (Batch NXP-RT-001)</h3>
+          <p>Independent Janoshik analytical test report conducted on 23 Mar 2026 verifying 10.60 mg active Retatrutide content and 99.795% purity (Unique Key: KSISHJQFL7NX).</p>
         </div>
       </div>
 
       <div class="lab-item">
-        <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab2.webp') }}', 'Science Page - Mass Spectrometry Molecular Weight Verification')">
-          <img src="{{ asset('lab2.webp') }}" alt="Mass Spec Report 02" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
+        <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab2.webp') }}', 'Janoshik Test Report #122238 — GHK-Cu (Copper Peptide)')">
+          <img src="{{ asset('lab2.webp') }}" alt="Janoshik Test Report GHK-Cu Copper Peptide" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>
           </div>
         </div>
-        <div class="lab-meta" style="margin-top:10px">
-          <span class="lab-meta-tag">Mass Spec • Sequence Confirmed</span>
-          <h3 style="font-size:20px;margin-top:4px">ESI-MS Molecular Identity #02</h3>
-          <p style="font-size:13px;color:var(--mut)">High-resolution electrospray ionisation mass spectrometry verifying theoretical molecular weight and exact amino acid peptide sequence fidelity.</p>
+        <div class="lab-meta">
+          <span class="lab-meta-tag">Purity: 99.717% • Task #122238</span>
+          <h3>GHK-Cu (Copper Peptide)</h3>
+          <p>Independent Janoshik double-tested analysis conducted on 24 Mar 2026 confirming 71.39 mg GHK-Cu content and 99.717% purity (Unique Key: DTPDDS2WWWAH).</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="sec" style="padding-top:0">
+<section class="sec alt" style="padding-top:0">
   <div class="wrap">
     <div class="head">
       <div>
@@ -112,7 +212,7 @@
   </div>
 </section>
 
-<section class="sec alt">
+<section class="sec">
   <div class="wrap">
     <div class="head">
       <div>
