@@ -34,7 +34,7 @@ h1{font-size:clamp(34px,5.5vw,72px)}h2{font-size:clamp(26px,3.8vw,44px)}h3{font-
 header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.98);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03);margin:0}
 .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:78px;gap:20px;position:relative}
 
-/* Navigasi Desktop dengan Kesan Garisan di Bawah Teks */
+/* Navigasi Desktop */
 nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
 nav.dnav a{padding:6px 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
 nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
@@ -210,12 +210,12 @@ footer li{list-style:none;margin-bottom:6px}
 
 <header>
   <div class="wrap bar">
-    <!-- Navigasi Kiri (Desktop) -->
+    <!-- Navigasi Kiri (Desktop) - Menempatkan Accessory menggantikan Science -->
     <nav class="dnav">
       <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
       <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
       <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'on' : '' }}">Products</a>
-      <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
+      <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
     </nav>
     
     <!-- Logo Teks -->
@@ -223,11 +223,11 @@ footer li{list-style:none;margin-bottom:6px}
     
     <!-- Bahagian Kanan Header -->
     <div class="rt">
-      <!-- Navigasi Kanan (Desktop) Mengandungi Resources, Contact & Accessory -->
+      <!-- Navigasi Kanan (Desktop) - Menempatkan Science menggantikan Accessory -->
       <nav class="dnav">
         <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
         <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
-        <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
+        <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
       </nav>
 
       <div class="tools">
@@ -246,15 +246,15 @@ footer li{list-style:none;margin-bottom:6px}
     </div>
   </div>
 
-  <!-- Menu Dropdown Mobile -->
+  <!-- Menu Dropdown Mobile - Ditukar susunan selari dengan desktop -->
   <nav class="mnav" id="navM">
     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
     <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
     <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'on' : '' }}">Products</a>
-    <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
+    <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
     <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
     <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
-    <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
+    <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
   </nav>
 </header>
 
