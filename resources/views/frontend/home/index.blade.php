@@ -34,7 +34,6 @@ h1{font-size:clamp(34px,5.5vw,72px)}h2{font-size:clamp(26px,3.8vw,44px)}h3{font-
 header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.98);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03);margin:0}
 .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:78px;gap:20px;position:relative}
 
-/* Navigasi Desktop */
 nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
 nav.dnav a{padding:6px 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
 nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
@@ -104,9 +103,27 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cat h3{font-size:20px}
 .cat p{font-size:12px;opacity:.9;margin-top:4px}
 
+/* Kad Produk & Crop Minimum Tanpa Melebarkan Gambar */
 .pc{padding:14px;background:#fff;border:1px solid var(--line);border-radius:26px;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column}
 .pc:hover{transform:translateY(-6px);box-shadow:0 24px 44px -24px rgba(47,111,159,.5)}
-.pc .ph{aspect-ratio:1;border-radius:20px;position:relative;background:#ffffff;border:1px solid rgba(210,226,239,.5);overflow:hidden}
+.pc .ph{
+  aspect-ratio:4/5;
+  border-radius:20px;
+  position:relative;
+  background:#ffffff;
+  border:1px solid rgba(210,226,239,.5);
+  overflow:hidden;
+  padding:0;
+}
+.pc .ph img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  padding:0 !important;
+  border-radius:inherit;
+  display:block;
+}
 .pc .chip{position:absolute;left:12px;top:12px;z-index:6;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);color:var(--green);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid rgba(210,226,239,.6)}
 .pc .b{text-align:left;align-items:stretch;padding:16px 8px 8px;gap:8px;display:flex;flex-direction:column;flex:1}
 .pc h3{font-size:20px;line-height:1.2}
@@ -115,6 +132,37 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .pc .meta span{font-size:11px;background:var(--bg2);color:var(--ink);padding:4px 10px;border-radius:999px}
 .btn-details{background:var(--green);color:#fff;padding:12px;border-radius:999px;font-size:13px;font-weight:600;text-align:center;margin-top:10px;transition:background .2s}
 .btn-details:hover{background:#245a82}
+
+/* Sistem Slaid Gambar Produk (Crop Minimum dengan object-fit: cover) */
+.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:inherit;background:#fff}
+.prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:#fff}
+.prod-slide{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  transition:opacity .65s ease-in-out;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+  border-radius:inherit;
+  background:#fff;
+}
+.prod-slide.active{opacity:1;pointer-events:auto}
+.prod-slide img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:inherit;
+  display:block;
+}
+.ps-dots{position:absolute;bottom:10px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:6px}
+.ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.ps-dot.active{background:var(--green);transform:scale(1.25)}
 
 .t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .t-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:14px;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease,border-color .25s ease}
@@ -126,17 +174,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .t-foot h3{font-size:21px;line-height:1.25;color:var(--ink)}
 .t-foot p{font-size:13px;color:var(--mut);line-height:1.55}
 
-.lab-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:40px;max-width:780px;margin:0 auto;align-items:start}
-.lab-item{display:flex;flex-direction:column;gap:14px;width:100%;max-width:350px;margin:0 auto}
-.lab-img-wrap{position:relative;width:100%;aspect-ratio:1 / 1.4;border-radius:18px;overflow:hidden;cursor:pointer;background:#ffffff;border:1px solid rgba(210,226,239,.95);box-shadow:0 10px 26px rgba(14,40,66,.07);transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease}
-.lab-img-wrap:hover{transform:translateY(-5px);border-color:var(--gold);box-shadow:0 18px 36px rgba(47,111,159,.16)}
-.lab-img-wrap img{width:100%!important;height:100%!important;display:block;border-radius:18px;object-fit:contain;object-position:center;background:#ffffff;padding:6px}
-.lab-badge{position:absolute;top:12px;right:12px;background:rgba(30,45,59,.88);color:#fff;font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;backdrop-filter:blur(6px);display:flex;align-items:center;gap:5px;z-index:2}
-.lab-badge svg{width:13px;height:13px;stroke:#fff}
-.lab-meta{display:flex;flex-direction:column;gap:6px;text-align:left}
 .lab-meta-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);background:rgba(47,111,159,.12);padding:4px 10px;border-radius:999px;width:fit-content}
-.lab-meta h3{font-size:20px;color:var(--ink);line-height:1.25}
-.lab-meta p{font-size:13px;color:var(--mut);line-height:1.55}
 
 .t-lightbox{position:fixed;inset:0;background:rgba(10,24,40,.88);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
 .t-lightbox.open{display:flex}
@@ -145,14 +183,12 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .t-lightbox-title{font-size:14px;font-weight:600;color:var(--ink);padding:4px 6px;text-align:center}
 .t-lightbox-close{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:var(--ink);font-size:22px;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
 
+/* Bahagian 2 Banner Kempen (Kurangkan Gelap Overlay) */
 .div2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.camp{position:relative;min-height:420px;color:#fff;display:flex;align-items:center;border-radius:26px;overflow:hidden}
+.camp{position:relative;min-height:420px;color:#fff;display:flex;align-items:center;border-radius:26px;overflow:hidden;cursor:pointer}
 .camp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
 .camp:hover img{transform:scale(1.03)}
-.camp:before{content:"";position:absolute;inset:0;z-index:1;background:rgba(14,40,66,.52)}
-.camp div{position:relative;z-index:2;padding:40px}
-.camp h2{font-size:clamp(24px,3vw,36px);color:#fff;margin-bottom:6px}
-.camp p{margin:10px 0 22px;max-width:380px;font-size:14px;color:#E3EFF8;opacity:.95}
+.camp:before{content:"";position:absolute;inset:0;z-index:1;background:rgba(14,40,66,.18)}
 
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .steps div{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px}
@@ -180,8 +216,6 @@ footer li{list-style:none;margin-bottom:6px}
 }
 @media(max-width:960px){
  .t-grid{grid-template-columns:1fr 1fr;gap:18px}
- .lab-grid{gap:28px;max-width:680px}
- .lab-item{max-width:310px}
 }
 @media(max-width:900px){
  .g2,.div2,.fg{grid-template-columns:1fr}
@@ -197,11 +231,9 @@ footer li{list-style:none;margin-bottom:6px}
  .hero{min-height:480px}
  .hero .in{max-width:100%}
  .hero .btn.line{margin:10px 0 0;display:inline-block}
- .g3,.g4,.steps,.t-grid,.lab-grid{grid-template-columns:1fr}
- .lab-item{max-width:320px}
+ .g3,.g4,.steps,.t-grid{grid-template-columns:1fr}
  .g6{grid-template-columns:repeat(2,1fr);gap:12px}
  .camp{min-height:360px}
- .camp div{padding:28px 22px}
 }
 </style>
 </head>
@@ -210,7 +242,6 @@ footer li{list-style:none;margin-bottom:6px}
 
 <header>
   <div class="wrap bar">
-    <!-- Navigasi Kiri (Desktop) -->
     <nav class="dnav">
       <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
       <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
@@ -218,12 +249,9 @@ footer li{list-style:none;margin-bottom:6px}
       <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
     </nav>
     
-    <!-- Logo Teks -->
     <a href="{{ route('home') }}" class="logo">NOVEX<small>PEPTIDES</small></a>
     
-    <!-- Bahagian Kanan Header -->
     <div class="rt">
-      <!-- Navigasi Kanan (Desktop) -->
       <nav class="dnav">
         <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
         <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
@@ -237,7 +265,6 @@ footer li{list-style:none;margin-bottom:6px}
           <span class="cart-badge" id="cartCount">0</span>
         </a>
 
-        <!-- Butang 3 Garis (Hamburger Mobile) -->
         <button class="burger-btn" id="mobileBurgerBtn" onclick="toggleMobileNav()" aria-label="Toggle Menu">
           <svg class="icon-open" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
           <svg class="icon-close" style="display:none" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -246,7 +273,6 @@ footer li{list-style:none;margin-bottom:6px}
     </div>
   </div>
 
-  <!-- Menu Dropdown Mobile -->
   <nav class="mnav" id="navM">
     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
     <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
@@ -338,46 +364,20 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <section class="sec alt" id="lab-reports"><div class="wrap">
-      <div class="head">
-        <div>
-          <span class="lab-meta-tag">Verified Batch Integrity</span>
-          <h2 style="margin-top:6px">Third-Party Lab Testing &amp; COA Analysis</h2>
-          <p>Every single batch produced undergoes independent analytical verification via Reverse-Phase HPLC and Mass Spectrometry to certify purity above 99% and exact molecular identity.</p>
-        </div>
-      </div>
-      <div class="lab-grid">
-        <div class="lab-item">
-          <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab1.webp') }}', 'Official Certificate of Analysis (COA) - HPLC Purity Test Report 01')">
-            <img src="{{ asset('lab1.webp') }}" alt="COA HPLC Analysis Report" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
-            <div class="lab-badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span>Click to Inspect COA</span>
-            </div>
-          </div>
-          <div class="lab-meta">
-            <span class="lab-meta-tag">Purity: &gt;99.2% • Verified</span>
-            <h3>Certificate of Analysis (COA) #01</h3>
-            <p>Comprehensive Reverse-Phase HPLC chromatography confirms single-peak molecular purity with zero trace heavy metal contaminants.</p>
-          </div>
-        </div>
-
-        <div class="lab-item">
-          <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab2.webp') }}', 'Official Certificate of Analysis (COA) - Mass Spectrometry & Analytical Assay 02')">
-            <img src="{{ asset('lab2.webp') }}" alt="COA Analytical Results" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
-            <div class="lab-badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span>Click to Inspect COA</span>
-            </div>
-          </div>
-          <div class="lab-meta">
-            <span class="lab-meta-tag">Mass Spec • Sequence Confirmed</span>
-            <h3>Analytical Test Certificate #02</h3>
-            <p>Electrospray Ionisation Mass Spectrometry (ESI-MS) verifying theoretical molecular weight and exact amino acid peptide sequence fidelity.</p>
+    <section class="sec alt" id="lab-reports" style="position:relative;background:linear-gradient(rgba(233, 242, 250, 0.92), rgba(233, 242, 250, 0.95)), url('https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1800&q=85') center/cover no-repeat;padding:90px 0;">
+      <div class="wrap">
+        <div class="head" style="justify-content:center;text-align:center;margin-bottom:0">
+          <div style="align-items:center;text-align:center;max-width:680px;margin:0 auto">
+            <span class="lab-meta-tag">Verified Batch Integrity</span>
+            <h2 style="margin-top:10px;font-size:clamp(28px,4vw,42px)">Third-Party Lab Testing &amp; COA Analysis</h2>
+            <p style="margin:12px auto 24px;font-size:15px;color:var(--mut);line-height:1.6">
+              Every batch is independently tested via HPLC and Mass Spectrometry to guarantee purity above 99% and authentic molecular sequence.
+            </p>
+            <a class="btn" href="{{ route('science') }}" style="padding:12px 32px;font-size:13px;font-weight:600">See Lab Reports →</a>
           </div>
         </div>
       </div>
-    </div></section>
+    </section>
 
     <section class="sec" id="testimonies"><div class="wrap">
       <div class="head">
@@ -420,14 +420,27 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <!-- 1. GABUNGAN SEKSYEN BIRU: Featured Formulations & 2 Banner Gambar -->
     <section class="sec alt"><div class="wrap">
       <div class="head"><div><h2>Featured Formulations</h2></div><a class="btn line" href="{{ route('products.index') }}">View all</a></div>
       <div class="g4">
-        <!-- Retatrutide -->
         <div class="card pc">
           <div class="ph">
-            <img src="{{ asset('reta1.webp') }}" alt="Retatrutide" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+            <div class="prod-slider">
+              <div class="prod-slides">
+                <div class="prod-slide active"><img src="{{ asset('reta1.webp') }}" alt="Retatrutide 1" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('reta2.webp') }}" alt="Retatrutide 2" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('reta3.webp') }}" alt="Retatrutide 3" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('reta4.webp') }}" alt="Retatrutide 4" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('reta5.webp') }}" alt="Retatrutide 5" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'"></div>
+              </div>
+              <div class="ps-dots">
+                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 2)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 3)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 4)"></span>
+              </div>
+            </div>
             <span class="chip">Weight Management</span>
           </div>
           <div class="b">
@@ -441,10 +454,19 @@ footer li{list-style:none;margin-bottom:6px}
             <a class="btn-details" href="{{ route('products.show', 'retatrutide') }}">See Details</a>
           </div>
         </div>
-        <!-- Retatrutide Plus -->
+
         <div class="card pc">
           <div class="ph">
-            <img src="{{ asset('retaplus1.webp') }}" alt="Retatrutide Plus" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'">
+            <div class="prod-slider">
+              <div class="prod-slides">
+                <div class="prod-slide active"><img src="{{ asset('retaplus1.webp') }}" alt="Retatrutide Plus 1" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('retaplus2.webp') }}" alt="Retatrutide Plus 2" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600'"></div>
+              </div>
+              <div class="ps-dots">
+                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
+              </div>
+            </div>
             <span class="chip">Weight Management</span>
           </div>
           <div class="b">
@@ -458,10 +480,23 @@ footer li{list-style:none;margin-bottom:6px}
             <a class="btn-details" href="{{ route('products.show', 'reta-plus') }}">See Details</a>
           </div>
         </div>
-        <!-- GlutaGlow Serum -->
+
         <div class="card pc">
           <div class="ph">
-            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600" alt="GlutaGlow Serum">
+            <div class="prod-slider">
+              <div class="prod-slides">
+                <div class="prod-slide active"><img src="{{ asset('gluta1.webp') }}" alt="GlutaGlow Serum 1" onerror="this.src='https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('gluta2.webp') }}" alt="GlutaGlow Serum 2" onerror="this.src='https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('gluta3.webp') }}" alt="GlutaGlow Serum 3" onerror="this.src='https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('gluta4.webp') }}" alt="GlutaGlow Serum 4" onerror="this.src='https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=600'"></div>
+              </div>
+              <div class="ps-dots">
+                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 2)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 3)"></span>
+              </div>
+            </div>
             <span class="chip">Skincare Collection</span>
           </div>
           <div class="b">
@@ -475,10 +510,19 @@ footer li{list-style:none;margin-bottom:6px}
             <a class="btn-details" href="{{ route('products.show', 'glutaglow-serum') }}">See Details</a>
           </div>
         </div>
-        <!-- Premium Athletic Jersey -->
+
         <div class="card pc">
           <div class="ph">
-            <img src="{{ asset('jry1.webp') }}" alt="Premium Athletic Jersey" onerror="this.src='https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600'">
+            <div class="prod-slider">
+              <div class="prod-slides">
+                <div class="prod-slide active"><img src="{{ asset('jry1.webp') }}" alt="Jersey 1" onerror="this.src='https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600'"></div>
+                <div class="prod-slide"><img src="{{ asset('jry2.webp') }}" alt="Jersey 2" onerror="this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'"></div>
+              </div>
+              <div class="ps-dots">
+                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
+                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
+              </div>
+            </div>
             <span class="chip">Apparel</span>
           </div>
           <div class="b">
@@ -494,28 +538,17 @@ footer li{list-style:none;margin-bottom:6px}
         </div>
       </div>
 
-      <!-- 2 Banner Kempen (Dicantumkan terus dalam seksyen biru yang sama) -->
       <div class="div2" style="margin-top:48px">
-        <div class="camp">
-          <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85" alt="Performance Peptides">
-          <div>
-            <h2>Fuel a Higher Standard</h2>
-            <p>Science Driven Performance</p>
-            <a class="btn" style="background:#FFFFFF;color:var(--green)" href="{{ route('products.index') }}">Explore peptides</a>
-          </div>
-        </div>
-        <div class="camp">
-          <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1000&q=85" alt="Skincare Peptides">
-          <div>
-            <h2>Radiant Skin From Within</h2>
-            <p>Advanced Peptide Skincare</p>
-            <a class="btn" style="background:#FFFFFF;color:var(--green)" href="{{ route('products.index') }}">Explore skincare</a>
-          </div>
-        </div>
+        <a class="camp" href="{{ route('products.index') }}" aria-label="Explore Performance Peptides">
+          <img src="{{ asset('f1.webp') }}" alt="Performance Peptides Banner" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85'">
+        </a>
+        <a class="camp" href="{{ route('products.index') }}" aria-label="Explore Peptide Skincare">
+          <img src="{{ asset('r1.webp') }}" alt="Skincare Peptides Banner" onerror="this.src='https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1000&q=85'">
+        </a>
       </div>
     </div></section>
 
-    <!-- 2. SEKSYEN PUTIH: From the bench to your door -->
+    <!-- SEKSYEN PUTIH: From the bench to your door -->
     <section class="sec"><div class="wrap">
       <div class="head"><div><h2>From the bench to your door</h2><p>Four checkpoints every vial passes before it leaves us.</p></div></div>
       <div class="steps">
@@ -526,7 +559,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <!-- 3. SEKSYEN BIRU: Latest Science Articles -->
+    <!-- SEKSYEN BIRU: Latest Science Articles -->
     <section class="sec alt"><div class="wrap">
       <div class="head"><div><h2>Latest Science Articles</h2></div><a class="btn line" href="{{ route('resources') }}">All articles</a></div>
       <div class="g4 art">
@@ -596,12 +629,43 @@ footer li{list-style:none;margin-bottom:6px}
 <script>
 let hi = 0, ht;
 function go(n){
-  const slides = document.querySelectorAll('.slide');
-  const dots = document.querySelectorAll('.dot');
+  const slides = document.querySelectorAll('.hero.sl .slide');
+  const dots = document.querySelectorAll('.hero.sl .dot');
   if(!slides.length) return;
   hi = (n + slides.length) % slides.length;
   slides.forEach((x, i) => x.classList.toggle('on', i === hi));
   dots.forEach((d, i) => d.classList.toggle('on', i === hi));
+}
+
+function setCardSlide(dot, idx){
+  if(window.event){
+    window.event.preventDefault();
+    window.event.stopPropagation();
+  }
+  const slider = dot.closest('.prod-slider');
+  if(!slider) return;
+  const slides = slider.querySelectorAll('.prod-slide');
+  const dots = slider.querySelectorAll('.ps-dot');
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+
+let prodSlideTimer;
+function startProdAutoSlide(){
+  clearInterval(prodSlideTimer);
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  prodSlideTimer = setInterval(() => {
+    document.querySelectorAll('.card .prod-slider').forEach(box => {
+      const slides = box.querySelectorAll('.prod-slide');
+      const dots = box.querySelectorAll('.ps-dot');
+      if(slides.length < 2) return;
+      let cur = 0;
+      slides.forEach((s, idx) => { if(s.classList.contains('active')) cur = idx; });
+      let next = (cur + 1) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === next));
+      dots.forEach((d, idx) => d.classList.toggle('active', idx === next));
+    });
+  }, 4500);
 }
 
 function openLightboxModal(src, title=''){
@@ -637,9 +701,10 @@ const setOff = () => {
 window.addEventListener('resize', setOff);
 document.addEventListener('DOMContentLoaded', () => {
   setOff();
-  if(document.querySelector('.slide')){
+  if(document.querySelector('.hero.sl .slide')){
     ht = setInterval(() => go(hi + 1), 7000);
   }
+  startProdAutoSlide();
 });
 </script>
 </body>

@@ -1,16 +1,198 @@
 @extends('frontend.home.index')
 
+@php
+// Kamus Data Penuh bagi Semua Produk & Imej Spesifik
+$allProducts = [
+    'retatrutide' => [
+        'id' => 'retatrutide',
+        'name' => 'Retatrutide',
+        'title' => 'Advanced Weight Management',
+        'spec' => '10mg - 100mg',
+        'val' => 280,
+        'price' => 'RM280.00 - RM980.00',
+        'category' => 'Weight Management',
+        'imgs' => ['reta1.webp', 'reta2.webp', 'reta3.webp', 'reta4.webp', 'reta5.webp'],
+        'stock' => 63,
+        'variants' => [
+            ['label' => '10mg', 'val' => 280, 'price' => 'RM280.00', 'stock' => 25],
+            ['label' => '30mg', 'val' => 480, 'price' => 'RM480.00', 'stock' => 18],
+            ['label' => '60mg', 'val' => 780, 'price' => 'RM780.00', 'stock' => 12],
+            ['label' => '100mg', 'val' => 980, 'price' => 'RM980.00', 'stock' => 8],
+        ],
+        'desc' => 'High-purity lyophilised triple-receptor agonist peptide synthesized for metabolic pathway investigations and weight management receptor studies. Select your preferred vial concentration above to view exact pricing.',
+    ],
+    'reta-plus' => [
+        'id' => 'reta-plus',
+        'name' => 'Retatrutide Plus (RETA PLUS)',
+        'title' => 'Combination of Retatrutide + Cagrilintide',
+        'spec' => '40mg',
+        'val' => 590,
+        'price' => 'RM590.00',
+        'category' => 'Weight Management',
+        'imgs' => ['retaplus1.webp', 'retaplus2.webp'],
+        'stock' => 15,
+        'desc' => 'Synergistic dual-action formulation pairing Retatrutide with Cagrilintide for comprehensive multi-target metabolic profiling.',
+    ],
+    'ghk-cu' => [
+        'id' => 'ghk-cu',
+        'name' => 'GHK-Cu',
+        'title' => 'Radiant Skin & Cellular Rejuvenation',
+        'spec' => '100mg',
+        'val' => 180,
+        'price' => 'RM180.00',
+        'category' => 'Skincare Peptides',
+        'imgs' => ['ghk1.webp', 'ghk2.webp'],
+        'stock' => 30,
+        'desc' => 'Naturally occurring copper complex tripeptide formulated for collagen matrix renewal and dermal restructuring research.',
+    ],
+    'nad-plus' => [
+        'id' => 'nad-plus',
+        'name' => 'NAD+',
+        'title' => 'Radiant Skin & Cellular Rejuvenation',
+        'spec' => '500mg',
+        'val' => 220,
+        'price' => 'RM220.00',
+        'category' => 'Skincare Peptides',
+        'imgs' => ['nad1.webp', 'nad2.webp'],
+        'stock' => 20,
+        'desc' => 'Essential coenzyme nicotinamide adenine dinucleotide (NAD+) supporting mitochondrial oxidative phosphorylation and cellular longevity.',
+    ],
+    'gluta' => [
+        'id' => 'gluta',
+        'name' => 'Glutathione',
+        'title' => 'Radiant Skin & Cellular Rejuvenation',
+        'spec' => '1500mg',
+        'val' => 150,
+        'price' => 'RM150.00',
+        'category' => 'Skincare Peptides',
+        'imgs' => ['glu1.webp', 'glu2.webp'],
+        'stock' => 35,
+        'desc' => 'Master antioxidant compound in ultra-pure lyophilised format for cellular oxidative stress mitigation and brightening assays.',
+    ],
+    'snap-8' => [
+        'id' => 'snap-8',
+        'name' => 'SNAP-8',
+        'title' => 'Radiant Skin & Cellular Rejuvenation',
+        'spec' => '10mg',
+        'val' => 180,
+        'price' => 'RM180.00',
+        'category' => 'Skincare Peptides',
+        'imgs' => ['snap1.webp', 'snap2.webp'],
+        'stock' => 22,
+        'desc' => 'Octapeptide complex engineered to study the modulation of facial muscle micro-contractions and expression lines.',
+    ],
+    'tesa' => [
+        'id' => 'tesa',
+        'name' => 'Tesamorelin',
+        'title' => 'Optimise Performance & Longevity',
+        'spec' => '5mg',
+        'val' => 170,
+        'price' => 'RM170.00',
+        'category' => 'Performance',
+        'imgs' => ['tesa1.webp', 'tesa2.webp'],
+        'stock' => 14,
+        'desc' => 'GHRH synthetic analogue investigated for endogenous growth hormone pathway regulation and body composition analysis.',
+    ],
+    'aicar' => [
+        'id' => 'aicar',
+        'name' => 'AICAR',
+        'title' => 'Optimise Performance & Longevity',
+        'spec' => '50mg',
+        'val' => 220,
+        'price' => 'RM220.00',
+        'category' => 'Performance',
+        'imgs' => ['aicar1.webp', 'aicar2.webp'],
+        'stock' => 19,
+        'desc' => 'AMPK activator compound investigated for cellular energy regulation and endurance adaptations in laboratory models.',
+    ],
+    'motsc' => [
+        'id' => 'motsc',
+        'name' => 'MOTS-C',
+        'title' => 'Optimise Performance & Longevity',
+        'spec' => '20mg',
+        'val' => 180,
+        'price' => 'RM180.00',
+        'category' => 'Performance',
+        'imgs' => ['mot1.webp', 'mot2.webp'],
+        'stock' => 16,
+        'desc' => 'Mitochondrial-derived peptide associated with insulin sensitivity and metabolic balance under physical strain.',
+    ],
+    'glutaglow-serum' => [
+        'id' => 'glutaglow-serum',
+        'name' => 'GlutaGlow Serum',
+        'title' => 'Advanced Skincare For A Brighter You',
+        'spec' => '10ml',
+        'val' => 59.90,
+        'price' => 'RM59.90',
+        'category' => 'Skincare Collection',
+        'imgs' => ['gluta1.webp', 'gluta2.webp', 'gluta3.webp', 'gluta4.webp'],
+        'stock' => 40,
+        'desc' => 'Concentrated brightening facial serum formulated with high-purity glutathione and peptide complexes for a radiant, even-toned complexion.',
+    ],
+    'ghk-cu-serum' => [
+        'id' => 'ghk-cu-serum',
+        'name' => 'GHK-Cu Serum',
+        'title' => 'Advanced Skincare For A Brighter You',
+        'spec' => '30ml',
+        'val' => 79.90,
+        'price' => 'RM79.90',
+        'category' => 'Skincare Collection',
+        'imgs' => ['ghks1.webp', 'ghks2.webp', 'ghks3.webp', 'ghks4.webp'],
+        'stock' => 35,
+        'desc' => 'Daily restorative copper peptide serum (30ml) designed to support skin elasticity, firmness, and barrier repair.',
+    ],
+    'glutathione-cream' => [
+        'id' => 'glutathione-cream',
+        'name' => 'Glutathione Cream',
+        'title' => 'Advanced Skincare For A Brighter You',
+        'spec' => 'Standard',
+        'val' => 39.90,
+        'price' => 'RM39.90',
+        'category' => 'Skincare Collection',
+        'imgs' => ['glc1.webp', 'glc2.webp', 'glc3.webp', 'glc4.webp'],
+        'stock' => 45,
+        'desc' => 'Nourishing antioxidant moisture cream enriched with glutathione to lock in hydration and promote luminous skin texture.',
+    ],
+    'jersey-01' => [
+        'id' => 'jersey-01',
+        'name' => 'Premium Athletic Jersey',
+        'title' => 'Performance. Style. Everyday.',
+        'spec' => 'Adult Size',
+        'val' => 40,
+        'price' => 'RM40.00',
+        'category' => 'Apparel',
+        'imgs' => ['jry1.webp', 'jry2.webp'],
+        'sizes' => ['S', 'M', 'L', 'XL'],
+        'stock' => 50,
+        'desc' => 'Official Novex Peptides merchandise. Crafted with lightweight, breathable, and moisture-wicking hexagonal weave fabric. Features premium V-neck design and durable finish.',
+    ]
+];
+
+// Pengecaman ID produk daripada pembolehubah Controller ataupun Parameter URL
+$reqKey = $id ?? request()->route('id') ?? request()->route('product') ?? request()->segment(2) ?? 'retatrutide';
+if(is_object($reqKey)) {
+    $reqKey = $reqKey->id ?? $reqKey->slug ?? 'retatrutide';
+}
+$currProd = $allProducts[$reqKey] ?? $allProducts['retatrutide'];
+$hasVariants = isset($currProd['variants']) && count($currProd['variants']) > 0;
+$isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
+@endphp
+
 @section('content')
 <style>
 .detail-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:start}
+
+/* Saiz & Bingkai Gambar Mengikut Standard Terkini (Crop Minimum, Tanpa Stretch) */
 .detail-img-wrap{
-  aspect-ratio:1;
-  max-width:580px;
-  border-radius:28px;
+  aspect-ratio:4/5;
+  max-width:540px;
+  width:100%;
+  border-radius:24px;
   overflow:hidden;
   border:1px solid var(--line);
   background:#ffffff;
   position:relative;
+  margin:0 auto;
 }
 .detail-img-wrap .prod-slide{
   position:absolute;
@@ -18,19 +200,22 @@
   width:100%;
   height:100%;
   opacity:0;
-  transition:opacity .4s ease-in-out;
+  transition:opacity .45s ease-in-out;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:20px;
   background:#fff;
+  padding:0;
+  overflow:hidden;
 }
 .detail-img-wrap .prod-slide.active{opacity:1;pointer-events:auto}
 .detail-img-wrap .prod-slide img{
-  max-height:100%;
-  max-width:100%;
-  object-fit:contain;
-  border-radius:18px;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  object-position:center !important;
+  border-radius:inherit;
+  display:block;
 }
 .detail-img-wrap .ps-dots{
   position:absolute;
@@ -46,9 +231,10 @@
   width:9px;
   height:9px;
   border-radius:50%;
-  background:rgba(30,45,59,.25);
+  background:rgba(255,255,255,.75);
   cursor:pointer;
   transition:all .3s ease;
+  box-shadow:0 1px 4px rgba(0,0,0,.4);
 }
 .detail-img-wrap .ps-dot.active{
   background:var(--green);
@@ -92,6 +278,7 @@
   border-bottom:1px solid var(--line);
   padding:20px 0;
 }
+
 .size-picker{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .size-btn{
   border:1px solid var(--line);
@@ -105,6 +292,7 @@
 }
 .size-btn:hover{border-color:var(--green)}
 .size-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.chart-link{font-size:12px;color:var(--gold);text-decoration:underline;cursor:pointer;font-weight:500;display:inline-block}
 
 .qty-row{display:flex;align-items:center;gap:16px;margin-top:8px;flex-wrap:wrap}
 .qty-box{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--card);overflow:hidden}
@@ -129,6 +317,7 @@
 .btn-add-cart:hover{background:#245a82}
 .btn-add-cart:active{transform:scale(0.98)}
 
+/* Cart Slide-in Drawer */
 .cart-overlay{
   position:fixed;
   inset:0;
@@ -266,9 +455,19 @@
   will-change:transform,top,left,width,height,opacity;
 }
 
+/* Modal Saiz Pakaian */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-content{background:#fff;border-radius:20px;max-width:540px;width:100%;padding:28px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:var(--mut);cursor:pointer}
+.table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:16px 0}
+.size-table{width:100%;border-collapse:collapse;font-size:13px;text-align:center;min-width:440px}
+.size-table th,.size-table td{border:1px solid var(--line);padding:10px 8px}
+.size-table th{background:var(--bg2);color:var(--green);font-weight:600}
+
 @media(max-width:900px){
   .detail-grid{grid-template-columns:1fr}
-  .detail-img-wrap{max-width:480px;margin:0 auto;width:100%}
+  .detail-img-wrap{max-width:440px}
 }
 @media(max-width:640px){
   .cart-drawer{max-width:100%}
@@ -283,56 +482,75 @@
     </div>
 
     <div class="detail-grid">
+      <!-- 1. Galeri Slaid Mengikut Imej Spesifik Produk -->
       <div class="detail-img-wrap">
-        <div class="prod-slide active" id="slide0">
-          <img src="{{ asset('reta1.webp') }}" alt="Retatrutide Main" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800'">
-        </div>
-        <div class="prod-slide" id="slide1">
-          <img src="{{ asset('reta2.webp') }}" alt="Retatrutide Packaging" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800'">
-        </div>
-        <div class="prod-slide" id="slide2">
-          <img src="{{ asset('reta3.webp') }}" alt="Retatrutide Vial" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800'">
-        </div>
+        @foreach($currProd['imgs'] as $idx => $imgFile)
+          <div class="prod-slide {{ $idx === 0 ? 'active' : '' }}" id="slide{{ $idx }}">
+            <img src="{{ asset($imgFile) }}" alt="{{ $currProd['name'] }} Image {{ $idx + 1 }}" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=800'">
+          </div>
+        @endforeach
 
-        <div class="ps-dots">
-          <span class="ps-dot active" onclick="showProductSlide(0, this)"></span>
-          <span class="ps-dot" onclick="showProductSlide(1, this)"></span>
-          <span class="ps-dot" onclick="showProductSlide(2, this)"></span>
-        </div>
+        @if(count($currProd['imgs']) > 1)
+          <div class="ps-dots">
+            @foreach($currProd['imgs'] as $idx => $imgFile)
+              <span class="ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="showProductSlide({{ $idx }}, this)"></span>
+            @endforeach
+          </div>
+        @endif
       </div>
 
+      <!-- 2. Maklumat Dinamik Mengikut Produk Terpilih -->
       <div class="detail-info">
-        <span class="detail-badge">Research Grade</span>
-        <h1 style="font-size:clamp(28px, 4vw, 42px);margin:4px 0">Retatrutide</h1>
-        <p id="detailSubDisplay" style="color:var(--mut);font-size:16px">Advanced Weight Management (10mg)</p>
+        <span class="detail-badge">{{ $currProd['category'] }}</span>
+        <h1 style="font-size:clamp(28px, 4vw, 42px);margin:4px 0">{{ $currProd['name'] }}</h1>
+        <p id="detailSubDisplay" style="color:var(--mut);font-size:16px">{{ $currProd['title'] }} ({{ $currProd['spec'] }})</p>
         
-        <div id="detailPriceDisplay" class="detail-price">RM280.00</div>
+        <div id="detailPriceDisplay" class="detail-price">{{ $currProd['price'] }}</div>
         
-        <div id="detailStockDisplay" class="stock-badge">In Stock (25 units available)</div>
+        <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
 
+        <!-- Pemilih Varian Dos (Sekiranya Ada, cth: Retatrutide) -->
+        @if($hasVariants)
         <div style="background:var(--card);padding:16px;border-radius:18px;border:1px solid var(--line);margin-top:6px">
           <label style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:6px">
             Select Vial Concentration / Dosage:
           </label>
           <div class="size-picker">
-            <button type="button" class="size-btn active" onclick="selectVariant('10mg', 280, 'RM280.00', 25, this)">10mg</button>
-            <button type="button" class="size-btn" onclick="selectVariant('30mg', 480, 'RM480.00', 18, this)">30mg</button>
-            <button type="button" class="size-btn" onclick="selectVariant('60mg', 780, 'RM780.00', 12, this)">60mg</button>
-            <button type="button" class="size-btn" onclick="selectVariant('100mg', 980, 'RM980.00', 8, this)">100mg</button>
+            @foreach($currProd['variants'] as $vIdx => $variant)
+              <button type="button" class="size-btn {{ $vIdx === 0 ? 'active' : '' }}" onclick="selectVariant('{{ $variant['label'] }}', {{ $variant['val'] }}, '{{ $variant['price'] }}', {{ $variant['stock'] }}, this)">
+                {{ $variant['label'] }}
+              </button>
+            @endforeach
           </div>
           <small id="varHint" style="font-size:12px;color:var(--mut);display:block;margin-top:4px">
             Select a dosage above to view exact pricing and available laboratory stock.
           </small>
         </div>
+        @endif
+
+        <!-- Pemilih Saiz Pakaian (Sekiranya Ada, cth: Jersey) -->
+        @if($isApparel)
+        <div style="margin-top:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <label style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--mut)">Select Size:</label>
+            <a class="chart-link" onclick="openSizeModal()">View Size Chart</a>
+          </div>
+          <div class="size-picker">
+            @foreach($currProd['sizes'] as $sIdx => $sz)
+              <button type="button" class="size-btn {{ $sIdx === 0 ? 'active' : '' }}" onclick="selectSize('{{ $sz }}', this)">
+                {{ $sz }}
+              </button>
+            @endforeach
+          </div>
+        </div>
+        @endif
 
         <div class="detail-desc">
           <h4 style="font-family:var(--serif);font-size:20px;margin-bottom:8px">Product Overview</h4>
-          <p>
-            High-purity lyophilised triple-receptor agonist peptide synthesized for metabolic pathway investigations and weight management receptor studies. Batch verification and full chemical documentation available upon order.
-          </p>
+          <p>{{ $currProd['desc'] }}</p>
         </div>
 
-        <!-- Stepper Kuantitas & Tombol Add to Cart -->
+        <!-- Stepper Kuantiti & Butang Add to Cart -->
         <div class="qty-row">
           <div class="qty-box">
             <button type="button" onclick="changeDetailQty(-1)" aria-label="Decrease quantity">-</button>
@@ -353,8 +571,10 @@
   </div>
 </section>
 
+<!-- Notifikasi Toast -->
 <div class="toast" id="toastMsg">✓ Added to cart</div>
 
+<!-- Slide-in Cart Drawer & Checkout WhatsApp -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCartDrawer()"></div>
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-header">
@@ -374,12 +594,37 @@
   </div>
 </div>
 
+<!-- Modal Carta Saiz (Untuk Produk Pakaian) -->
+<div class="modal-overlay" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeSizeModal()">&times;</button>
+    <h3 style="font-size:24px;margin-bottom:6px">Size Chart (Adult)</h3>
+    <p style="font-size:13px;color:var(--mut);margin-bottom:12px">Novex Premium Athletic Jersey — All measurements in inches.</p>
+    <div class="table-scroll">
+      <table class="size-table">
+        <thead>
+          <tr><th>Size</th><th>Length (A)</th><th>Chest (B)</th><th>Shoulder</th><th>Short Sleeve</th><th>Long Sleeve</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>S</b></td><td>26</td><td>38</td><td>16</td><td>8.5</td><td>22.5</td></tr>
+          <tr><td><b>M</b></td><td>27</td><td>40</td><td>17</td><td>9</td><td>23</td></tr>
+          <tr><td><b>L</b></td><td>28</td><td>42</td><td>18</td><td>9.5</td><td>23.5</td></tr>
+          <tr><td><b>XL</b></td><td>29</td><td>44</td><td>19</td><td>10</td><td>24</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <script>
 const WA = '601112085054';
 
-let currentSelectedDosage = '10mg';
-let currentUnitVal = 280;
-let currentMaxStock = 25;
+// Data Produk Semasa
+const currentProduct = @json($currProd);
+let currentSelectedDosage = currentProduct.variants ? currentProduct.variants[0].label : null;
+let currentSelectedSize = currentProduct.sizes ? currentProduct.sizes[0] : null;
+let currentUnitVal = currentProduct.variants ? currentProduct.variants[0].val : currentProduct.val;
+let currentMaxStock = currentProduct.variants ? currentProduct.variants[0].stock : currentProduct.stock;
 let currentQty = 1;
 
 function showProductSlide(idx, dotEl){
@@ -401,9 +646,15 @@ function selectVariant(dosage, priceNum, priceFormatted, stock, btnEl){
   btnEl.classList.add('active');
 
   document.getElementById('detailPriceDisplay').innerText = priceFormatted;
-  document.getElementById('detailSubDisplay').innerText = `Advanced Weight Management (${dosage})`;
+  document.getElementById('detailSubDisplay').innerText = `${currentProduct.title} (${dosage})`;
   document.getElementById('detailStockDisplay').innerText = `In Stock (${stock} units available)`;
   document.getElementById('detailQtyInput').value = currentQty;
+}
+
+function selectSize(size, btnEl){
+  currentSelectedSize = size;
+  btnEl.closest('.size-picker').querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  btnEl.classList.add('active');
 }
 
 function changeDetailQty(delta){
@@ -411,6 +662,10 @@ function changeDetailQty(delta){
   document.getElementById('detailQtyInput').value = currentQty;
 }
 
+function openSizeModal(){ document.getElementById('sizeModal').classList.add('open'); }
+function closeSizeModal(){ document.getElementById('sizeModal').classList.remove('open'); }
+
+// Pengurusan Keranjang / Cart Drawer
 let CART = JSON.parse(localStorage.getItem('nvx_cart') || '[]');
 
 function saveCart(){
@@ -433,25 +688,28 @@ function showToast(msg){
 }
 
 function addToCartFromDetail(){
-  const prodId = 'retatrutide';
-  const prodName = 'Retatrutide';
-  const itemSize = `Dosage: ${currentSelectedDosage}`;
-  const itemVal = currentUnitVal;
-  const itemSpec = currentSelectedDosage;
-  const itemImg = '{{ asset("reta1.webp") }}';
+  let itemSpec = currentProduct.spec;
+  let itemSizeLabel = null;
 
-  const existing = CART.find(x => x.id === prodId && x.size === itemSize);
+  if(currentSelectedDosage){
+    itemSpec = currentSelectedDosage;
+    itemSizeLabel = `Dosage: ${currentSelectedDosage}`;
+  } else if(currentSelectedSize){
+    itemSizeLabel = `Size: ${currentSelectedSize}`;
+  }
+
+  const existing = CART.find(x => x.id === currentProduct.id && x.size === itemSizeLabel);
 
   if(existing){
     existing.qty += currentQty;
   } else {
     CART.push({
-      id: prodId,
-      n: prodName,
+      id: currentProduct.id,
+      n: currentProduct.name,
       s: itemSpec,
-      val: itemVal,
-      i: itemImg,
-      size: itemSize,
+      val: currentUnitVal,
+      i: currentProduct.imgs[0],
+      size: itemSizeLabel,
       qty: currentQty
     });
   }
@@ -518,7 +776,7 @@ function renderCart(){
     const subtotal = item.val * item.qty;
     total += subtotal;
     const detailLabel = item.size ? item.size : item.s;
-    const imgSrc = item.i ? (item.i.startsWith('http') || item.i.endsWith('.webp') || item.i.endsWith('.png') ? item.i : `https://images.unsplash.com/photo-${item.i}?auto=format&fit=crop&w=150&q=80`) : '{{ asset("reta1.webp") }}';
+    const imgSrc = item.i.startsWith('http') ? item.i : `{{ asset('') }}/${item.i}`.replace(/([^:]\/)\/+/g, "$1");
 
     return `
       <div class="cart-item">
