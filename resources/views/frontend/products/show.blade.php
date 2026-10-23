@@ -1,7 +1,7 @@
 @extends('frontend.home.index')
 
+@section('content')
 @php
-// Kamus Data Penuh bagi Semua Produk, Skincare & Aksesori
 $allProducts = [
     'retatrutide' => [
         'id' => 'retatrutide',
@@ -192,7 +192,6 @@ $allProducts = [
     ],
 ];
 
-// Pengecaman ID produk dari Parameter Route atau Segmen URL
 $reqKey = $id ?? request()->route('id') ?? request()->route('product') ?? request()->segment(2) ?? 'retatrutide';
 if(is_object($reqKey)) {
     $reqKey = $reqKey->id ?? $reqKey->slug ?? 'retatrutide';
@@ -340,7 +339,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 .btn-add-cart:hover{background:#245a82}
 .btn-add-cart:active{transform:scale(0.98)}
 
-/* Cart Slide-in Drawer */
 .cart-overlay{
   position:fixed;
   inset:0;
@@ -478,7 +476,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   will-change:transform,top,left,width,height,opacity;
 }
 
-/* Modal Carta Saiz */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
 .modal-content{background:#fff;border-radius:20px;max-width:540px;width:100%;padding:28px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
@@ -500,7 +497,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 
 <section class="sec">
   <div class="wrap">
-    <!-- Pautan Balik Dinamik (Kembali ke Accessory jika dalam bahagian Aksesori) -->
     <div style="margin-bottom:24px">
       @if($isAccessory)
         <a href="{{ route('accessory') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Accessories</a>
@@ -510,7 +506,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
     </div>
 
     <div class="detail-grid">
-      <!-- 1. Galeri Slaid Mengikut Imej Spesifik Produk -->
       <div class="detail-img-wrap">
         @foreach($currProd['imgs'] as $idx => $imgFile)
           <div class="prod-slide {{ $idx === 0 ? 'active' : '' }}" id="slide{{ $idx }}">
@@ -527,7 +522,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         @endif
       </div>
 
-      <!-- 2. Maklumat Dinamik Mengikut Produk Terpilih -->
       <div class="detail-info">
         <span class="detail-badge">{{ $currProd['category'] }}</span>
         <h1 style="font-size:clamp(28px, 4vw, 42px);margin:4px 0">{{ $currProd['name'] }}</h1>
@@ -537,7 +531,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         
         <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
 
-        <!-- Pemilih Varian Dos (Sekiranya Ada) -->
         @if($hasVariants)
         <div style="background:var(--card);padding:16px;border-radius:18px;border:1px solid var(--line);margin-top:6px">
           <label style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:6px">
@@ -556,7 +549,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         </div>
         @endif
 
-        <!-- Pemilih Saiz Pakaian (Sekiranya Ada) -->
         @if($isApparel)
         <div style="margin-top:6px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -599,10 +591,8 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   </div>
 </section>
 
-<!-- Notifikasi Toast -->
 <div class="toast" id="toastMsg">✓ Added to cart</div>
 
-<!-- Slide-in Cart Drawer & Checkout WhatsApp -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCartDrawer()"></div>
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-header">
@@ -619,6 +609,27 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3.6 4.5 1.7 6.4L3 29l6.8-1.8A13 13 0 0 0 16 29c7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.8c-2 0-3.9-.6-5.6-1.6l-.4-.2-4 1 1.1-3.9-.3-.4A10.7 10.7 0 1 1 16 26.8zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1-1.900-.9-3.100-1.700-4.300-3.800-.3-.6.3-.5.9-1.700.1-.2 0-.4 0-.5l-1-2.300c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.200 1.100-1.200 2.800s1.200 3.300 1.400 3.500c.2.2 2.400 3.700 5.900 5.200 2.200.9 3 1 4.100.8.700-.1 1.900-.8 2.200-1.500.3-.7.3-1.400.2-1.500-.1-.2-.3-.2-.6-.4z"/></svg>
       Click To Proceed
     </button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeSizeModal()">&times;</button>
+    <h3 style="font-size:24px;margin-bottom:6px">Size Chart (Adult)</h3>
+    <p style="font-size:13px;color:var(--mut);margin-bottom:12px">Novex Premium Athletic Jersey — All measurements in inches.</p>
+    <div class="table-scroll">
+      <table class="size-table">
+        <thead>
+          <tr><th>Size</th><th>Length (A)</th><th>Chest (B)</th><th>Shoulder</th><th>Short Sleeve</th><th>Long Sleeve</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>S</b></td><td>26</td><td>38</td><td>16</td><td>8.5</td><td>22.5</td></tr>
+          <tr><td><b>M</b></td><td>27</td><td>40</td><td>17</td><td>9</td><td>23</td></tr>
+          <tr><td><b>L</b></td><td>28</td><td>42</td><td>18</td><td>9.5</td><td>23.5</td></tr>
+          <tr><td><b>XL</b></td><td>29</td><td>44</td><td>19</td><td>10</td><td>24</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -671,7 +682,6 @@ function changeDetailQty(delta){
 function openSizeModal(){ document.getElementById('sizeModal').classList.add('open'); }
 function closeSizeModal(){ document.getElementById('sizeModal').classList.remove('open'); }
 
-// Pengurusan Troli & Penyimpanan Tempatan
 let CART = JSON.parse(localStorage.getItem('nvx_cart') || '[]');
 
 function saveCart(){
