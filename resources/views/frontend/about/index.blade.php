@@ -71,7 +71,7 @@
   </div>
 </section>
 
-<section class="sec" style="background:var(--bg2)">
+<section class="sec" style="background:#ffffff">
   <div class="wrap">
     <p class="pull">
       “A good certificate is one you can match to the vial in your hand.”
