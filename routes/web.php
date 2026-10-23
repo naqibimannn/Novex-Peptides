@@ -20,7 +20,7 @@ Route::prefix('/')->group(function () {
     })->name('products.index');
 
     Route::get('/products/{id}', function ($id) {
-        return view('frontend.products.show', ['productId' => $id]);
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
     })->name('products.show');
 
     Route::get('/science', function () {
@@ -38,6 +38,10 @@ Route::prefix('/')->group(function () {
     Route::get('/accessory', function () {
         return view('frontend.accessory.index');
     })->name('accessory');
+
+    Route::get('/accessory/{id}', function ($id) {
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
+    })->name('accessory.show');
 
     Route::get('/cart', function () {
         return view('frontend.cart.index');
