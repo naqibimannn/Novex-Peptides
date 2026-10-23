@@ -1,7 +1,7 @@
 @extends('frontend.home.index')
 
 @php
-// Kamus Data Penuh bagi Semua Produk & Imej Spesifik
+// Kamus Data Penuh bagi Semua Produk, Skincare & Aksesori
 $allProducts = [
     'retatrutide' => [
         'id' => 'retatrutide',
@@ -165,10 +165,34 @@ $allProducts = [
         'sizes' => ['S', 'M', 'L', 'XL'],
         'stock' => 50,
         'desc' => 'Official Novex Peptides merchandise. Crafted with lightweight, breathable, and moisture-wicking hexagonal weave fabric. Features premium V-neck design and durable finish.',
-    ]
+    ],
+    'injection-kit' => [
+        'id' => 'injection-kit',
+        'name' => 'Injection Kit',
+        'title' => 'Complete Reconstitution & Administration Set',
+        'spec' => '1 Set (10x Injections)',
+        'val' => 15,
+        'price' => 'RM15.00',
+        'category' => 'Accessory',
+        'imgs' => ['ik1.webp', 'ik2.webp'],
+        'stock' => 50,
+        'desc' => 'Complete sterile laboratory reconstitution and administration kit. Includes 1ml disposable syringe barrels, ultra-fine sterile needles, safety caps, and individually sealed alcohol prep pads (70% Isopropyl Alcohol) designed for 10x precise injection preparation assays.',
+    ],
+    'insulin-needle-1ml' => [
+        'id' => 'insulin-needle-1ml',
+        'name' => 'Insulin Needle 1 ml',
+        'title' => 'Ultra-Fine Precision Micro-Syringe (31G)',
+        'spec' => 'Box of 100 pcs',
+        'val' => 55,
+        'price' => 'RM55.00',
+        'category' => 'Accessory',
+        'imgs' => ['ins1.webp', 'ins2.webp'],
+        'stock' => 100,
+        'desc' => 'Laboratory-grade 1ml ultra-fine precision micro-dosing syringes (31G). Individually blister packed, ethylene oxide (EO) sterilized, non-toxic, and non-pyrogenic with crystal-clear barrel markings for accurate fluid transfer.',
+    ],
 ];
 
-// Pengecaman ID produk daripada pembolehubah Controller ataupun Parameter URL
+// Pengecaman ID produk dari Parameter Route atau Segmen URL
 $reqKey = $id ?? request()->route('id') ?? request()->route('product') ?? request()->segment(2) ?? 'retatrutide';
 if(is_object($reqKey)) {
     $reqKey = $reqKey->id ?? $reqKey->slug ?? 'retatrutide';
@@ -176,13 +200,12 @@ if(is_object($reqKey)) {
 $currProd = $allProducts[$reqKey] ?? $allProducts['retatrutide'];
 $hasVariants = isset($currProd['variants']) && count($currProd['variants']) > 0;
 $isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
+$isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('accessory*');
 @endphp
 
-@section('content')
 <style>
 .detail-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:start}
 
-/* Saiz & Bingkai Gambar Mengikut Standard Terkini (Crop Minimum, Tanpa Stretch) */
 .detail-img-wrap{
   aspect-ratio:4/5;
   max-width:540px;
@@ -455,7 +478,7 @@ $isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
   will-change:transform,top,left,width,height,opacity;
 }
 
-/* Modal Saiz Pakaian */
+/* Modal Carta Saiz */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
 .modal-content{background:#fff;border-radius:20px;max-width:540px;width:100%;padding:28px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
@@ -477,8 +500,13 @@ $isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
 
 <section class="sec">
   <div class="wrap">
+    <!-- Pautan Balik Dinamik (Kembali ke Accessory jika dalam bahagian Aksesori) -->
     <div style="margin-bottom:24px">
-      <a href="{{ route('products.index') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Catalog</a>
+      @if($isAccessory)
+        <a href="{{ route('accessory') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Accessories</a>
+      @else
+        <a href="{{ route('products.index') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Catalog</a>
+      @endif
     </div>
 
     <div class="detail-grid">
@@ -509,7 +537,7 @@ $isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
         
         <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
 
-        <!-- Pemilih Varian Dos (Sekiranya Ada, cth: Retatrutide) -->
+        <!-- Pemilih Varian Dos (Sekiranya Ada) -->
         @if($hasVariants)
         <div style="background:var(--card);padding:16px;border-radius:18px;border:1px solid var(--line);margin-top:6px">
           <label style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:6px">
@@ -528,7 +556,7 @@ $isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
         </div>
         @endif
 
-        <!-- Pemilih Saiz Pakaian (Sekiranya Ada, cth: Jersey) -->
+        <!-- Pemilih Saiz Pakaian (Sekiranya Ada) -->
         @if($isApparel)
         <div style="margin-top:6px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -594,28 +622,6 @@ $isApparel = isset($currProd['sizes']) && count($currProd['sizes']) > 0;
   </div>
 </div>
 
-<!-- Modal Carta Saiz (Untuk Produk Pakaian) -->
-<div class="modal-overlay" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeSizeModal()">&times;</button>
-    <h3 style="font-size:24px;margin-bottom:6px">Size Chart (Adult)</h3>
-    <p style="font-size:13px;color:var(--mut);margin-bottom:12px">Novex Premium Athletic Jersey — All measurements in inches.</p>
-    <div class="table-scroll">
-      <table class="size-table">
-        <thead>
-          <tr><th>Size</th><th>Length (A)</th><th>Chest (B)</th><th>Shoulder</th><th>Short Sleeve</th><th>Long Sleeve</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><b>S</b></td><td>26</td><td>38</td><td>16</td><td>8.5</td><td>22.5</td></tr>
-          <tr><td><b>M</b></td><td>27</td><td>40</td><td>17</td><td>9</td><td>23</td></tr>
-          <tr><td><b>L</b></td><td>28</td><td>42</td><td>18</td><td>9.5</td><td>23.5</td></tr>
-          <tr><td><b>XL</b></td><td>29</td><td>44</td><td>19</td><td>10</td><td>24</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
 <script>
 const WA = '601112085054';
 
@@ -665,7 +671,7 @@ function changeDetailQty(delta){
 function openSizeModal(){ document.getElementById('sizeModal').classList.add('open'); }
 function closeSizeModal(){ document.getElementById('sizeModal').classList.remove('open'); }
 
-// Pengurusan Keranjang / Cart Drawer
+// Pengurusan Troli & Penyimpanan Tempatan
 let CART = JSON.parse(localStorage.getItem('nvx_cart') || '[]');
 
 function saveCart(){
