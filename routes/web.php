@@ -114,3 +114,10 @@ Route::prefix('admin')->group(function () {
         return redirect()->route('home');
     })->name('admin.logout');
 });
+
+Route::get('/products', function () {
+    return view('backend.admin.dashboard.admin', [
+        'section' => 'products',
+        'secret' => 'admin'
+    ]);
+})->name('admin.products');
