@@ -112,16 +112,23 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   background:#ffffff;
   border:1px solid rgba(210,226,239,.5);
   overflow:hidden;
-  padding:0;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 .pc .ph img{
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  width:auto !important;
+  height:auto !important;
+  object-fit:contain !important;
   object-position:center !important;
   padding:0 !important;
-  border-radius:inherit;
+  margin:0 !important;
+  border-radius:12px !important;
   display:block;
+  background:transparent;
 }
 .pc .chip{position:absolute;left:12px;top:12px;z-index:6;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);color:var(--green);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid rgba(210,226,239,.6)}
 .pc .b{text-align:left;align-items:stretch;padding:16px 8px 8px;gap:8px;display:flex;flex-direction:column;flex:1}
@@ -132,7 +139,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .btn-details{background:var(--green);color:#fff;padding:12px;border-radius:999px;font-size:13px;font-weight:600;text-align:center;margin-top:10px;transition:background .2s}
 .btn-details:hover{background:#245a82}
 
-.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:inherit;background:#fff}
+.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:#fff}
 .prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:#fff}
 .prod-slide{
   position:absolute;
@@ -152,16 +159,19 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 }
 .prod-slide.active{opacity:1;pointer-events:auto}
 .prod-slide img{
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  width:auto !important;
+  height:auto !important;
+  object-fit:contain !important;
   object-position:center !important;
   padding:0 !important;
   margin:0 !important;
-  border-radius:inherit;
+  border-radius:12px !important;
   display:block;
+  background:transparent;
 }
-.ps-dots{position:absolute;bottom:10px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:6px}
+.ps-dots{position:absolute;bottom:6px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:6px}
 .ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .ps-dot.active{background:var(--green);transform:scale(1.25)}
 
@@ -184,8 +194,8 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .t-lightbox-close{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:var(--ink);font-size:22px;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
 
 .div2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.camp{position:relative;min-height:420px;color:#fff;display:flex;align-items:center;border-radius:26px;overflow:hidden;cursor:pointer}
-.camp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.camp{position:relative;aspect-ratio:16/9;color:#fff;display:flex;align-items:center;border-radius:26px;overflow:hidden;cursor:pointer}
+.camp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .5s}
 .camp:hover img{transform:scale(1.03)}
 .camp:before{content:"";position:absolute;inset:0;z-index:1;background:rgba(14,40,66,.18)}
 
@@ -233,7 +243,7 @@ footer li{list-style:none;margin-bottom:6px}
  .hero .btn.line{margin:10px 0 0;display:inline-block}
  .g3,.g4,.steps{grid-template-columns:1fr}
  .g6{grid-template-columns:repeat(2,1fr);gap:12px}
- .camp{min-height:360px}
+ .camp{min-height:unset}
  .t-metrics{flex-wrap:wrap;gap:16px}
 }
 </style>
