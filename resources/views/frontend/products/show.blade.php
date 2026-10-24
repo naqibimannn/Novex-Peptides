@@ -215,6 +215,10 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   background:#ffffff;
   position:relative;
   margin:0 auto;
+  padding:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 .detail-img-wrap .prod-slide{
   position:absolute;
@@ -227,21 +231,25 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   align-items:center;
   justify-content:center;
   background:#fff;
-  padding:0;
+  padding:12px;
   overflow:hidden;
+  border-radius:inherit;
 }
 .detail-img-wrap .prod-slide.active{opacity:1;pointer-events:auto}
 .detail-img-wrap .prod-slide img{
-  width:100% !important;
-  height:100% !important;
-  object-fit:cover !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  width:auto !important;
+  height:auto !important;
+  object-fit:contain !important;
   object-position:center !important;
-  border-radius:inherit;
+  border-radius:14px !important;
   display:block;
+  background:transparent;
 }
 .detail-img-wrap .ps-dots{
   position:absolute;
-  bottom:16px;
+  bottom:14px;
   left:0;
   right:0;
   z-index:5;
@@ -393,11 +401,18 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   overflow:hidden;
   background:#ffffff;
   border:1px solid var(--line);
+  padding:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 .cart-item-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius:8px;
 }
 .cart-del-btn{
   background:none;
@@ -497,7 +512,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 
 <section class="sec">
   <div class="wrap">
-    <!-- Butang Balik Dinamik: Kembali ke Accessory sekiranya item aksesori -->
     <div style="margin-bottom:24px">
       @if($isAccessory)
         <a href="{{ route('accessory') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Accessories</a>
@@ -507,7 +521,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
     </div>
 
     <div class="detail-grid">
-      <!-- 1. Galeri Slaid Mengikut Imej Spesifik Produk -->
       <div class="detail-img-wrap">
         @foreach($currProd['imgs'] as $idx => $imgFile)
           <div class="prod-slide {{ $idx === 0 ? 'active' : '' }}" id="slide{{ $idx }}">
@@ -524,7 +537,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         @endif
       </div>
 
-      <!-- 2. Maklumat Dinamik Mengikut Produk Terpilih -->
       <div class="detail-info">
         <span class="detail-badge">{{ $currProd['category'] }}</span>
         <h1 style="font-size:clamp(28px, 4vw, 42px);margin:4px 0">{{ $currProd['name'] }}</h1>
@@ -534,7 +546,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         
         <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
 
-        <!-- Pemilih Varian Dos (Sekiranya Ada) -->
         @if($hasVariants)
         <div style="background:var(--card);padding:16px;border-radius:18px;border:1px solid var(--line);margin-top:6px">
           <label style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:6px">
@@ -553,7 +564,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
         </div>
         @endif
 
-        <!-- Pemilih Saiz Pakaian (Sekiranya Ada) -->
         @if($isApparel)
         <div style="margin-top:6px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -575,7 +585,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
           <p>{{ $currProd['desc'] }}</p>
         </div>
 
-        <!-- Stepper Kuantiti & Butang Add to Cart -->
         <div class="qty-row">
           <div class="qty-box">
             <button type="button" onclick="changeDetailQty(-1)" aria-label="Decrease quantity">-</button>
@@ -641,7 +650,6 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 <script>
 const WA = '601112085054';
 
-// Data Produk Semasa
 const currentProduct = @json($currProd);
 let currentSelectedDosage = currentProduct.variants ? currentProduct.variants[0].label : null;
 let currentSelectedSize = currentProduct.sizes ? currentProduct.sizes[0] : null;
