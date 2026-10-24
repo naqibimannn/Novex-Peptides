@@ -5,13 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Novex Peptides &middot; Management Console</title>
-  <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
+  <title>CentraDesk &middot; Enterprise Management Console</title>
+  <link rel="icon" type="image/png" href="{{ asset('assets/admin/logo.png') }}">
+  <link rel="apple-touch-icon" href="{{ asset('assets/admin/logo.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     tailwind.config = {
@@ -19,17 +21,17 @@
         extend: {
           colors: {
             'brand': {
-              DEFAULT: '#2F6F9F',
-              'hover': '#245a82',
-              'dark': '#1E2D3B',
-              'tint': '#E9F2FA',
-              'tint-2': '#D2E2EF',
+              DEFAULT: '#0071E3',
+              'hover': '#0062C4',
+              'dark': '#004DA0',
+              'tint': '#F0F6FE',
+              'tint-2': '#E1EDFD',
               'border': '#CBE0FB',
             },
             'hero-blue': {
-              DEFAULT: '#2F6F9F',
-              'light': '#E9F2FA',
-              'hover': '#245a82'
+              DEFAULT: '#006FEE',
+              'light': '#E6F1FE',
+              'hover': '#005BC4'
             }
           },
           fontFamily: {
@@ -88,7 +90,7 @@
     $randomHeroes = [
       [
         'title' => 'Empower your digital management console today.',
-        'desc' => 'Monitor analytics, catalog products, and manage operations seamlessly.'
+        'desc' => 'Monitor analytics, publish content and manage operations seamlessly.'
       ],
       [
         'title' => 'Streamline your enterprise workflows effortlessly.',
@@ -99,8 +101,8 @@
         'desc' => 'Here is a quick overview of your system activity and performance metrics.'
       ],
       [
-        'title' => 'Manage inventory, publish and scale your products.',
-        'desc' => 'Keep your catalog updated with verified lab specifications.'
+        'title' => 'Manage, publish and scale your content.',
+        'desc' => 'Keep your site updated with the latest articles, media and services.'
       ],
       [
         'title' => 'System status is optimal and fully active.',
@@ -111,12 +113,12 @@
     $selectedHero = $randomHeroes[array_rand($randomHeroes)];
   @endphp
 
-  <!-- PAGE LOADER -->
+  <!-- SECTION: PAGE LOADER -->
   <div id="pageLoaderOverlay"
     class="hidden fixed inset-0 z-[100] bg-white flex-col items-center justify-center transition-all duration-500 ease-out opacity-100">
     <div class="relative z-10 flex flex-col items-center max-w-xs w-full px-6 text-center">
       <div class="flex items-center justify-center mb-6 animate-pulse select-none">
-        <span class="font-serif text-2xl font-bold tracking-wider text-slate-900">NOVEX <small class="text-xs text-sky-600 block tracking-widest font-sans font-semibold">PEPTIDES</small></span>
+        <img src="{{ asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'" alt="CentraDesk Logo" class="h-9 w-auto object-contain">
       </div>
       <div class="w-44 h-1 bg-slate-100 rounded-full overflow-hidden relative mb-3">
         <div class="w-1/2 h-full bg-brand rounded-full animate-simple-scan"></div>
@@ -130,7 +132,7 @@
     </div>
   </div>
 
-  <!-- NOTIFICATIONS -->
+  <!-- SECTION: NOTIFICATIONS -->
   @if(session('success'))
     <div id="toastSuccess"
       class="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 bg-slate-900 text-white rounded-xl transition-all duration-300 translate-y-0 opacity-100 text-xs shadow-md">
@@ -150,7 +152,7 @@
     </div>
   @endif
 
-  <!-- SIDEBAR (MEDIA ASSETS & SERVICES REMOVED) -->
+  <!-- SECTION: SIDEBAR -->
   <aside id="mainSidebar"
     class="w-64 flex flex-col justify-between shrink-0 h-screen p-5 border-r border-slate-300 bg-[#EEF2F6] hidden md:flex z-30 transition-all duration-300 ease-in-out">
     <div class="flex flex-col gap-6 overflow-y-auto pr-1">
@@ -158,7 +160,7 @@
       <div class="px-2 pt-1 flex items-center">
         <a href="{{ url($secretPrefix) }}"
           class="flex items-center gap-2 w-full group select-none transition-opacity hover:opacity-90">
-          <span class="font-serif text-2xl font-bold tracking-wider text-slate-900">NOVEX <small class="text-[10px] text-sky-600 tracking-widest block font-sans font-semibold">PEPTIDES CONSOLE</small></span>
+          <img src="{{ asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'" alt="CentraDesk" class="h-9 w-auto object-contain">
         </a>
       </div>
 
@@ -166,6 +168,7 @@
         $menuGeneral = [
           'dashboard' => ['label' => 'Dashboard', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />'],
           'audience' => ['label' => 'Audience Views', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />'],
+          'products' => ['label' => 'Product Manage', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />'],
           'blogs' => ['label' => 'Articles & News', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />'],
         ];
 
@@ -198,7 +201,6 @@
       </nav>
     </div>
 
-    <!-- BOTTOM SIDEBAR (HELP & INFORMATION REMOVED) -->
     <div class="flex flex-col gap-1 pt-4 border-t border-slate-300">
       <form action="{{ route('admin.logout', ['secret' => $secretPrefix]) }}" method="POST" class="m-0">
         @csrf
@@ -215,7 +217,7 @@
     </div>
   </aside>
 
-  <!-- MAIN CANVAS CONTAINER -->
+  <!-- SECTION: MAIN CANVAS CONTAINER -->
   <div class="flex-1 flex flex-col min-w-0 bg-[#EEF2F6] overflow-y-auto relative h-screen transition-all duration-300">
 
     <!-- TOP HEADER -->
@@ -263,9 +265,8 @@
           </svg>
         </button>
 
-        <!-- PROFILE: Admin Novex & admin@novexsupps.com -->
         <div class="flex items-center gap-2.5 shrink-0 pl-1">
-          <div class="h-8 w-8 rounded-lg bg-sky-900 text-white font-bold flex items-center justify-center text-xs shadow-xs">
+          <div class="h-8 w-8 rounded-lg bg-brand text-white font-bold flex items-center justify-center text-xs shadow-xs">
             NP
           </div>
           <div class="flex flex-col text-left">
@@ -284,8 +285,8 @@
         <div class="flex flex-col items-center justify-center text-center my-6 gap-2">
           <div
             class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-300 shadow-xs text-xs font-semibold text-slate-700">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Novex Management Portal v1.0</span>
+            <img src="{{ asset('assets/admin/logo.png') }}" onerror="this.src='{{ asset('logo.png') }}'" alt="CentraDesk Logo" class="h-4 w-auto object-contain">
+            <span>CentraDesk v1.0 Enterprise</span>
           </div>
 
           <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
@@ -357,6 +358,7 @@
                   </div>
                 </div>
 
+                <!-- TAMPILAN BULAN (1-12) / HARI (GRID KALENDAR) -->
                 <div id="calendarHeaderDays" class="grid grid-cols-7 text-center mb-2">
                   <span class="text-xs font-semibold text-slate-400">Sun</span>
                   <span class="text-xs font-semibold text-slate-400">Mon</span>
@@ -375,35 +377,23 @@
           </div>
         </div>
 
-        <!-- STATS CARDS -->
+        <!-- STATS CARDS (LOGO SVG TELAH DIBUANG) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-          <!-- CARD 1: Total Products -->
+          <!-- CARD 1: Published Articles -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">Catalog Products</span>
-              <div class="w-8 h-8 rounded-xl bg-blue-50 text-brand flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
+            <div>
+              <span class="text-xs font-semibold text-slate-500">Published Articles</span>
             </div>
             <div class="flex items-baseline justify-between mt-2">
-              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $productsCount ?? 15 }}</span>
+              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $articlesCount ?? 0 }}</span>
             </div>
           </div>
 
           <!-- CARD 2: Security Events -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
-            <div class="flex items-center justify-between">
+            <div>
               <span class="text-xs font-semibold text-slate-500">Security Events</span>
-              <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
             </div>
             <div class="flex items-baseline justify-between mt-2">
               @php
@@ -415,15 +405,8 @@
 
           <!-- CARD 3: Audience Views -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
-            <div class="flex items-center justify-between">
+            <div>
               <span class="text-xs font-semibold text-slate-500" id="cardAudienceLabel">Audience Views</span>
-              <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              </div>
             </div>
             <div class="flex items-baseline justify-between mt-2">
               @php
@@ -434,19 +417,13 @@
             </div>
           </div>
 
-          <!-- CARD 4: Articles & Research Notes -->
+          <!-- CARD 4: Total Pages -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">Research Articles</span>
-              <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                </svg>
-              </div>
+            <div>
+              <span class="text-xs font-semibold text-slate-500">Total Pages</span>
             </div>
             <div class="flex items-baseline justify-between mt-2">
-              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $articlesCount ?? 4 }}</span>
+              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $pagesCount ?? 6 }}</span>
             </div>
           </div>
 
@@ -482,7 +459,7 @@
                     <p class="text-xs text-slate-400 mt-0.5">Most recently published content on your portal.</p>
                   </div>
                   <a href="{{ url($secretPrefix . '/blogs') }}" class="text-xs font-bold text-brand hover:underline">+
-                    Manage Articles</a>
+                    Manage Article</a>
                 </div>
 
                 @php
@@ -501,7 +478,7 @@
                       <a href="{{ url('/blog/' . $dp->slug) }}" target="_blank"
                         class="flex items-center gap-3 group p-3.5 rounded-xl bg-slate-50/80 hover:bg-brand-tint border-0 transition-all">
                         <div class="w-12 h-12 rounded-lg bg-slate-200 overflow-hidden shrink-0">
-                          <img src="{{ $dp->cover_image ?: asset('logo.png') }}" alt="{{ $dp->title }}"
+                          <img src="{{ $dp->cover_image ?: asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'" alt="{{ $dp->title }}"
                             class="w-full h-full object-cover">
                         </div>
                         <div class="truncate flex-1 min-w-0">
@@ -517,21 +494,8 @@
                     @endforeach
                   </div>
                 @else
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50/80 border-0">
-                      <div class="w-12 h-12 rounded-lg bg-slate-200 flex items-center justify-center font-bold text-xs text-slate-500 shrink-0">DOC</div>
-                      <div class="truncate flex-1 min-w-0">
-                        <h4 class="truncate text-sm font-semibold text-slate-800">Understanding Retatrutide</h4>
-                        <span class="block text-xs text-slate-400 mt-0.5">Research Note</span>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50/80 border-0">
-                      <div class="w-12 h-12 rounded-lg bg-slate-200 flex items-center justify-center font-bold text-xs text-slate-500 shrink-0">DOC</div>
-                      <div class="truncate flex-1 min-w-0">
-                        <h4 class="truncate text-sm font-semibold text-slate-800">The Science of GHK-Cu</h4>
-                        <span class="block text-xs text-slate-400 mt-0.5">Research Note</span>
-                      </div>
-                    </div>
+                  <div class="py-8 text-center text-slate-400 text-xs">
+                    No articles recorded yet.
                   </div>
                 @endif
               </div>
@@ -545,7 +509,7 @@
 
           <div class="xl:col-span-4 flex flex-col gap-6 justify-between h-full">
 
-            <!-- QUICK ACTIONS: NEW PRODUCT SHORTCUT -->
+            <!-- QUICK ACTIONS -->
             <div class="bg-white border-0 rounded-2xl p-5 shadow-sm">
               <div class="pb-3 border-b border-slate-100 mb-4 flex items-center justify-between">
                 <div>
@@ -555,7 +519,6 @@
               </div>
 
               <div class="grid grid-cols-2 gap-3">
-                <!-- NEW PRODUCT BUTTON -->
                 <a href="{{ url($secretPrefix . '/products/create') }}"
                   class="group p-3.5 rounded-xl bg-slate-50/80 border-0 hover:bg-brand-tint transition-all flex flex-col justify-between min-h-[85px]">
                   <div class="flex items-center justify-between">
@@ -596,7 +559,8 @@
                   </div>
                   <div>
                     <span
-                      class="block truncate text-xs font-bold text-slate-800 group-hover:text-brand transition-colors mt-2">View Live Site</span>
+                      class="block truncate text-xs font-bold text-slate-800 group-hover:text-brand transition-colors mt-2">View
+                      Live Site</span>
                     <span class="block text-[11px] text-slate-400 mt-0.5">Open portal</span>
                   </div>
                 </a>
@@ -609,7 +573,7 @@
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
                   <div>
                     <h3 class="font-bold text-sm text-slate-900">Recent Activity Log</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Real-time audit stream</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Real-time SQL audit stream</p>
                   </div>
                   <a href="{{ url($secretPrefix . '/audit-logs') }}"
                     class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
@@ -702,6 +666,13 @@
           <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Audience module loaded.</div>
         @endif
 
+      @elseif($currentSection === 'products')
+        @if(view()->exists('backend.admin.products'))
+          @include('backend.admin.products')
+        @else
+          <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Product Manage module loaded.</div>
+        @endif
+
       @elseif($currentSection === 'blogs')
         @if(view()->exists('backend.admin.blogs'))
           @include('backend.admin.blogs')
@@ -742,6 +713,9 @@
   @endphp
 
   <script>
+    /* =========================================================================
+     * SECTION: CORE DASHBOARD & REAL-TIME DYNAMIC DATE SYSTEM
+     * ========================================================================= */
     function triggerRefreshAnimation(btn) {
       const icon = document.getElementById('refreshIcon');
       if (icon) {
@@ -858,7 +832,7 @@
         for (let m = 0; m < 12; m++) {
           const isSelected = (m === calMonth);
           const activeClass = isSelected 
-            ? 'bg-[#2F6F9F] text-white font-bold shadow-sm' 
+            ? 'bg-[#006FEE] text-white font-bold shadow-sm' 
             : 'bg-slate-50 text-slate-700 hover:bg-slate-100 font-semibold';
 
           html += `
@@ -896,16 +870,16 @@
 
           if (pickerMode === 'daily') {
             if (day === selectedDay) {
-              bgClass = 'bg-[#2F6F9F] text-white font-bold rounded-full shadow-sm';
+              bgClass = 'bg-[#006FEE] text-white font-bold rounded-full shadow-sm';
               textClass = 'text-white';
             }
           } else {
             if (thisDate >= startDateObj && thisDate <= curDate) {
               if (day === selectedDay) {
-                bgClass = 'bg-[#2F6F9F] text-white font-bold rounded-full shadow-sm';
+                bgClass = 'bg-[#006FEE] text-white font-bold rounded-full shadow-sm';
                 textClass = 'text-white';
               } else {
-                bgClass = 'bg-[#E9F2FA] text-slate-900 font-semibold rounded-full';
+                bgClass = 'bg-[#E6F1FE] text-slate-900 font-semibold rounded-full';
               }
             }
           }
@@ -936,11 +910,11 @@
       audienceChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          labels: [],
           datasets: [{
             label: 'Total Views',
-            data: [120, 190, 300, 500, 240, 320, 410],
-            backgroundColor: '#2F6F9F',
+            data: [],
+            backgroundColor: '#0071E3',
             borderRadius: 6,
             borderSkipped: false,
           }]
@@ -951,7 +925,7 @@
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#1E2D3B',
+              backgroundColor: '#1E293B',
               padding: 10,
               cornerRadius: 8,
               callbacks: {
@@ -1026,7 +1000,7 @@
 
           const chartSum = (resData.data && resData.data.length > 0) ? resData.data.reduce((a, b) => a + Number(b), 0) : 0;
           const metricVal = document.getElementById('metricAudienceViews');
-          const impressionsText = document.getElementById('totalImpressionsText');
+          const impresstionsText = document.getElementById('totalImpressionsText');
 
           let displayedCount = 0;
           if (pickerMode === 'daily') {
@@ -1036,11 +1010,10 @@
           }
 
           if (metricVal) metricVal.innerText = Number(displayedCount).toLocaleString();
-          if (impressionsText) impressionsText.innerText = `${Number(displayedCount).toLocaleString()} sessions`;
+          if (impresstionsText) impresstionsText.innerText = `${Number(displayedCount).toLocaleString()} sessions`;
         })
         .catch(err => {
-          const impressionsText = document.getElementById('totalImpressionsText');
-          if (impressionsText) impressionsText.innerText = `2,080 sessions`;
+          console.error("Error fetching database metrics:", err);
         });
     }
 
@@ -1050,6 +1023,7 @@
       menus: [
         { title: 'Dashboard Analytics', section: 'Overview & Metrics', url: '{{ url($secretPrefix) }}' },
         { title: 'Audience Views', section: 'Realtime Visitor Traffic', url: '{{ url($secretPrefix . "/audience") }}' },
+        { title: 'Product Manage', section: 'Catalog & Inventory', url: '{{ url($secretPrefix . "/products") }}' },
         { title: 'Articles & News', section: 'Content Studio & SEO', url: '{{ url($secretPrefix . "/blogs") }}' },
         { title: 'Activity Logs', section: 'System Events & Security', url: '{{ url($secretPrefix . "/audit-logs") }}' },
         { title: 'General Settings', section: 'Configuration & Security Keys', url: '{{ url($secretPrefix . "/settings") }}' },
@@ -1207,7 +1181,7 @@
         sessionStorage.setItem('centradesk_splash_shown', 'true');
 
         setTimeout(() => {
-          if (statusText) statusText.innerText = "Novex Console Ready.";
+          if (statusText) statusText.innerText = "CentraDesk Ready.";
         }, 1200);
 
         setTimeout(() => {
