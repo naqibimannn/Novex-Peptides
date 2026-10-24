@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+/*
+|--------------------------------------------------------------------------
+| Web Routes - Frontend
+|--------------------------------------------------------------------------
+*/
 Route::prefix('/')->group(function () {
     Route::get('/', function () {
         return view('frontend.home.index');
@@ -46,4 +47,70 @@ Route::prefix('/')->group(function () {
     Route::get('/cart', function () {
         return view('frontend.cart.index');
     })->name('cart');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes - Backend / Admin Mockup
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    });
+
+    Route::get('/dashboard', function () {
+        return view('backend.admin.dashboard.admin', [
+            'section' => 'dashboard',
+            'secret' => 'admin'
+        ]);
+    })->name('admin.dashboard');
+
+    Route::get('/audience', function () {
+        return view('backend.admin.dashboard.admin', [
+            'section' => 'audience',
+            'secret' => 'admin'
+        ]);
+    })->name('admin.audience');
+
+    Route::get('/blogs', function () {
+        return view('backend.admin.dashboard.admin', [
+            'section' => 'blogs',
+            'secret' => 'admin'
+        ]);
+    })->name('admin.blogs');
+
+    Route::get('/audit-logs', function () {
+        return view('backend.admin.dashboard.admin', [
+            'section' => 'audit-logs',
+            'secret' => 'admin'
+        ]);
+    })->name('admin.audit-logs');
+
+    Route::get('/info', function () {
+        return view('backend.admin.dashboard.admin', [
+            'section' => 'info',
+            'secret' => 'admin'
+        ]);
+    })->name('admin.info');
+
+    Route::get('/settings', function () {
+        return view('backend.admin.dashboard.admin', [
+            'section' => 'settings',
+            'secret' => 'admin'
+        ]);
+    })->name('admin.settings');
+
+    Route::get('/audience/data', function () {
+        return response()->json([
+            'labels' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            'data' => [140, 210, 320, 510, 260, 340, 430],
+            'total' => 2210,
+            'todayViews' => 510,
+        ]);
+    })->name('admin.audience.data');
+
+    Route::post('/logout', function () {
+        return redirect()->route('home');
+    })->name('admin.logout');
 });
