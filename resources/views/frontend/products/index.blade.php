@@ -9,12 +9,14 @@
   padding:12px 18px;
   border:1px solid var(--line);
   background:var(--card);
+  color:var(--ink);
   border-radius:999px;
   margin-bottom:16px;
   font:inherit;
   outline:none;
-  transition:border-color .2s ease;
+  transition:border-color .2s ease, background-color .25s ease, color .25s ease;
 }
+.sq::placeholder{color:var(--mut)}
 .sq:focus{border-color:var(--green)}
 .filter{
   display:flex;
@@ -44,8 +46,8 @@
   aspect-ratio:4/5;
   border-radius:20px;
   position:relative;
-  background:#ffffff;
-  border:1px solid rgba(210,226,239,.5);
+  background:var(--card-surface);
+  border:1px solid var(--line);
   overflow:hidden;
   padding:10px;
   display:flex;
@@ -65,8 +67,8 @@
   display:block;
   background:transparent;
 }
-.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:#fff}
-.prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:#fff}
+.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:var(--card-surface)}
+.prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:var(--card-surface)}
 .prod-slide{
   position:absolute;
   inset:0;
@@ -78,7 +80,7 @@
   margin:0;
   overflow:hidden;
   border-radius:inherit;
-  background:#fff;
+  background:var(--card-surface);
   display:flex;
   align-items:center;
   justify-content:center;

@@ -212,13 +212,14 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   border-radius:24px;
   overflow:hidden;
   border:1px solid var(--line);
-  background:#ffffff;
+  background:var(--card-surface);
   position:relative;
   margin:0 auto;
   padding:12px;
   display:flex;
   align-items:center;
   justify-content:center;
+  transition:background-color .25s ease, border-color .25s ease;
 }
 .detail-img-wrap .prod-slide{
   position:absolute;
@@ -230,7 +231,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#fff;
+  background:var(--card-surface);
   padding:12px;
   overflow:hidden;
   border-radius:inherit;
@@ -282,6 +283,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   font-weight:600;
   letter-spacing:.04em;
   align-self:flex-start;
+  border:1px solid var(--line);
 }
 .detail-price{
   font-size:clamp(26px,3vw,34px);
@@ -303,16 +305,18 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 .detail-desc{
   font-size:14px;
   line-height:1.7;
-  color:#3A4D5E;
+  color:var(--mut);
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   padding:20px 0;
 }
+.detail-desc h4{color:var(--ink)}
 
 .size-picker{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .size-btn{
   border:1px solid var(--line);
-  background:#fff;
+  background:var(--card-surface);
+  color:var(--ink);
   padding:8px 16px;
   font-size:13px;
   font-weight:600;
@@ -326,9 +330,9 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 
 .qty-row{display:flex;align-items:center;gap:16px;margin-top:8px;flex-wrap:wrap}
 .qty-box{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--card);overflow:hidden}
-.qty-box button{width:40px;height:40px;background:none;border:none;font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.qty-box button{width:40px;height:40px;background:none;border:none;font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
 .qty-box button:hover{background:var(--bg2)}
-.qty-box input{width:46px;text-align:center;border:0;background:none;font-weight:600;font-size:14px}
+.qty-box input{width:46px;text-align:center;border:0;background:none;font-weight:600;font-size:14px;color:var(--ink)}
 
 .btn-add-cart{
   background:var(--green);
@@ -350,7 +354,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 .cart-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.5);
+  background:rgba(0,0,0,.6);
   z-index:999;
   display:none;
   backdrop-filter:blur(3px);
@@ -363,13 +367,15 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   bottom:0;
   width:100%;
   max-width:460px;
-  background:#fff;
+  background:var(--card-surface);
+  color:var(--ink);
   z-index:1000;
   transform:translateX(100%);
   transition:transform .3s ease;
   display:flex;
   flex-direction:column;
-  box-shadow:-10px 0 30px rgba(0,0,0,.15);
+  box-shadow:-10px 0 30px rgba(0,0,0,.25);
+  border-left:1px solid var(--line);
 }
 .cart-drawer.open{transform:translateX(0)}
 .cart-header{
@@ -379,6 +385,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   justify-content:space-between;
   align-items:center;
 }
+.cart-header h3{color:var(--ink)}
 .cart-items{
   padding:18px 22px;
   overflow-y:auto;
@@ -395,11 +402,12 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   border-bottom:1px solid var(--line);
   padding-bottom:14px;
 }
+.cart-item h4{color:var(--ink)}
 .cart-item-img{
   aspect-ratio:1;
   border-radius:12px;
   overflow:hidden;
-  background:#ffffff;
+  background:var(--card-surface);
   border:1px solid var(--line);
   padding:4px;
   display:flex;
@@ -426,7 +434,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   justify-content:center;
   transition:background .2s,color .2s;
 }
-.cart-del-btn:hover{background:#ffe4e6;color:#be123c}
+.cart-del-btn:hover{background:rgba(225,29,72,.12);color:var(--red)}
 .cart-footer{
   padding:20px 22px;
   border-top:1px solid var(--line);
@@ -438,6 +446,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   align-items:center;
   margin-bottom:16px;
   font-size:16px;
+  color:var(--ink);
 }
 .cart-total-price{
   font-size:24px;
@@ -470,7 +479,7 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
   left:50%;
   transform:translateX(-50%) translateY(100px);
   background:var(--ink);
-  color:#fff;
+  color:var(--bg);
   padding:12px 24px;
   border-radius:999px;
   font-size:13px;
@@ -493,12 +502,12 @@ $isAccessory = ($currProd['category'] ?? '') === 'Accessory' || request()->is('a
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal-content{background:#fff;border-radius:20px;max-width:540px;width:100%;padding:28px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.modal-content{background:var(--card-surface);color:var(--ink);border-radius:20px;max-width:540px;width:100%;padding:28px;position:relative;box-shadow:0 20px 40px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto;border:1px solid var(--line)}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:var(--mut);cursor:pointer}
 .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:16px 0}
 .size-table{width:100%;border-collapse:collapse;font-size:13px;text-align:center;min-width:440px}
-.size-table th,.size-table td{border:1px solid var(--line);padding:10px 8px}
-.size-table th{background:var(--bg2);color:var(--green);font-weight:600}
+.size-table th,.size-table td{border:1px solid var(--line);padding:10px 8px;color:var(--ink)}
+.size-table th{background:var(--bg2);color:var(--gold);font-weight:600}
 
 @media(max-width:900px){
   .detail-grid{grid-template-columns:1fr}
