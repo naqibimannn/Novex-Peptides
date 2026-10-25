@@ -701,7 +701,6 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Featured Formulations (Dinamik dari Database & Admin Manage) -->
     <section class="sec alt"><div class="wrap">
       <div class="head">
         <div>
@@ -716,16 +715,46 @@ footer li{list-style:none;margin-bottom:6px}
         @endphp
 
         @forelse($items as $item)
+          @php
+              $imgList = [];
+              if (!empty($item->image)) {
+                  $decoded = json_decode($item->image, true);
+                  $imgList = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) 
+                      ? $decoded 
+                      : [$item->image];
+              }
+              $validImages = array_values(array_filter($imgList, fn($p) => file_exists(public_path($p))));
+          @endphp
+
           <div class="card pc">
             <div class="ph">
-              @if(!empty($item->image) && file_exists(public_path($item->image)))
-                <img src="{{ asset($item->image) }}" alt="{{ $item->title }}" loading="lazy">
+              @if(count($validImages) > 1)
+                <!-- SLIDER BERGANDA DINAMIK -->
+                <div class="prod-slider">
+                  <div class="prod-slides">
+                    @foreach($validImages as $idx => $img)
+                      <div class="prod-slide {{ $idx === 0 ? 'active' : '' }}">
+                        <img src="{{ asset($img) }}" alt="{{ $item->title }} - Slide {{ $idx + 1 }}" loading="lazy">
+                      </div>
+                    @endforeach
+                  </div>
+                  <div class="ps-dots">
+                    @foreach($validImages as $idx => $img)
+                      <span class="ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setCardSlide(this, {{ $idx }})"></span>
+                    @endforeach
+                  </div>
+                </div>
+              @elseif(count($validImages) === 1)
+                <!-- SATU IMEJ SAHAJA -->
+                <img src="{{ asset($validImages[0]) }}" alt="{{ $item->title }}" loading="lazy">
               @else
+                <!-- PLACEHOLDER HURUF N -->
                 <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:14px;user-select:none;transition:background-color .25s ease;">
                   N
                 </div>
               @endif
             </div>
+
             <div class="b">
               <h3>{{ $item->title }}</h3>
               <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
