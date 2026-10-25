@@ -8,16 +8,49 @@
 <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+(function() {
+  const savedTheme = localStorage.getItem('nvx_theme') || 'system';
+  const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+})();
+</script>
+
 <style>
 :root{
-  --bg:#FFFFFF;--bg2:#E9F2FA;--ink:#1E2D3B;--mut:#5A6F82;--green:#2F6F9F;
-  --line:#D2E2EF;--card:#F6FAFD;--gold:#3F84B5;--red:#e11d48;
-  --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
+  --bg:#FFFFFF;
+  --bg2:#E9F2FA;
+  --ink:#1E2D3B;
+  --mut:#5A6F82;
+  --green:#2F6F9F;
+  --line:#D2E2EF;
+  --card:#F6FAFD;
+  --card-surface:#FFFFFF;
+  --header-bg:rgba(255,255,255,.98);
+  --gold:#3F84B5;
+  --red:#e11d48;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
 }
+
+[data-theme="dark"]{
+  --bg:#0B131E;
+  --bg2:#132030;
+  --ink:#E8F1F8;
+  --mut:#8FA3B7;
+  --green:#3A87BF;
+  --line:#1E3147;
+  --card:#101B29;
+  --card-surface:#142335;
+  --header-bg:rgba(11,19,30,.98);
+  --gold:#5EA2D6;
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--ink);font:15px/1.65 var(--sans);overflow-x:hidden}
-img{display:block;width:100%;height:100%;object-fit:cover;background:#ffffff}
+body{background:var(--bg);color:var(--ink);font:15px/1.65 var(--sans);overflow-x:hidden;transition:background-color .25s ease, color .25s ease}
+img{display:block;width:100%;height:100%;object-fit:cover;background:transparent}
 a{color:inherit;text-decoration:none}
 button{font:inherit;cursor:pointer;border:0}
 :focus-visible{outline:2px solid var(--green);outline-offset:2px}
@@ -31,7 +64,7 @@ h1{font-size:clamp(34px,5.5vw,72px)}h2{font-size:clamp(26px,3.8vw,44px)}h3{font-
 .btn.line{background:none;border:1px solid currentColor;color:inherit}
 
 .top{background:var(--green);color:#E3EFF8;font-size:12px;text-align:center;padding:7px 12px;letter-spacing:.03em}
-header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.98);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03);margin:0}
+header{position:sticky;top:0;z-index:40;background:var(--header-bg);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03);margin:0;transition:background-color .25s ease, border-color .25s ease}
 .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:78px;gap:20px;position:relative}
 
 nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
@@ -41,7 +74,58 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .logo{text-align:center;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1;letter-spacing:.06em;color:var(--ink)}
 .logo small{display:block;font:500 9px var(--sans);letter-spacing:.38em;margin-top:5px;color:var(--gold)}
 .rt{display:flex;align-items:center;justify-content:flex-end;gap:20px}
-.tools{display:flex;align-items:center;gap:12px}
+.tools{display:flex;align-items:center;gap:10px}
+
+/* Theme Dropdown Switcher */
+.theme-menu-wrap{position:relative}
+.theme-btn{
+  background:none;
+  border:1px solid var(--line);
+  color:var(--ink);
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.theme-btn:hover{background:var(--bg2);border-color:var(--gold)}
+.theme-btn svg{width:18px;height:18px;stroke:currentColor;fill:none}
+.theme-dropdown{
+  position:absolute;
+  top:calc(100% + 8px);
+  right:0;
+  background:var(--card-surface);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:6px;
+  min-width:140px;
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+  display:none;
+  flex-direction:column;
+  gap:2px;
+  z-index:90;
+}
+.theme-dropdown.open{display:flex}
+.theme-opt{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  border-radius:10px;
+  background:none;
+  color:var(--ink);
+  font-size:13px;
+  font-weight:500;
+  text-align:left;
+  width:100%;
+  transition:all .15s ease;
+}
+.theme-opt svg{width:16px;height:16px;stroke:currentColor;fill:none;flex-shrink:0}
+.theme-opt:hover{background:var(--bg2);color:var(--green)}
+.theme-opt.active{background:var(--green);color:#fff}
 
 .burger-btn{display:none;background:none;border:1px solid var(--line);padding:7px;border-radius:10px;cursor:pointer;align-items:center;justify-content:center;color:var(--ink);transition:all .2s ease}
 .burger-btn:hover{background:var(--bg2);border-color:var(--gold)}
@@ -49,14 +133,34 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .burger-btn.open .icon-close{display:block !important}
 
 .mnav{display:none}
-.mnav.open{display:flex;position:absolute;top:100%;left:0;right:0;background:rgba(255,255,255,.99);backdrop-filter:blur(10px);flex-direction:column;gap:0;padding:12px 24px 24px;border-bottom:1px solid var(--line);box-shadow:0 16px 32px rgba(14,40,66,.12);z-index:99}
+.mnav.open{display:flex;position:absolute;top:100%;left:0;right:0;background:var(--header-bg);backdrop-filter:blur(10px);flex-direction:column;gap:0;padding:12px 24px 24px;border-bottom:1px solid var(--line);box-shadow:0 16px 32px rgba(14,40,66,.12);z-index:99}
 .mnav a{padding:14px 0;border-bottom:1px solid var(--line);font-size:15px;font-weight:500;color:var(--ink);transition:color .2s ease}
 .mnav a:hover, .mnav a.on{color:var(--green);font-weight:600}
+
+.m-theme-box{display:flex;flex-direction:column;gap:10px;padding:18px 0 6px}
+.m-theme-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+.m-theme-btns{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px}
+.m-theme-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:9px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  font-size:12px;
+  font-weight:600;
+  transition:all .2s ease;
+}
+.m-theme-btn svg{width:14px;height:14px;stroke:currentColor;fill:none}
+.m-theme-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
 
 .cart-trigger-btn{position:relative;background:none;border:0;color:var(--green);padding:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease}
 .cart-trigger-btn:hover{transform:scale(1.12)}
 .cart-trigger-btn svg{width:25px;height:25px;stroke:var(--green);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.cart-badge{position:absolute;top:-2px;right:-5px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;line-height:18px;text-align:center;font-weight:700;padding:0 4px;border:2px solid #fff}
+.cart-badge{position:absolute;top:-2px;right:-5px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;line-height:18px;text-align:center;font-weight:700;padding:0 4px;border:2px solid var(--card-surface)}
 
 .hero{position:relative;height:calc(100vh - var(--off, 110px));height:calc(100svh - var(--off, 110px));min-height:520px;overflow:hidden;color:#fff;display:flex;align-items:center}
 .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) brightness(1.05)}
@@ -94,7 +198,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
 .g6{display:grid;grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));gap:18px}
-.ph{aspect-ratio:4/5;overflow:hidden;border-radius:24px;background:#ffffff}
+.ph{aspect-ratio:4/5;overflow:hidden;border-radius:24px;background:var(--card-surface)}
 .cat{position:relative;aspect-ratio:3/4;overflow:hidden;color:#fff;display:flex;align-items:end;border-radius:26px}
 .cat img{position:absolute;inset:0;transition:transform .6s}
 .cat:hover img{transform:scale(1.04)}
@@ -103,14 +207,14 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cat h3{font-size:20px}
 .cat p{font-size:12px;opacity:.9;margin-top:4px}
 
-.pc{padding:14px;background:#fff;border:1px solid var(--line);border-radius:26px;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column}
+.pc{padding:14px;background:var(--card-surface);border:1px solid var(--line);border-radius:26px;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column}
 .pc:hover{transform:translateY(-6px);box-shadow:0 24px 44px -24px rgba(47,111,159,.5)}
 .pc .ph{
   aspect-ratio:4/5;
   border-radius:20px;
   position:relative;
-  background:#ffffff;
-  border:1px solid rgba(210,226,239,.5);
+  background:var(--card-surface);
+  border:1px solid var(--line);
   overflow:hidden;
   padding:10px;
   display:flex;
@@ -130,7 +234,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   display:block;
   background:transparent;
 }
-.pc .chip{position:absolute;left:12px;top:12px;z-index:6;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);color:var(--green);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid rgba(210,226,239,.6)}
+.pc .chip{position:absolute;left:12px;top:12px;z-index:6;background:var(--header-bg);backdrop-filter:blur(8px);color:var(--green);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid var(--line)}
 .pc .b{text-align:left;align-items:stretch;padding:16px 8px 8px;gap:8px;display:flex;flex-direction:column;flex:1}
 .pc h3{font-size:20px;line-height:1.2}
 .pc .s{font-size:13px;color:var(--mut)}
@@ -139,8 +243,8 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .btn-details{background:var(--green);color:#fff;padding:12px;border-radius:999px;font-size:13px;font-weight:600;text-align:center;margin-top:10px;transition:background .2s}
 .btn-details:hover{background:#245a82}
 
-.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:#fff}
-.prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:#fff}
+.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:var(--card-surface)}
+.prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:var(--card-surface)}
 .prod-slide{
   position:absolute;
   inset:0;
@@ -152,7 +256,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   margin:0;
   overflow:hidden;
   border-radius:inherit;
-  background:#fff;
+  background:var(--card-surface);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -176,22 +280,22 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .ps-dot.active{background:var(--green);transform:scale(1.25)}
 
 .t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
-.t-frame-single{aspect-ratio:1.38/1;border-radius:24px;overflow:hidden;border:1px solid var(--line);background:#ffffff;cursor:pointer}
+.t-frame-single{aspect-ratio:1.38/1;border-radius:24px;overflow:hidden;border:1px solid var(--line);background:var(--card-surface);cursor:pointer}
 .t-frame-single img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;display:block;transition:transform .4s ease}
 .t-frame-single:hover img{transform:scale(1.02)}
 .t-single-content{display:flex;flex-direction:column;gap:16px}
 .t-single-content h2{font-size:clamp(28px,4vw,42px);color:var(--ink)}
-.t-single-content p{font-size:15px;color:#3A4D5E;line-height:1.65}
+.t-single-content p{font-size:15px;color:var(--mut);line-height:1.65}
 .t-metrics{display:flex;gap:24px;margin:8px 0 12px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .t-metrics div b{font-family:var(--serif);font-size:24px;color:var(--green);display:block}
 .t-metrics div p{font-size:12px;color:var(--mut);margin:0}
 
 .t-lightbox{position:fixed;inset:0;background:rgba(10,24,40,.88);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
 .t-lightbox.open{display:flex}
-.t-lightbox-inner{position:relative;max-width:960px;width:100%;background:#fff;border-radius:24px;padding:16px;box-shadow:0 25px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:10px}
-.t-lightbox-inner img{width:100%;height:auto;max-height:80vh;object-fit:contain;border-radius:16px;background:#fff}
+.t-lightbox-inner{position:relative;max-width:960px;width:100%;background:var(--card-surface);border-radius:24px;padding:16px;box-shadow:0 25px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:10px}
+.t-lightbox-inner img{width:100%;height:auto;max-height:80vh;object-fit:contain;border-radius:16px;background:var(--card-surface)}
 .t-lightbox-title{font-size:14px;font-weight:600;color:var(--ink);padding:4px 6px;text-align:center}
-.t-lightbox-close{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;background:#fff;color:var(--ink);font-size:22px;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+.t-lightbox-close{position:absolute;top:-14px;right:-14px;width:38px;height:38px;border-radius:50%;background:var(--card-surface);color:var(--ink);font-size:22px;font-weight:600;box-shadow:0 6px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
 
 .div2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .camp{position:relative;aspect-ratio:16/9;color:#fff;display:flex;align-items:center;border-radius:26px;overflow:hidden;cursor:pointer}
@@ -200,7 +304,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .camp:before{content:"";position:absolute;inset:0;z-index:1;background:rgba(14,40,66,.18)}
 
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-.steps div{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px}
+.steps div{background:var(--card-surface);border:1px solid var(--line);border-radius:24px;padding:24px}
 .steps b{font:italic 500 46px/1 var(--serif);color:var(--gold)}
 .steps h3{margin:10px 0 8px;font-size:23px}
 .steps p{font-size:14px;color:var(--mut)}
@@ -270,6 +374,27 @@ footer li{list-style:none;margin-bottom:6px}
       </nav>
 
       <div class="tools">
+        <!-- Switcher Tema Desktop: Light, Night & System -->
+        <div class="theme-menu-wrap" id="themeMenuWrap">
+          <button type="button" class="theme-btn" id="themeToggleBtn" onclick="toggleThemeDropdown(event)" aria-label="Toggle Night/Light/System theme">
+            <svg id="themeIconActive" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+          </button>
+          <div class="theme-dropdown" id="themeDropdown">
+            <button type="button" class="theme-opt" data-theme-val="light" onclick="chooseTheme('light')">
+              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              <span>Light</span>
+            </button>
+            <button type="button" class="theme-opt" data-theme-val="dark" onclick="chooseTheme('dark')">
+              <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <span>Night</span>
+            </button>
+            <button type="button" class="theme-opt" data-theme-val="system" onclick="chooseTheme('system')">
+              <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <span>System</span>
+            </button>
+          </div>
+        </div>
+
         <a class="cart-trigger-btn" href="{{ route('cart') }}" aria-label="Shopping Cart">
           <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
           <span class="cart-badge" id="cartCount">0</span>
@@ -291,6 +416,25 @@ footer li{list-style:none;margin-bottom:6px}
     <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
     <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
     <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
+    
+    <!-- Switcher Tema Mobile -->
+    <div class="m-theme-box">
+      <span class="m-theme-title">Display Mode</span>
+      <div class="m-theme-btns">
+        <button type="button" class="m-theme-btn" data-theme-val="light" onclick="chooseTheme('light')">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          Light
+        </button>
+        <button type="button" class="m-theme-btn" data-theme-val="dark" onclick="chooseTheme('dark')">
+          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          Night
+        </button>
+        <button type="button" class="m-theme-btn" data-theme-val="system" onclick="chooseTheme('system')">
+          <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          System
+        </button>
+      </div>
+    </div>
   </nav>
 </header>
 
@@ -568,25 +712,25 @@ footer li{list-style:none;margin-bottom:6px}
         <a class="btn line" href="{{ route('resources') }}">All articles</a>
       </div>
       <div class="g4 art">
-        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=500&q=85" alt="Understanding Retatrutide">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">Understanding Retatrutide</h3></div>
         </a>
-        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=500&q=85" alt="The Science of GHK-Cu">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">The Science of GHK-Cu</h3></div>
         </a>
-        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=500&q=85" alt="Benefits of NAD+">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">Benefits of NAD+</h3></div>
         </a>
-        <a class="card" href="{{ route('resources') }}" style="background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+        <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
             <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=500&q=85" alt="What is Tesamorelin">
           </div>
@@ -632,6 +776,61 @@ footer li{list-style:none;margin-bottom:6px}
 </div></footer>
 
 <script>
+const themeIcons = {
+  light: `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
+  dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`,
+  system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>`
+};
+
+function applyTheme(mode) {
+  const isDark = (mode === 'dark') || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  
+  const iconEl = document.getElementById('themeIconActive');
+  if (iconEl && themeIcons[mode]) {
+    iconEl.innerHTML = themeIcons[mode];
+  }
+
+  document.querySelectorAll('[data-theme-val]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-theme-val') === mode);
+  });
+}
+
+function chooseTheme(mode) {
+  localStorage.setItem('nvx_theme', mode);
+  applyTheme(mode);
+  closeThemeDropdown();
+}
+
+function toggleThemeDropdown(e) {
+  if (e) e.stopPropagation();
+  const dropdown = document.getElementById('themeDropdown');
+  if (dropdown) dropdown.classList.toggle('open');
+}
+
+function closeThemeDropdown() {
+  const dropdown = document.getElementById('themeDropdown');
+  if (dropdown) dropdown.classList.remove('open');
+}
+
+// Deteksi perubahan tema sistem secara langsung
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  const currentMode = localStorage.getItem('nvx_theme') || 'system';
+  if (currentMode === 'system') {
+    applyTheme('system');
+  }
+});
+
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('themeMenuWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    closeThemeDropdown();
+  }
+});
+
+/* =========================================================================
+ * SLIDER & HERO SCRIPTS
+ * ========================================================================= */
 let hi = 0, ht;
 function go(n){
   const slides = document.querySelectorAll('.hero.sl .slide');
@@ -706,6 +905,9 @@ const setOff = () => {
 window.addEventListener('resize', setOff);
 document.addEventListener('DOMContentLoaded', () => {
   setOff();
+  const currentMode = localStorage.getItem('nvx_theme') || 'system';
+  applyTheme(currentMode);
+
   if(document.querySelector('.hero.sl .slide')){
     ht = setInterval(() => go(hi + 1), 7000);
   }
