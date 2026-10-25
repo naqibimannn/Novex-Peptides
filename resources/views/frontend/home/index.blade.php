@@ -223,12 +223,12 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 
 #lab-reports{
   position:relative;
-  background:linear-gradient(rgba(233, 242, 250, 0.92), rgba(233, 242, 250, 0.95)), url('https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1800&q=85') center/cover no-repeat;
+  background:linear-gradient(rgba(233, 242, 250, 0.92), rgba(233, 242, 250, 0.95)), url('https://images.unsplash.com/photo-1758685848543-5c8ba81bc822?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D') center/cover no-repeat;
   padding:52px 0;
   transition:background .3s ease;
 }
 [data-theme="dark"] #lab-reports{
-  background:linear-gradient(rgba(10, 17, 26, 0.90), rgba(16, 27, 39, 0.94)), url('https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1800&q=85') center/cover no-repeat;
+  background:linear-gradient(rgba(10, 17, 26, 0.90), rgba(16, 27, 39, 0.94)), url('https://images.unsplash.com/photo-1758685848543-5c8ba81bc822?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D') center/cover no-repeat;
 }
 #lab-reports h2{color:var(--ink)}
 #lab-reports p{color:var(--mut)}
@@ -260,7 +260,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   display:block;
   background:transparent;
 }
-.pc .chip{position:absolute;left:12px;top:12px;z-index:6;background:var(--header-bg);backdrop-filter:blur(8px);color:var(--green);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid var(--line)}
 .pc .b{text-align:left;align-items:stretch;padding:16px 8px 8px;gap:8px;display:flex;flex-direction:column;flex:1}
 .pc h3{font-size:20px;line-height:1.2;color:var(--ink)}
 .pc .s{font-size:13px;color:var(--mut)}
@@ -515,7 +514,7 @@ footer li{list-style:none;margin-bottom:6px}
           </button>
           <div class="theme-dropdown" id="themeDropdown">
             <button type="button" class="theme-opt" data-theme-val="light" onclick="chooseTheme('light')">
-              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
               <span>Light</span>
             </button>
             <button type="button" class="theme-opt" data-theme-val="dark" onclick="chooseTheme('dark')">
@@ -651,6 +650,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
+    <!-- Seksyen Lab Reports (Background baharu) -->
     <section class="sec alt" id="lab-reports">
       <div class="wrap">
         <div class="head" style="justify-content:center;text-align:center;margin-bottom:0">
@@ -665,6 +665,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
+    <!-- Seksyen Real Transformations (Slaid Gambar Auto-Update t1.webp hingga t8.webp) -->
     <section class="sec" id="testimonies">
       <div class="wrap">
         <div class="t-single-grid">
@@ -722,6 +723,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
+    <!-- Seksyen Featured Formulations (Tag Ayat / Chip telah dibuang) -->
     <section class="sec alt"><div class="wrap">
       <div class="head">
         <div>
@@ -749,7 +751,6 @@ footer li{list-style:none;margin-bottom:6px}
                 <span class="ps-dot" onclick="setCardSlide(this, 4)"></span>
               </div>
             </div>
-            <span class="chip">Weight Management</span>
           </div>
           <div class="b">
             <h3>Retatrutide</h3>
@@ -774,7 +775,6 @@ footer li{list-style:none;margin-bottom:6px}
                 <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
               </div>
             </div>
-            <span class="chip">Weight Management</span>
           </div>
           <div class="b">
             <h3>Retatrutide Plus (RETA PLUS)</h3>
@@ -803,7 +803,6 @@ footer li{list-style:none;margin-bottom:6px}
                 <span class="ps-dot" onclick="setCardSlide(this, 3)"></span>
               </div>
             </div>
-            <span class="chip">Skincare Collection</span>
           </div>
           <div class="b">
             <h3>GlutaGlow Serum</h3>
@@ -828,7 +827,6 @@ footer li{list-style:none;margin-bottom:6px}
                 <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
               </div>
             </div>
-            <span class="chip">Apparel</span>
           </div>
           <div class="b">
             <h3>Premium Athletic Jersey</h3>
