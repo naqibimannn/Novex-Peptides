@@ -758,7 +758,7 @@ footer li{list-style:none;margin-bottom:6px}
               if (!empty($item->image)) {
                   $decoded = json_decode($item->image, true);
                   if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p) && file_exists(public_path($p))));
+                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p) && (file_exists(public_path($p)) || file_exists(public_path('uploads/products/' . basename($p))))));
                   } elseif (file_exists(public_path($item->image))) {
                       $slides = [$item->image];
                   }
@@ -802,6 +802,9 @@ footer li{list-style:none;margin-bottom:6px}
 
             <div class="b">
               <h3>{{ $item->title }}</h3>
+              @if(!empty($item->subtitle))
+                <p class="s">{{ $item->subtitle }}</p>
+              @endif
               <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
               <div class="meta">
                 <span style="font-weight:600">{{ $item->dosage_spec ?? 'Laboratory Grade' }}</span>
