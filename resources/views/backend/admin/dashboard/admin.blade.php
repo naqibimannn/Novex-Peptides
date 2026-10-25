@@ -84,8 +84,9 @@
   class="bg-[#EEF2F6] font-sans text-slate-700 antialiased h-screen flex overflow-hidden text-sm select-none relative">
 
   @php
-    $currentSection = $section ?? 'dashboard';
-    $secretPrefix = $secret ?? env('ADMIN_SECRET_KEY');
+  $currentSection = $section ?? 'dashboard';
+  $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
+  $secretPrefix = 'admin/' . $secretKey;
 
     $randomHeroes = [
       [
@@ -184,7 +185,7 @@
       <nav class="flex flex-col gap-1.5">
         @foreach ($allMenuItems as $key => $item)
           @php $isActive = ($currentSection === $key); @endphp
-          <a href="{{ url($secretPrefix . '/' . ($key === 'dashboard' ? '' : $key)) }}"
+          <a href="{{ route('admin.' . ($key === 'dashboard' ? 'dashboard' : $key)) }}"
             class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isActive ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50' }}">
             <div class="flex items-center gap-3">
               <svg class="w-4 h-4 shrink-0 {{ $isActive ? 'text-slate-900' : 'text-slate-400' }}" fill="none"
@@ -665,8 +666,8 @@
         @endif
 
       @elseif($currentSection === 'products')
-        @if(view()->exists('backend.admin.products'))
-          @include('backend.admin.products')
+        @if(view()->exists('backend.admin.products.products'))
+          @include('backend.admin.products.products')
         @else
           <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Product Manage module loaded.</div>
         @endif
