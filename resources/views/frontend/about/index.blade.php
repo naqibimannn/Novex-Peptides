@@ -1,6 +1,12 @@
 @extends('frontend.home.index')
 
 @section('content')
+@php
+  $aboutPath = public_path('assets/website/about/about.webp');
+  $aboutVer = file_exists($aboutPath) ? filemtime($aboutPath) : time();
+  $aboutUrl = asset('assets/website/about/about.webp') . '?v=' . $aboutVer;
+@endphp
+
 <style>
 .rows>div{
   background:var(--card);
@@ -34,6 +40,26 @@
   margin-top:20px;
 }
 
+.about-img-link{
+  display:block;
+  aspect-ratio:4/3;
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  cursor:pointer;
+  transition:transform .3s ease, border-color .3s ease;
+}
+.about-img-link:hover{
+  transform:scale(1.015);
+  border-color:var(--gold);
+}
+.about-img-link img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
 @media(max-width:900px){
   .rows>div{grid-template-columns:50px 1fr}
   .rows p{grid-column:2}
@@ -59,9 +85,9 @@
       <p style="color:var(--mut);line-height:1.7">We started Novex as a sourcing desk that treats the batch number as the centre of everything.</p>
       <p style="margin-top:14px;color:var(--ink);font-weight:500;line-height:1.7">If we cannot test it, trace it and explain it in plain language, it does not go into our catalog.</p>
     </div>
-    <div style="aspect-ratio:4/3;border-radius:24px;overflow:hidden;border:1px solid var(--line)">
-      <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800" alt="About Lab">
-    </div>
+    <a href="{{ $aboutUrl }}" onclick="if(typeof openLightboxModal === 'function'){ openLightboxModal('{{ $aboutUrl }}', 'Why Novex Exists'); return false; }" class="about-img-link">
+      <img src="{{ $aboutUrl }}" alt="Why Novex Exists - Lab Research" onerror="this.src='https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800'">
+    </a>
   </div>
 </section>
 
