@@ -77,6 +77,6 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
             ]);
         })->name('audience.data');
 
-        Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+        Route::match(['get', 'post'], '/logout', [AdminLoginController::class, 'logout'])->name('logout');
     });
 });
