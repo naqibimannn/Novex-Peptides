@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Skrip Pencegah Kedipan Tema (Anti-FOUC) -->
 <script>
 (function() {
   const savedTheme = localStorage.getItem('nvx_theme') || 'system';
@@ -75,7 +74,6 @@ nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
 nav.dnav a{padding:6px 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
 nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 
-/* Logo Styling */
 .logo{text-align:center;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1;letter-spacing:.06em;color:var(--ink);transition:all .25s ease}
 .logo small{display:block;font:500 9px var(--sans);letter-spacing:.38em;margin-top:5px;color:var(--gold);transition:color .25s ease}
 [data-theme="dark"] .logo{color:#FFFFFF !important;text-shadow:0 0 20px rgba(92,165,218,.3)}
@@ -87,7 +85,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .rt{display:flex;align-items:center;justify-content:flex-end;gap:20px}
 .tools{display:flex;align-items:center;gap:10px}
 
-/* Theme Switcher */
 .theme-menu-wrap{position:relative}
 .theme-btn{
   background:none;
@@ -308,57 +305,56 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .ps-dot.active{background:var(--green);transform:scale(1.25)}
 
-/* Slaid Gambar Real Transformations (t1.webp - t8.webp): Auto-Busting & Penuh */
 .t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
 .t-slider-wrap{position:relative;width:100%;max-width:540px;margin:0 auto}
 .t-slider{
   position:relative;
   width:100%;
-  aspect-ratio:1.38/1;
   border-radius:24px;
   overflow:hidden;
   border:1px solid var(--line);
-  background:var(--card-surface);
+  background:transparent;
   box-shadow:0 12px 32px rgba(14,40,66,.07);
 }
-.t-slides{position:relative;width:100%;height:100%}
-.t-slide{
-  position:absolute;
-  inset:0;
+.t-slides{
+  display:grid;
+  grid-template-columns:100%;
   width:100%;
-  height:100%;
+}
+.t-slide{
+  grid-column:1;
+  grid-row:1;
+  width:100%;
   opacity:0;
   pointer-events:none;
   transition:opacity .55s ease-in-out;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:0;
-  margin:0;
+  display:block;
   text-decoration:none;
   cursor:pointer;
-  background:transparent;
   border-radius:inherit;
+  position:relative;
 }
-.t-slide.active{opacity:1;pointer-events:auto}
+.t-slide.active{
+  opacity:1;
+  pointer-events:auto;
+  z-index:2;
+}
 .t-slide img{
   width:100% !important;
-  height:100% !important;
+  height:auto !important;
   max-width:100% !important;
-  max-height:100% !important;
-  object-fit:cover !important;
-  object-position:center !important;
+  max-height:none !important;
+  display:block !important;
   border-radius:inherit !important;
-  display:block;
   padding:0 !important;
   margin:0 !important;
   transition:transform .4s ease;
 }
-.t-slide:hover img{transform:scale(1.02)}
+.t-slide:hover img{transform:scale(1.015)}
 .t-badge-zoom{
   position:absolute;
-  top:14px;
-  right:14px;
+  top:12px;
+  right:12px;
   background:rgba(20,35,50,.78);
   backdrop-filter:blur(6px);
   color:#fff;
@@ -486,7 +482,6 @@ footer li{list-style:none;margin-bottom:6px}
  .g3,.g4,.steps{grid-template-columns:1fr}
  .g6{grid-template-columns:repeat(2,1fr);gap:12px}
  .camp{min-height:unset}
- .t-slider{aspect-ratio:1.38/1}
  .t-metrics{flex-wrap:wrap;gap:16px}
 }
 </style>
@@ -520,7 +515,7 @@ footer li{list-style:none;margin-bottom:6px}
           </button>
           <div class="theme-dropdown" id="themeDropdown">
             <button type="button" class="theme-opt" data-theme-val="light" onclick="chooseTheme('light')">
-              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="12" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
               <span>Light</span>
             </button>
             <button type="button" class="theme-opt" data-theme-val="dark" onclick="chooseTheme('dark')">
@@ -656,7 +651,6 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <!-- Seksyen Lab Reports -->
     <section class="sec alt" id="lab-reports">
       <div class="wrap">
         <div class="head" style="justify-content:center;text-align:center;margin-bottom:0">
@@ -671,7 +665,6 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Real Transformations (Slaid Gambar Auto-Update t1.webp hingga t8.webp) -->
     <section class="sec" id="testimonies">
       <div class="wrap">
         <div class="t-single-grid">
@@ -942,9 +935,6 @@ footer li{list-style:none;margin-bottom:6px}
 </div></footer>
 
 <script>
-/* =========================================================================
- * NIGHT, LIGHT & SYSTEM THEME CONTROLLER
- * ========================================================================= */
 const themeIcons = {
   light: `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
   dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`,
@@ -996,9 +986,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-/* =========================================================================
- * SLIDER & HERO SCRIPTS
- * ========================================================================= */
 let hi = 0, ht;
 function go(n){
   const slides = document.querySelectorAll('.hero.sl .slide');
