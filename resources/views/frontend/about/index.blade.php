@@ -40,12 +40,18 @@
   margin-top:20px;
 }
 
+/* Bingkai Kad Saiz Asal, Gambar Lebih Kecil Di Dalam */
 .about-img-link{
-  display:block;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   aspect-ratio:4/3;
+  width:100%;
   border-radius:24px;
   overflow:hidden;
   border:1px solid var(--line);
+  background:var(--card-surface);
+  padding:32px;
   cursor:pointer;
   transition:transform .3s ease, border-color .3s ease;
 }
@@ -57,12 +63,16 @@
   width:100%;
   height:100%;
   object-fit:cover;
+  border-radius:16px;
   display:block;
 }
 
 @media(max-width:900px){
   .rows>div{grid-template-columns:50px 1fr}
   .rows p{grid-column:2}
+}
+@media(max-width:640px){
+  .about-img-link{padding:20px}
 }
 </style>
 
