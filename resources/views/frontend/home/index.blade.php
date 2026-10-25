@@ -209,6 +209,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cart-trigger-btn svg{width:25px;height:25px;stroke:var(--green);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .cart-badge{position:absolute;top:-2px;right:-5px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;line-height:18px;text-align:center;font-weight:700;padding:0 4px;border:2px solid var(--card-surface)}
 
+/* Hero Section: Typography Putih Bersih */
 .hero{position:relative;height:calc(100vh - var(--off, 110px));height:calc(100svh - var(--off, 110px));min-height:520px;overflow:hidden;color:#fff !important;display:flex;align-items:center}
 .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) brightness(1.05)}
 .hero:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,17,26,.82),rgba(10,17,26,.25) 75%)}
@@ -305,6 +306,42 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .pc .meta span{font-size:11px;background:var(--bg2);color:var(--ink);padding:4px 10px;border-radius:999px;border:1px solid var(--line)}
 .btn-details{background:var(--green);color:#fff;padding:12px;border-radius:999px;font-size:13px;font-weight:600;text-align:center;margin-top:10px;transition:background .2s}
 .btn-details:hover{background:#266391}
+
+.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:var(--card-surface)}
+.prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:var(--card-surface)}
+.prod-slide{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  transition:opacity .65s ease-in-out;
+  padding:0;
+  margin:0;
+  overflow:hidden;
+  border-radius:inherit;
+  background:var(--card-surface);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.prod-slide.active{opacity:1;pointer-events:auto}
+.prod-slide img{
+  max-width:100% !important;
+  max-height:100% !important;
+  width:auto !important;
+  height:auto !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:12px !important;
+  display:block;
+  background:transparent;
+}
+.ps-dots{position:absolute;bottom:6px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:6px}
+.ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.ps-dot.active{background:var(--green);transform:scale(1.25)}
 
 .t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
 .t-slider-wrap{position:relative;width:100%;max-width:540px;margin:0 auto}
@@ -701,6 +738,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
+    <!-- Seksyen Featured Formulations (Dinamik dari Database & Multi-Image Slider) -->
     <section class="sec alt"><div class="wrap">
       <div class="head">
         <div>
@@ -716,40 +754,47 @@ footer li{list-style:none;margin-bottom:6px}
 
         @forelse($items as $item)
           @php
-              $imgList = [];
+              $slides = [];
               if (!empty($item->image)) {
                   $decoded = json_decode($item->image, true);
-                  $imgList = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) 
-                      ? $decoded 
-                      : [$item->image];
+                  if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p) && file_exists(public_path($p))));
+                  } elseif (file_exists(public_path($item->image))) {
+                      $slides = [$item->image];
+                  }
               }
-              $validImages = array_values(array_filter($imgList, fn($p) => file_exists(public_path($p))));
           @endphp
 
           <div class="card pc">
             <div class="ph">
-              @if(count($validImages) > 1)
-                <!-- SLIDER BERGANDA DINAMIK -->
+              @if(count($slides) > 1)
+                <!-- Multi-image slider dengan auto slide dan dot selector -->
                 <div class="prod-slider">
                   <div class="prod-slides">
-                    @foreach($validImages as $idx => $img)
-                      <div class="prod-slide {{ $idx === 0 ? 'active' : '' }}">
-                        <img src="{{ asset($img) }}" alt="{{ $item->title }} - Slide {{ $idx + 1 }}" loading="lazy">
+                    @foreach($slides as $sIdx => $imgSrc)
+                      <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
+                        <img src="{{ asset($imgSrc) }}" alt="{{ $item->title }} - Slide {{ $sIdx + 1 }}" loading="lazy">
                       </div>
                     @endforeach
                   </div>
                   <div class="ps-dots">
-                    @foreach($validImages as $idx => $img)
-                      <span class="ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setCardSlide(this, {{ $idx }})"></span>
+                    @foreach($slides as $sIdx => $imgSrc)
+                      <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlide(this, {{ $sIdx }})"></span>
                     @endforeach
                   </div>
                 </div>
-              @elseif(count($validImages) === 1)
-                <!-- SATU IMEJ SAHAJA -->
-                <img src="{{ asset($validImages[0]) }}" alt="{{ $item->title }}" loading="lazy">
+              @elseif(count($slides) === 1)
+                <!-- Single image menggunakan slider container standard -->
+                <div class="prod-slider">
+                  <div class="prod-slides">
+                    <div class="prod-slide active">
+                      <img src="{{ asset($slides[0]) }}" alt="{{ $item->title }}" loading="lazy">
+                    </div>
+                  </div>
+                </div>
               @else
-                <!-- PLACEHOLDER HURUF N -->
-                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:14px;user-select:none;transition:background-color .25s ease;">
+                <!-- Elegant N placeholder frame jika imej belum dimuat naik -->
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:12px;user-select:none;transition:background-color .25s ease;">
                   N
                 </div>
               @endif
@@ -767,7 +812,7 @@ footer li{list-style:none;margin-bottom:6px}
           </div>
         @empty
           <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--mut); font-size: 14px;">
-            Katalog formulasi sedang dikemaskini.
+            Formulation catalog is currently being updated.
           </div>
         @endforelse
       </div>
@@ -866,9 +911,9 @@ footer li{list-style:none;margin-bottom:6px}
 
 <script>
 const themeIcons = {
-  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
+  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor"></line><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor"></line><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor"></line><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor"></line>`,
   dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" fill="none"></path>`,
-  system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" fill="none"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>`
+  system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" fill="none"></rect><line x1="8" y1="21" x2="16" y2="21" stroke="currentColor"></line><line x1="12" y1="17" x2="12" y2="21"></line>`
 };
 
 function applyTheme(mode) {
@@ -956,6 +1001,37 @@ function go(n){
   dots.forEach((d, i) => d.classList.toggle('on', i === hi));
 }
 
+function setCardSlide(dot, idx){
+  if(window.event){
+    window.event.preventDefault();
+    window.event.stopPropagation();
+  }
+  const slider = dot.closest('.prod-slider');
+  if(!slider) return;
+  const slides = slider.querySelectorAll('.prod-slide');
+  const dots = slider.querySelectorAll('.ps-dot');
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+
+var prodSlideTimer = null;
+function startProdAutoSlide(){
+  clearInterval(prodSlideTimer);
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  prodSlideTimer = setInterval(() => {
+    document.querySelectorAll('.card .prod-slider').forEach(box => {
+      const slides = box.querySelectorAll('.prod-slide');
+      const dots = box.querySelectorAll('.ps-dot');
+      if(slides.length < 2) return;
+      let cur = 0;
+      slides.forEach((s, idx) => { if(s.classList.contains('active')) cur = idx; });
+      let next = (cur + 1) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === next));
+      dots.forEach((d, idx) => d.classList.toggle('active', idx === next));
+    });
+  }, 4500);
+}
+
 let tSlideIndex = 0;
 const totalTSlides = 8;
 let tSlideTimer = null;
@@ -1014,6 +1090,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(document.querySelector('.hero.sl .slide')){
     ht = setInterval(() => go(hi + 1), 7000);
   }
+  startProdAutoSlide();
   startTransformTimer();
 
   const transformBox = document.getElementById('transformSlider');
