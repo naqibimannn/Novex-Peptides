@@ -1,6 +1,13 @@
 @extends('frontend.home.index')
 
 @section('content')
+@php
+  $lab1Ver = file_exists(public_path('lab1.webp')) ? filemtime(public_path('lab1.webp')) : time();
+  $lab2Ver = file_exists(public_path('lab2.webp')) ? filemtime(public_path('lab2.webp')) : time();
+  $lab1Url = asset('lab1.webp') . '?v=' . $lab1Ver;
+  $lab2Url = asset('lab2.webp') . '?v=' . $lab2Ver;
+@endphp
+
 <style>
 .lab-meta-tag{
   display:inline-block;
@@ -9,7 +16,8 @@
   text-transform:uppercase;
   letter-spacing:.08em;
   color:var(--green);
-  background:rgba(47,111,159,.12);
+  background:var(--bg2);
+  border:1px solid var(--line);
   padding:4px 10px;
   border-radius:999px;
   width:fit-content;
@@ -29,12 +37,12 @@
   width:100%;
   max-width:500px;
   margin:0 auto;
-  background:#fff;
+  background:var(--card-surface);
   border:1px solid var(--line);
   border-radius:24px;
   padding:18px;
   box-shadow:0 10px 26px rgba(14,40,66,.06);
-  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease, background-color .25s ease;
 }
 .lab-item:hover{
   transform:translateY(-5px);
@@ -48,8 +56,8 @@
   border-radius:16px;
   overflow:hidden;
   cursor:pointer;
-  background:#ffffff;
-  border:1px solid rgba(210,226,239,.85);
+  background:var(--card-surface);
+  border:1px solid var(--line);
 }
 .lab-img-wrap img{
   width:100% !important;
@@ -57,14 +65,14 @@
   display:block;
   object-fit:contain !important;
   object-position:center !important;
-  background:#ffffff;
+  background:transparent;
   padding:4px;
 }
 .lab-badge{
   position:absolute;
   top:12px;
   right:12px;
-  background:rgba(30,45,59,.88);
+  background:rgba(20,35,50,.82);
   color:#fff;
   font-size:11px;
   font-weight:600;
@@ -75,6 +83,7 @@
   align-items:center;
   gap:5px;
   z-index:2;
+  border:1px solid rgba(255,255,255,.2);
 }
 .lab-badge svg{
   width:13px;
@@ -93,6 +102,7 @@
   font-size:22px;
   color:var(--ink);
   line-height:1.25;
+  transition:color .25s ease;
 }
 .lab-meta p{
   font-size:13.5px;
@@ -102,6 +112,7 @@
 
 .rows>div{
   background:var(--card);
+  border:1px solid var(--line);
   border-radius:24px;
   padding:24px 28px;
   margin-bottom:12px;
@@ -109,12 +120,20 @@
   grid-template-columns:80px 1fr 1.5fr;
   gap:24px;
   align-items:baseline;
+  transition:background-color .25s ease, border-color .25s ease;
 }
 .rows b{font:italic 500 30px var(--serif);color:var(--gold)}
-.rows p{color:#3A4D5E}
+.rows h3{font-size:20px;color:var(--ink)}
+.rows p{color:var(--mut);line-height:1.65}
 
 .gl{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.gl div{background:var(--card);border-radius:18px;padding:18px 20px}
+.gl div{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px 20px;
+  transition:background-color .25s ease, border-color .25s ease;
+}
 .gl b{font:500 21px var(--serif);display:block;margin-bottom:4px;color:var(--ink)}
 .gl p{font-size:13px;color:var(--mut);line-height:1.55}
 
@@ -152,8 +171,8 @@
 
     <div class="lab-grid">
       <div class="lab-item">
-        <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab1.webp') }}', 'Janoshik Test Report #123459 — Retatrutide 10 MG (Batch NXP-RT-001)')">
-          <img src="{{ asset('lab1.webp') }}" alt="Janoshik Test Report Retatrutide 10 MG" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
+        <div class="lab-img-wrap" onclick="openLightboxModal('{{ $lab1Url }}', 'Janoshik Test Report #123459 — Retatrutide 10 MG (Batch NXP-RT-001)')">
+          <img src="{{ $lab1Url }}" alt="Janoshik Test Report Retatrutide 10 MG" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>
@@ -167,8 +186,8 @@
       </div>
 
       <div class="lab-item">
-        <div class="lab-img-wrap" onclick="openLightboxModal('{{ asset('lab2.webp') }}', 'Janoshik Test Report #122238 — GHK-Cu (Copper Peptide)')">
-          <img src="{{ asset('lab2.webp') }}" alt="Janoshik Test Report GHK-Cu Copper Peptide" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
+        <div class="lab-img-wrap" onclick="openLightboxModal('{{ $lab2Url }}', 'Janoshik Test Report #122238 — GHK-Cu (Copper Peptide)')">
+          <img src="{{ $lab2Url }}" alt="Janoshik Test Report GHK-Cu Copper Peptide" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>
@@ -184,7 +203,7 @@
   </div>
 </section>
 
-<section class="sec alt" style="padding-top:0">
+<section class="sec alt">
   <div class="wrap">
     <div class="head">
       <div>
