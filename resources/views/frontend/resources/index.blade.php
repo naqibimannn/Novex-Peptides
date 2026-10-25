@@ -108,7 +108,7 @@
     <div class="g4">
       <article class="res-card" onclick="openResourceModal('retatrutide')">
         <div class="res-thumb">
-          <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=700&q=85" alt="Understanding Retatrutide" loading="lazy">
+          <img src="{{ asset('assets/website/science/s1.webp') }}" alt="Understanding Retatrutide" loading="lazy">
         </div>
         <div class="res-body">
           <h3 style="font-size:20px;line-height:1.25">Understanding Retatrutide</h3>
@@ -119,7 +119,7 @@
 
       <article class="res-card" onclick="openResourceModal('ghk-cu')">
         <div class="res-thumb">
-          <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700&q=85" alt="The Science of GHK-Cu" loading="lazy">
+          <img src="{{ asset('assets/website/science/s2.webp') }}" alt="The Science of GHK-Cu" loading="lazy">
         </div>
         <div class="res-body">
           <h3 style="font-size:20px;line-height:1.25">The Science of GHK-Cu</h3>
@@ -130,7 +130,7 @@
 
       <article class="res-card" onclick="openResourceModal('nad')">
         <div class="res-thumb">
-          <img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=700&q=85" alt="Benefits of NAD+" loading="lazy">
+          <img src="{{ asset('assets/website/science/s3.webp') }}" alt="Benefits of NAD+" loading="lazy">
         </div>
         <div class="res-body">
           <h3 style="font-size:20px;line-height:1.25">Benefits of NAD+</h3>
@@ -141,7 +141,7 @@
 
       <article class="res-card" onclick="openResourceModal('tesamorelin')">
         <div class="res-thumb">
-          <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700&q=85" alt="What is Tesamorelin" loading="lazy">
+          <img src="{{ asset('assets/website/science/s4.webp') }}" alt="What is Tesamorelin" loading="lazy">
         </div>
         <div class="res-body">
           <h3 style="font-size:20px;line-height:1.25">What is Tesamorelin</h3>
@@ -170,7 +170,7 @@ const articlesData = {
   'retatrutide': {
     title: 'Understanding Retatrutide',
     sub: 'An investigational triple-receptor agonist and what early research shows.',
-    img: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=900&q=85',
+    img: "{{ asset('assets/website/science/s1.webp') }}",
     paragraphs: [
       'Retatrutide is an investigational peptide designed to act on three receptors simultaneously: GIP, GLP-1, and glucagon. This triple mechanism is what distinguishes it from earlier single and dual receptor agonists.',
       'It has been studied in clinical trials run by its originator, and it is not an approved medicine. Published trial data are early and should be evaluated with laboratory analytical scrutiny.',
@@ -180,7 +180,7 @@ const articlesData = {
   'ghk-cu': {
     title: 'The Science of GHK-Cu',
     sub: 'A naturally occurring copper peptide and its role in skin biology research.',
-    img: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=900&q=85',
+    img: "{{ asset('assets/website/science/s2.webp') }}",
     paragraphs: [
       'GHK-Cu is a small tripeptide with high affinity for copper(II) ions. It occurs naturally in human plasma and saliva, with biological concentrations documented to decline as age advances.',
       'Laboratory studies have examined its biochemical modulation in collagen synthesis, dermal wound repair, fibroblasts, and tissue remodelling pathways.',
@@ -190,7 +190,7 @@ const articlesData = {
   'nad': {
     title: 'Benefits of NAD+',
     sub: 'Why this coenzyme sits at the centre of cellular energy research.',
-    img: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=900&q=85',
+    img: "{{ asset('assets/website/science/s3.webp') }}",
     paragraphs: [
       'NAD+ (Nicotinamide Adenine Dinucleotide) is an indispensable coenzyme found in all living cells. It mediates critical electron transfer reactions in oxidative phosphorylation and fuels sirtuin enzymatic activity.',
       'Extensive research indicates cellular NAD+ availability declines significantly over time, making it a pivotal subject of investigation in mitochondrial integrity and cellular longevity models.',
@@ -200,7 +200,7 @@ const articlesData = {
   'tesamorelin': {
     title: 'What is Tesamorelin',
     sub: 'A synthetic peptide studied for metabolic optimisation and longevity.',
-    img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=900&q=85',
+    img: "{{ asset('assets/website/science/s4.webp') }}",
     paragraphs: [
       'Tesamorelin is a synthetic analogue of Growth Hormone-Releasing Factor (GRF). It acts selectively on pituitary somatotrophs to stimulate endogenous growth hormone synthesis and pulsatile release.',
       'It has been widely investigated in controlled clinical literature for adipose tissue metabolism, body composition profiling, and hepatic lipid regulation.',
