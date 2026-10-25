@@ -2,11 +2,38 @@
 
 @section('content')
 <style>
-.rows>div{background:var(--card);border-radius:24px;padding:24px 28px;margin-bottom:12px;display:grid;grid-template-columns:80px 1fr 1.5fr;gap:24px;align-items:baseline}
+.rows>div{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:24px 28px;
+  margin-bottom:12px;
+  display:grid;
+  grid-template-columns:80px 1fr 1.5fr;
+  gap:24px;
+  align-items:baseline;
+  transition:background-color .25s ease, border-color .25s ease;
+}
 .rows b{font:italic 500 30px var(--serif);color:var(--gold)}
-.rows p{color:#3A4D5E}
-.pull{font:italic 500 clamp(24px,3.6vw,44px)/1.25 var(--serif);max-width:900px;margin:auto;text-align:center}
-.pull small{display:block;font:600 11px var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-top:20px}
+.rows h3{font-size:20px;color:var(--ink)}
+.rows p{color:var(--mut);line-height:1.65}
+
+.pull{
+  font:italic 500 clamp(24px,3.6vw,44px)/1.25 var(--serif);
+  max-width:900px;
+  margin:auto;
+  text-align:center;
+  color:var(--ink);
+}
+.pull small{
+  display:block;
+  font:600 11px var(--sans);
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-top:20px;
+}
+
 @media(max-width:900px){
   .rows>div{grid-template-columns:50px 1fr}
   .rows p{grid-column:2}
@@ -30,9 +57,9 @@
       <h1 style="font-size:42px;margin-bottom:16px">Why Novex Exists</h1>
       <p style="color:var(--mut);line-height:1.7;margin-bottom:14px">Researchers buying peptides online kept running into the same problem: a certificate that could not be matched to the vial in their hand.</p>
       <p style="color:var(--mut);line-height:1.7">We started Novex as a sourcing desk that treats the batch number as the centre of everything.</p>
-      <p style="margin-top:14px;color:#3A4D5E">If we cannot test it, trace it and explain it in plain language, it does not go into our catalog.</p>
+      <p style="margin-top:14px;color:var(--ink);font-weight:500;line-height:1.7">If we cannot test it, trace it and explain it in plain language, it does not go into our catalog.</p>
     </div>
-    <div style="aspect-ratio:4/3;border-radius:24px;overflow:hidden">
+    <div style="aspect-ratio:4/3;border-radius:24px;overflow:hidden;border:1px solid var(--line)">
       <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800" alt="About Lab">
     </div>
   </div>
@@ -71,7 +98,7 @@
   </div>
 </section>
 
-<section class="sec" style="background:#ffffff">
+<section class="sec" style="background:var(--bg);border-top:1px solid var(--line)">
   <div class="wrap">
     <p class="pull">
       “A good certificate is one you can match to the vial in your hand.”
