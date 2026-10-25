@@ -92,8 +92,15 @@
   <div id="productGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @forelse($rawProducts as $product)
       @php
-        $hasImage = !empty($product->image) && file_exists(public_path($product->image));
-        $imageUrl = $hasImage ? asset($product->image) . '?v=' . time() : null;
+        $imgList = [];
+        if (!empty($product->image)) {
+            $decoded = json_decode($product->image, true);
+            $imgList = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) 
+                ? $decoded 
+                : [$product->image];
+        }
+        $validImages = array_values(array_filter($imgList, fn($p) => file_exists(public_path($p))));
+        $hasImage = count($validImages) > 0;
       @endphp
 
       <div class="product-vault-card bg-slate-50/60 border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between hover:border-brand/40 hover:shadow-xs transition-all duration-200"
@@ -102,30 +109,35 @@
         data-dosage="{{ strtolower($product->dosage_spec ?? '') }}">
         
         <div class="flex flex-col gap-4">
-          <!-- CARD HEADER -->
-          <div class="flex items-start justify-between gap-3">
+          <!-- CARD HEADER (TEKS /products/... TELAH DIBUANG) -->
+          <div class="flex items-center justify-between gap-3">
             <div class="truncate">
               <h3 class="font-bold text-sm sm:text-base text-slate-900 truncate" title="{{ $product->title }}">
                 {{ $product->title }}
               </h3>
-              <p class="text-[11px] text-slate-400 font-mono mt-0.5 truncate">/products/{{ $product->slug }}</p>
             </div>
             <span class="px-2.5 py-1 rounded-lg bg-white/90 border border-slate-200/80 text-slate-600 font-semibold text-[11px] uppercase tracking-wider shrink-0 shadow-2xs">
               {{ $product->badge_category ?? 'Laboratory' }}
             </span>
           </div>
 
-          <!-- IMAGE VAULT BOX -->
+          <!-- IMAGE VAULT BOX / SLIDER INDICATOR -->
           <div class="relative w-full border-2 border-dashed border-slate-200/90 hover:border-brand/60 rounded-2xl p-4 bg-white/80 backdrop-blur-xs flex flex-col items-center justify-center text-center transition-all duration-200 group overflow-hidden h-48">
             @if($hasImage)
               <div class="w-full h-full flex items-center justify-center p-2 relative">
-                <img src="{{ $imageUrl }}" alt="{{ $product->title }}" 
+                <img src="{{ asset($validImages[0]) }}?v={{ time() }}" alt="{{ $product->title }}" 
                   class="max-w-full max-h-full object-contain rounded-xl opacity-90 group-hover:opacity-100 transition-opacity duration-200">
                 
+                @if(count($validImages) > 1)
+                  <span class="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold tracking-tight shadow-sm">
+                    {{ count($validImages) }} Slides
+                  </span>
+                @endif
+
                 <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-2xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center">
-                  <button type="button" onclick='openEditProductModal(@json($product))'
+                  <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
                     class="px-3.5 py-2 rounded-xl bg-white/95 text-slate-900 font-extrabold text-xs shadow-md flex items-center gap-1.5 transform translate-y-1 group-hover:translate-y-0 transition-transform cursor-pointer">
-                    <span>Replace Visual Asset</span>
+                    <span>Manage Images</span>
                   </button>
                 </div>
               </div>
@@ -155,7 +167,7 @@
 
         <!-- CARD FOOTER ACTIONS -->
         <div class="pt-4 mt-4 border-t border-slate-200/60 flex items-center justify-between gap-2">
-          <button type="button" onclick='openEditProductModal(@json($product))'
+          <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
             class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand/40 text-slate-700 hover:text-brand font-bold text-xs shadow-2xs transition-all cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
@@ -187,7 +199,7 @@
 
 <!-- MODAL: ADD PRODUCT FORM -->
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
-  <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-6">
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Add New Formulation</h3>
@@ -224,23 +236,21 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Visual Asset</label>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Visual Assets (Multiple Allowed)</label>
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" name="image" accept="image/*"
-            onchange="previewModalImage(event, 'createPreviewBox', 'createPreviewImg')"
+          <input type="file" name="images[]" multiple accept="image/*"
+            onchange="previewMultiImages(event, 'createImagesPreviewGrid')"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           
-          <div id="createPreviewBox" class="hidden w-28 h-28 mb-2 rounded-xl overflow-hidden border border-slate-200">
-            <img id="createPreviewImg" src="" alt="Preview" class="w-full h-full object-contain">
-          </div>
+          <div id="createImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
 
           <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.75 3.75 0 0118 19.5H6.75z" />
             </svg>
-            <span>Click to upload file</span>
+            <span>Click or drag multiple files to create slider</span>
           </div>
-          <span class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, or WEBP up to 3MB (Optional)</span>
+          <span class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, or WEBP up to 3MB each (Optional)</span>
         </div>
       </div>
 
@@ -254,13 +264,13 @@
   </div>
 </div>
 
-<!-- MODAL: EDIT PRODUCT FORM -->
+<!-- MODAL: EDIT PRODUCT FORM (DENGAN PILIHAN REPLACE ATAU ADD TO SLIDER) -->
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
-  <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-6">
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Edit Formulation</h3>
-        <p class="text-xs text-slate-400 font-medium">Update pricing, dosage units, and molecular asset photography.</p>
+        <p class="text-xs text-slate-400 font-medium">Update pricing, dosage units, and molecular asset slider.</p>
       </div>
       <button type="button" onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
@@ -293,24 +303,43 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
       </div>
 
+      <!-- CURRENT SLIDES LIST -->
+      <div id="existingImagesWrapper" class="space-y-1.5">
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
+        <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80"></div>
+      </div>
+
+      <!-- UPLOAD ACTION MODE (REPLACE VS APPEND/ADD SLIDE) -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Upload Action Mode</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 hover:bg-white has-[:checked]:border-brand has-[:checked]:bg-brand-tint has-[:checked]:text-brand transition-all">
+            <input type="radio" name="image_mode" value="replace" checked class="text-brand focus:ring-brand">
+            <span>Replace Existing</span>
+          </label>
+          <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700 hover:bg-white has-[:checked]:border-brand has-[:checked]:bg-brand-tint has-[:checked]:text-brand transition-all">
+            <input type="radio" name="image_mode" value="append" class="text-brand focus:ring-brand">
+            <span>Add to Slider</span>
+          </label>
+        </div>
+      </div>
+
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Update Visual Asset</label>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Choose New Visual Asset(s)</label>
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" name="image" accept="image/*"
-            onchange="previewModalImage(event, 'editPreviewBox', 'editPreviewImg')"
+          <input type="file" name="images[]" multiple accept="image/*"
+            onchange="previewMultiImages(event, 'editNewImagesPreviewGrid')"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           
-          <div id="editPreviewBox" class="w-28 h-28 mb-2 rounded-xl overflow-hidden border border-slate-200 flex items-center justify-center bg-white">
-            <img id="editPreviewImg" src="" alt="Preview" class="w-full h-full object-contain">
-          </div>
+          <div id="editNewImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
 
           <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
-            <span>Click to upload new visual</span>
+            <span>Click to upload new visual(s)</span>
           </div>
-          <span class="text-[11px] text-slate-400 mt-0.5">Leave blank to keep existing image</span>
+          <span class="text-[11px] text-slate-400 mt-0.5">Leave blank to retain current catalog visual assets</span>
         </div>
       </div>
 
@@ -395,7 +424,7 @@
     }
   }
 
-  function openEditProductModal(product) {
+  function openEditProductModal(product, existingImages = []) {
     const modal = document.getElementById('editProductModal');
     const form = document.getElementById('editProductForm');
     const secretPrefix = "{{ $secretPrefix }}";
@@ -407,16 +436,24 @@
       document.getElementById('edit_dosage_spec').value = product.dosage_spec || '';
       document.getElementById('edit_badge_category').value = product.badge_category || '';
 
-      const previewBox = document.getElementById('editPreviewBox');
-      const previewImg = document.getElementById('editPreviewImg');
-      if (previewBox && previewImg) {
-        if (product.image) {
-          previewImg.src = `{{ asset('') }}${product.image}`;
-          previewBox.classList.remove('hidden');
-        } else {
-          previewBox.classList.add('hidden');
-        }
+      const existingGrid = document.getElementById('editExistingImagesGrid');
+      const wrapper = document.getElementById('existingImagesWrapper');
+      existingGrid.innerHTML = '';
+
+      if (existingImages && existingImages.length > 0) {
+        wrapper.classList.remove('hidden');
+        existingImages.forEach(img => {
+          const div = document.createElement('div');
+          div.className = 'w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center';
+          div.innerHTML = `<img src="{{ asset('') }}${img}" class="w-full h-full object-contain rounded-lg">`;
+          existingGrid.appendChild(div);
+        });
+      } else {
+        wrapper.classList.add('hidden');
       }
+
+      document.getElementById('editNewImagesPreviewGrid').innerHTML = '';
+      document.getElementById('editNewImagesPreviewGrid').classList.add('hidden');
 
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -431,19 +468,29 @@
     }
   }
 
-  function previewModalImage(event, boxId, imgId) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const box = document.getElementById(boxId);
-        const img = document.getElementById(imgId);
-        if (box && img) {
-          img.src = e.target.result;
-          box.classList.remove('hidden');
-        }
-      };
-      reader.readAsDataURL(file);
+  function previewMultiImages(event, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = '';
+    const files = event.target.files;
+
+    if (files && files.length > 0) {
+      container.classList.remove('hidden');
+      container.classList.add('flex');
+
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const div = document.createElement('div');
+          div.className = 'w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs';
+          div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded-lg">`;
+          container.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+    } else {
+      container.classList.add('hidden');
     }
   }
 
