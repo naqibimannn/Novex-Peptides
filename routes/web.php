@@ -19,9 +19,15 @@ Route::prefix('/')->group(function () {
     Route::get('/cart', fn () => view('frontend.cart.index'))->name('cart');
 });
 
-$adminSecret = config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
+$adminSecret = config('admin.secret_key') ?: env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia');
 
 Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($adminSecret) {
+
+    Route::get('/', function () {
+        return auth()->check()
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('admin.login');
+    });
 
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
@@ -31,8 +37,6 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
     });
 
     Route::middleware('auth')->group(function () use ($adminSecret) {
-        Route::get('/', fn () => redirect()->route('admin.dashboard'));
-
         Route::get('/dashboard', fn () => view('backend.admin.dashboard.admin', [
             'section' => 'dashboard',
             'secret' => $adminSecret,
