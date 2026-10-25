@@ -3,11 +3,17 @@
     $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
     $secretPrefix = 'admin/' . $secretKey;
 
-    $categories = collect($rawProducts)->pluck('badge_category')->filter()->unique()->values();
+    $categories = [
+        'Weight Management',
+        'Skincare Peptides',
+        'Skincare Collection',
+        'Performance',
+        'Apparel',
+        'Accessory'
+    ];
 @endphp
 
 <style>
-  /* Slider Engine Scoped to Product Cards */
   .admin-prod-slider {
     position: relative;
     width: 100%;
@@ -130,7 +136,7 @@
 
           @foreach($categories as $cat)
             @php
-              $catCount = collect($rawProducts)->where('badge_category', $cat)->count();
+              $catCount = collect($rawProducts)->where('category', $cat)->count();
             @endphp
             <button type="button" onclick="switchCategoryFilter('{{ strtolower($cat) }}', '{{ $cat }}')"
               class="category-option-btn w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
@@ -149,7 +155,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <input type="text" id="productSearchInput" onkeyup="filterProducts()" placeholder="Search formulation..."
+        <input type="text" id="productSearchInput" onkeyup="filterProducts()" placeholder="Search formulation or keyword..."
           class="w-full bg-slate-50/70 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
       </div>
 
@@ -160,7 +166,7 @@
 
   </div>
 
-  <!-- PRODUCT VAULT CARDS GRID WITH REAL-TIME SLIDER -->
+  <!-- PRODUCT VAULT CARDS GRID -->
   <div id="productGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @forelse($rawProducts as $product)
       @php
@@ -171,32 +177,38 @@
                 ? $decoded 
                 : [$product->image];
         }
-        $validImages = array_values(array_filter($imgList, fn($p) => !empty($p) && file_exists(public_path($p))));
+        $validImages = array_values(array_filter($imgList, fn($p) => !empty($p) && (file_exists(public_path($p)) || file_exists(public_path('uploads/products/' . basename($p))))));
         $hasImage = count($validImages) > 0;
       @endphp
 
       <div class="product-vault-card bg-slate-50/60 border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between hover:border-brand/40 hover:shadow-xs transition-all duration-200"
         data-title="{{ strtolower($product->title) }}"
-        data-category="{{ strtolower($product->badge_category ?? 'general') }}"
-        data-dosage="{{ strtolower($product->dosage_spec ?? '') }}">
+        data-subtitle="{{ strtolower($product->subtitle ?? '') }}"
+        data-category="{{ strtolower($product->category ?? 'weight management') }}"
+        data-dosage="{{ strtolower($product->dosage_spec ?? '') }}"
+        data-keywords="{{ strtolower($product->keywords ?? '') }}">
         
         <div class="flex flex-col gap-4">
-          <!-- CARD HEADER (NO URL /products/... TEXT) -->
-          <div class="flex items-center justify-between gap-3">
+          <!-- CARD HEADER -->
+          <div class="flex items-start justify-between gap-3">
             <div class="truncate">
               <h3 class="font-bold text-sm sm:text-base text-slate-900 truncate" title="{{ $product->title }}">
                 {{ $product->title }}
               </h3>
+              @if(!empty($product->subtitle))
+                <p class="text-xs text-slate-500 font-medium truncate mt-0.5" title="{{ $product->subtitle }}">
+                  {{ $product->subtitle }}
+                </p>
+              @endif
             </div>
             <span class="px-2.5 py-1 rounded-lg bg-white/90 border border-slate-200/80 text-slate-600 font-semibold text-[11px] uppercase tracking-wider shrink-0 shadow-2xs">
               {{ $product->badge_category ?? 'Laboratory' }}
             </span>
           </div>
 
-          <!-- IMAGE VAULT BOX: SLIDER CONTAINER -->
+          <!-- IMAGE VAULT BOX / SLIDER CONTAINER -->
           <div class="relative w-full border border-slate-200/90 hover:border-brand/60 rounded-2xl p-3 bg-white/80 backdrop-blur-xs flex flex-col items-center justify-center text-center transition-all duration-200 group overflow-hidden h-52">
             @if(count($validImages) > 1)
-              <!-- MULTI-IMAGE AUTO SLIDER WITH DOTS -->
               <div class="admin-prod-slider">
                 <div class="admin-prod-slides">
                   @foreach($validImages as $idx => $img)
@@ -216,7 +228,6 @@
                 {{ count($validImages) }} Slides
               </span>
 
-              <!-- HOVER ACTION OVERLAY -->
               <div class="absolute inset-0 bg-slate-900/35 backdrop-blur-2xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-2xl flex items-center justify-center z-15 pointer-events-none">
                 <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
                   class="pointer-events-auto px-3.5 py-2 rounded-xl bg-white/95 text-slate-900 font-extrabold text-xs shadow-md flex items-center gap-1.5 transform translate-y-1 group-hover:translate-y-0 transition-transform cursor-pointer">
@@ -225,7 +236,6 @@
               </div>
 
             @elseif(count($validImages) === 1)
-              <!-- SINGLE IMAGE DISPLAY -->
               <div class="w-full h-full flex items-center justify-center p-1 relative">
                 <img src="{{ asset($validImages[0]) }}?v={{ time() }}" alt="{{ $product->title }}" 
                   class="max-w-full max-h-full object-contain rounded-xl opacity-90 group-hover:opacity-100 transition-opacity duration-200">
@@ -238,7 +248,6 @@
                 </div>
               </div>
             @else
-              <!-- DEFAULT PLACEHOLDER WITH LETTER N -->
               <div class="flex flex-col items-center justify-center gap-2 pointer-events-none select-none">
                 <div class="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-400 font-serif font-bold text-2xl group-hover:scale-105 group-hover:border-brand/30 group-hover:text-brand transition-all">
                   N
@@ -313,6 +322,12 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
       </div>
 
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
+        <input type="text" name="subtitle" placeholder="e.g. Advanced Weight Management"
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
+      </div>
+
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Pricing Range *</label>
@@ -326,9 +341,25 @@
         </div>
       </div>
 
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+          <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
+            @foreach($categories as $cat)
+              <option value="{{ $cat }}">{{ $cat }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <input type="text" name="badge_category" placeholder="e.g. Research grade"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
+        </div>
+      </div>
+
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Category</label>
-        <input type="text" name="badge_category" placeholder="e.g. Research grade"
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Search Keywords</label>
+        <input type="text" name="keywords" placeholder="e.g. retatrutide weight loss 10mg 40mg"
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
       </div>
 
@@ -367,7 +398,7 @@
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Edit Formulation</h3>
-        <p class="text-xs text-slate-400 font-medium">Update pricing, dosage units, and molecular asset slider.</p>
+        <p class="text-xs text-slate-400 font-medium">Update pricing, category filter, and molecular slider images.</p>
       </div>
       <button type="button" onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
@@ -378,6 +409,12 @@
       <div>
         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
         <input type="text" id="edit_title" name="title" required
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
+        <input type="text" id="edit_subtitle" name="subtitle"
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
       </div>
 
@@ -394,9 +431,25 @@
         </div>
       </div>
 
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+          <select id="edit_category" name="category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
+            @foreach($categories as $cat)
+              <option value="{{ $cat }}">{{ $cat }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <input type="text" id="edit_badge_category" name="badge_category"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
+        </div>
+      </div>
+
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Category</label>
-        <input type="text" id="edit_badge_category" name="badge_category"
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Search Keywords</label>
+        <input type="text" id="edit_keywords" name="keywords"
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
       </div>
 
@@ -485,10 +538,12 @@
 
     cards.forEach(card => {
       const title = card.dataset.title || '';
+      const subtitle = card.dataset.subtitle || '';
       const category = card.dataset.category || '';
       const dosage = card.dataset.dosage || '';
+      const keywords = card.dataset.keywords || '';
 
-      const matchesSearch = title.includes(q) || category.includes(q) || dosage.includes(q);
+      const matchesSearch = !q || title.includes(q) || subtitle.includes(q) || category.includes(q) || dosage.includes(q) || keywords.includes(q);
       const matchesCategory = (activeCategoryFilter === 'all') || (category === activeCategoryFilter);
 
       if (matchesSearch && matchesCategory) {
@@ -529,9 +584,12 @@
     if (modal && form) {
       form.action = `{{ url('') }}/${secretPrefix}/products/${product.id}`;
       document.getElementById('edit_title').value = product.title || '';
+      document.getElementById('edit_subtitle').value = product.subtitle || '';
       document.getElementById('edit_price').value = product.price || '';
       document.getElementById('edit_dosage_spec').value = product.dosage_spec || '';
       document.getElementById('edit_badge_category').value = product.badge_category || '';
+      document.getElementById('edit_category').value = product.category || 'Weight Management';
+      document.getElementById('edit_keywords').value = product.keywords || '';
 
       const existingGrid = document.getElementById('editExistingImagesGrid');
       const wrapper = document.getElementById('existingImagesWrapper');
@@ -591,7 +649,6 @@
     }
   }
 
-  /* Slider Engine Controller for Admin Cards */
   function setAdminCardSlide(dot, idx) {
     if (window.event) {
       window.event.preventDefault();
