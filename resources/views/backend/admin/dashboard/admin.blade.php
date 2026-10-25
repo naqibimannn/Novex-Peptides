@@ -85,7 +85,7 @@
 
   @php
     $currentSection = $section ?? 'dashboard';
-    $secretPrefix = $secret ?? env('ADMIN_SECRET_KEY', 'portal-v99x');
+    $secretPrefix = $secret ?? env('ADMIN_SECRET_KEY');
 
     $randomHeroes = [
       [
@@ -113,7 +113,6 @@
     $selectedHero = $randomHeroes[array_rand($randomHeroes)];
   @endphp
 
-  <!-- SECTION: PAGE LOADER -->
   <div id="pageLoaderOverlay"
     class="hidden fixed inset-0 z-[100] bg-white flex-col items-center justify-center transition-all duration-500 ease-out opacity-100">
     <div class="relative z-10 flex flex-col items-center max-w-xs w-full px-6 text-center">
@@ -132,7 +131,6 @@
     </div>
   </div>
 
-  <!-- SECTION: NOTIFICATIONS -->
   @if(session('success'))
     <div id="toastSuccess"
       class="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 bg-slate-900 text-white rounded-xl transition-all duration-300 translate-y-0 opacity-100 text-xs shadow-md">
@@ -152,7 +150,6 @@
     </div>
   @endif
 
-  <!-- SECTION: SIDEBAR -->
   <aside id="mainSidebar"
     class="w-64 flex flex-col justify-between shrink-0 h-screen p-5 border-r border-slate-300 bg-[#EEF2F6] hidden md:flex z-30 transition-all duration-300 ease-in-out">
     <div class="flex flex-col gap-6 overflow-y-auto pr-1">
@@ -201,19 +198,9 @@
       </nav>
     </div>
 
+    <!-- SEKSYEN BAWAH SIDEBAR: LOG KELUAR -->
     <div class="flex flex-col gap-1 pt-4 border-t border-slate-300">
       <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
-  @csrf
-  <button type="submit"
-    class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer text-left">
-    <svg class="w-4 h-4 text-slate-400 group-hover:text-rose-600" fill="none" stroke="currentColor"
-      stroke-width="2" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-    </svg>
-    <span class="tracking-tight">Log out</span>
-  </button>
-</form>
         @csrf
         <button type="submit"
           class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer text-left">
@@ -388,7 +375,7 @@
           </div>
         </div>
 
-        <!-- STATS CARDS (LOGO SVG TELAH DIBUANG) -->
+        <!-- STATS CARDS -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
           <!-- CARD 1: Published Articles -->
