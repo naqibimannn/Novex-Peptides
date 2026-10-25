@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- Skrip Pencegah Kedipan Tema (Anti-FOUC) -->
 <script>
 (function() {
   const savedTheme = localStorage.getItem('nvx_theme') || 'system';
@@ -75,7 +74,6 @@ nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
 nav.dnav a{padding:6px 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
 nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 
-/* Logo Styling */
 .logo{text-align:center;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1;letter-spacing:.06em;color:var(--ink);transition:all .25s ease}
 .logo small{display:block;font:500 9px var(--sans);letter-spacing:.38em;margin-top:5px;color:var(--gold);transition:color .25s ease}
 [data-theme="dark"] .logo{color:#FFFFFF !important;text-shadow:0 0 20px rgba(92,165,218,.3)}
@@ -87,7 +85,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .rt{display:flex;align-items:center;justify-content:flex-end;gap:20px}
 .tools{display:flex;align-items:center;gap:10px}
 
-/* Theme Switcher */
 .theme-menu-wrap{position:relative}
 .theme-btn{
   background:none;
@@ -173,18 +170,15 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cart-trigger-btn svg{width:25px;height:25px;stroke:var(--green);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .cart-badge{position:absolute;top:-2px;right:-5px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;line-height:18px;text-align:center;font-weight:700;padding:0 4px;border:2px solid var(--card-surface)}
 
-/* Hero Section: Memastikan Teks & Butang Kekal Putih Bersih Dalam Semua Mod */
+/* Hero Section: Typography Kekal Putih Bersih */
 .hero{position:relative;height:calc(100vh - var(--off, 110px));height:calc(100svh - var(--off, 110px));min-height:520px;overflow:hidden;color:#fff !important;display:flex;align-items:center}
 .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) brightness(1.05)}
 .hero:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,17,26,.82),rgba(10,17,26,.25) 75%)}
 .hero .wrap{position:relative;z-index:2;width:100%}
 .hero .in{max-width:580px}
-.hero,
-.hero h1,
-.hero p,
-.hero span,
-.hero .in *{color:#FFFFFF !important}
-.hero p{max-width:480px;margin:18px 0 28px;font-size:16px;line-height:1.6;opacity:.95}
+.hero h1{font-size:clamp(34px,5.5vw,72px);color:#FFFFFF !important}
+.hero p{max-width:480px;margin:18px 0 28px;font-size:16px;line-height:1.6;opacity:.95;color:#FFFFFF !important}
+.hero span{color:#FFFFFF !important}
 .hero .btn{background:#FFFFFF !important;color:var(--green) !important}
 .hero .btn:hover{background:#E9F2FA !important;color:#245a82 !important}
 .hero .btn.line{background:transparent !important;color:#FFFFFF !important;border:1px solid rgba(255,255,255,.85) !important;margin-left:10px}
@@ -311,13 +305,13 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .ps-dot.active{background:var(--green);transform:scale(1.25)}
 
-/* Slaid Gambar Bahagian Real Transformations (t1.webp hingga t8.webp) */
+/* Slaid Gambar Bahagian Real Transformations (t1.webp hingga t8.webp) - Tanpa Ruang Putih & Tanpa Butang Kiri Kanan */
 .t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
 .t-slider-wrap{position:relative;width:100%;max-width:540px;margin:0 auto}
 .t-slider{
   position:relative;
   width:100%;
-  aspect-ratio:1.25/1;
+  aspect-ratio:1.38/1;
   border-radius:24px;
   overflow:hidden;
   border:1px solid var(--line);
@@ -336,22 +330,26 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:12px;
+  padding:0;
+  margin:0;
+  text-decoration:none;
   cursor:pointer;
-  background:var(--card-surface);
+  background:transparent;
+  border-radius:inherit;
 }
 .t-slide.active{opacity:1;pointer-events:auto}
 .t-slide img{
+  width:100% !important;
+  height:100% !important;
   max-width:100% !important;
   max-height:100% !important;
-  width:auto !important;
-  height:auto !important;
-  object-fit:contain !important;
+  object-fit:cover !important;
   object-position:center !important;
-  border-radius:16px !important;
+  border-radius:inherit !important;
   display:block;
-  background:transparent;
-  transition:transform .35s ease;
+  padding:0 !important;
+  margin:0 !important;
+  transition:transform .4s ease;
 }
 .t-slide:hover img{transform:scale(1.02)}
 .t-badge-zoom{
@@ -372,37 +370,14 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   pointer-events:none;
 }
 .t-badge-zoom svg{width:13px;height:13px;stroke:#fff}
-.t-nav-btn{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:rgba(20,35,50,.72);
-  backdrop-filter:blur(6px);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:17px;
-  border:1px solid rgba(255,255,255,.3);
-  cursor:pointer;
-  z-index:5;
-  transition:all .2s ease;
-}
-.t-nav-btn:hover{background:var(--green);border-color:var(--green)}
-.t-prev{left:14px}
-.t-next{right:14px}
-.t-dots{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:5}
+.t-dots{display:flex;justify-content:center;gap:8px;margin-top:14px}
 .t-dot{
   width:8px;
   height:8px;
   border-radius:50%;
-  background:rgba(255,255,255,.55);
+  background:var(--line);
   cursor:pointer;
   transition:all .25s ease;
-  box-shadow:0 1px 3px rgba(0,0,0,.3);
 }
 .t-dot.active{
   background:var(--green);
@@ -508,10 +483,6 @@ footer li{list-style:none;margin-bottom:6px}
  .g3,.g4,.steps{grid-template-columns:1fr}
  .g6{grid-template-columns:repeat(2,1fr);gap:12px}
  .camp{min-height:unset}
- .t-slider{aspect-ratio:1/1.15}
- .t-nav-btn{width:34px;height:34px;font-size:14px}
- .t-prev{left:8px}
- .t-next{right:8px}
  .t-metrics{flex-wrap:wrap;gap:16px}
 }
 </style>
@@ -538,7 +509,6 @@ footer li{list-style:none;margin-bottom:6px}
       </nav>
 
       <div class="tools">
-        <!-- Switcher Tema Desktop: Light, Night & System -->
         <div class="theme-menu-wrap" id="themeMenuWrap">
           <button type="button" class="theme-btn" id="themeToggleBtn" onclick="toggleThemeDropdown(event)" aria-label="Toggle Night/Light/System theme">
             <svg id="themeIconActive" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
@@ -704,24 +674,22 @@ footer li{list-style:none;margin-bottom:6px}
             <div class="t-slider" id="transformSlider">
               <div class="t-slides">
                 @for ($i = 1; $i <= 8; $i++)
-                  <div class="t-slide {{ $i === 1 ? 'active' : '' }}" onclick="openLightboxModal('{{ asset('t' . $i . '.webp') }}', 'Client Transformation #{{ $i }} - Real Results')">
+                  <a href="{{ asset('t' . $i . '.webp') }}" onclick="openLightboxModal('{{ asset('t' . $i . '.webp') }}', 'Client Transformation #{{ $i }} - Real Results'); return false;" class="t-slide {{ $i === 1 ? 'active' : '' }}">
                     <img src="{{ asset('t' . $i . '.webp') }}" alt="Client Transformation {{ $i }}" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
                     <div class="t-badge-zoom">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                       <span>Enlarge</span>
                     </div>
-                  </div>
+                  </a>
                 @endfor
               </div>
-              
-              <button type="button" class="t-nav-btn t-prev" onclick="prevTransformSlide(event)" aria-label="Previous Slide">&#8592;</button>
-              <button type="button" class="t-nav-btn t-next" onclick="nextTransformSlide(event)" aria-label="Next Slide">&#8594;</button>
+            </div>
 
-              <div class="t-dots">
-                @for ($i = 0; $i < 8; $i++)
-                  <span class="t-dot {{ $i === 0 ? 'active' : '' }}" onclick="setTransformSlide({{ $i }}, event)"></span>
-                @endfor
-              </div>
+            <!-- Dots Navigasi Di Bawah Kad Gambar -->
+            <div class="t-dots">
+              @for ($i = 0; $i < 8; $i++)
+                <span class="t-dot {{ $i === 0 ? 'active' : '' }}" onclick="setTransformSlide({{ $i }}, event)"></span>
+              @endfor
             </div>
           </div>
 
@@ -963,9 +931,6 @@ footer li{list-style:none;margin-bottom:6px}
 </div></footer>
 
 <script>
-/* =========================================================================
- * NIGHT, LIGHT & SYSTEM THEME CONTROLLER
- * ========================================================================= */
 const themeIcons = {
   light: `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
   dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`,
@@ -1076,35 +1041,12 @@ function setTransformSlide(idx, e){
   });
 }
 
-function prevTransformSlide(e){
-  if(e){
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  setTransformSlide(tSlideIndex - 1);
-  restartTransformTimer();
-}
-
-function nextTransformSlide(e){
-  if(e){
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  setTransformSlide(tSlideIndex + 1);
-  restartTransformTimer();
-}
-
 function startTransformTimer(){
   clearInterval(tSlideTimer);
   if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   tSlideTimer = setInterval(() => {
     setTransformSlide(tSlideIndex + 1);
   }, 4500);
-}
-
-function restartTransformTimer(){
-  clearInterval(tSlideTimer);
-  startTransformTimer();
 }
 
 function openLightboxModal(src, title=''){
