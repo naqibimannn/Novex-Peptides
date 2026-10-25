@@ -3,13 +3,13 @@
 @section('content')
 <style>
 .res-card{
-  background:#fff;
+  background:var(--card-surface);
   border:1px solid var(--line);
   border-radius:24px;
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease, background-color .25s ease;
   cursor:pointer;
 }
 .res-card:hover{
@@ -21,7 +21,7 @@
   width:100%;
   aspect-ratio:16/10;
   overflow:hidden;
-  background:#ffffff;
+  background:var(--card-surface);
 }
 .res-thumb img{
   width:100%;
@@ -38,12 +38,16 @@
   flex-direction:column;
   flex:1;
 }
+.res-body h3{
+  color:var(--ink);
+  transition:color .25s ease;
+}
 
 /* Modal Reader */
 .modal-overlay{
   position:fixed;
   inset:0;
-  background:rgba(10,24,40,.85);
+  background:rgba(10,17,26,.85);
   backdrop-filter:blur(6px);
   z-index:9999;
   display:none;
@@ -53,15 +57,18 @@
 }
 .modal-overlay.open{display:flex}
 .modal-content{
-  background:#fff;
+  background:var(--card-surface);
+  border:1px solid var(--line);
+  color:var(--ink);
   border-radius:24px;
   max-width:680px;
   width:100%;
   padding:32px;
   position:relative;
-  box-shadow:0 25px 60px rgba(0,0,0,.35);
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
   max-height:90vh;
   overflow-y:auto;
+  transition:background-color .25s ease, border-color .25s ease;
 }
 .modal-close{
   position:absolute;
@@ -73,6 +80,7 @@
   color:var(--mut);
   cursor:pointer;
   line-height:1;
+  transition:color .2s ease;
 }
 .modal-close:hover{color:var(--ink)}
 </style>
@@ -207,13 +215,13 @@ function openResourceModal(articleKey){
 
   const bodyEl = document.getElementById('modalBody');
   bodyEl.innerHTML = `
-    <div style="aspect-ratio:16/9;border-radius:16px;overflow:hidden;margin-bottom:18px">
+    <div style="aspect-ratio:16/9;border-radius:16px;overflow:hidden;margin-bottom:18px;border:1px solid var(--line)">
       <img src="${art.img}" alt="${art.title}" style="width:100%;height:100%;object-fit:cover">
     </div>
-    <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--green);background:rgba(47,111,159,.12);padding:4px 10px;border-radius:999px;display:inline-block;margin-bottom:8px">Research Note</span>
+    <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--green);background:var(--bg2);padding:4px 10px;border-radius:999px;display:inline-block;margin-bottom:8px;border:1px solid var(--line)">Research Note</span>
     <h2 style="font-size:clamp(22px,3vw,30px);line-height:1.2;margin-bottom:6px;color:var(--ink)">${art.title}</h2>
     <p style="font-size:14px;color:var(--mut);margin-bottom:18px;font-style:italic">${art.sub}</p>
-    <div style="display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.7;color:#3A4D5E;border-top:1px solid var(--line);padding-top:16px">
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.7;color:var(--ink);border-top:1px solid var(--line);padding-top:16px">
       ${art.paragraphs.map(p => `<p>${p}</p>`).join('')}
     </div>
     <div style="font-size:11px;color:var(--mut);border-top:1px solid var(--line);margin-top:20px;padding-top:12px">
