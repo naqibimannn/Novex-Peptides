@@ -144,7 +144,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 4)"></span>
             </div>
           </div>
-          <span class="chip">Weight Management</span>
         </div>
         <div class="b">
           <h3>Retatrutide</h3>
@@ -167,7 +166,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Weight Management</span>
         </div>
         <div class="b">
           <h3>Retatrutide Plus (RETA PLUS)</h3>
@@ -190,7 +188,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Skincare Peptides</span>
         </div>
         <div class="b">
           <h3>GHK-Cu</h3>
@@ -213,7 +210,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Skincare Peptides</span>
         </div>
         <div class="b">
           <h3>NAD+</h3>
@@ -236,7 +232,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Skincare Peptides</span>
         </div>
         <div class="b">
           <h3>Glutathione</h3>
@@ -259,7 +254,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Skincare Peptides</span>
         </div>
         <div class="b">
           <h3>SNAP-8</h3>
@@ -282,7 +276,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Performance</span>
         </div>
         <div class="b">
           <h3>Tesamorelin</h3>
@@ -305,7 +298,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Performance</span>
         </div>
         <div class="b">
           <h3>AICAR</h3>
@@ -328,7 +320,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Performance</span>
         </div>
         <div class="b">
           <h3>MOTS-C</h3>
@@ -355,7 +346,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 3)"></span>
             </div>
           </div>
-          <span class="chip">Skincare Collection</span>
         </div>
         <div class="b">
           <h3>GlutaGlow Serum</h3>
@@ -382,7 +372,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 3)"></span>
             </div>
           </div>
-          <span class="chip">Skincare Collection</span>
         </div>
         <div class="b">
           <h3>GHK-Cu Serum</h3>
@@ -409,7 +398,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 3)"></span>
             </div>
           </div>
-          <span class="chip">Skincare Collection</span>
         </div>
         <div class="b">
           <h3>Glutathione Cream</h3>
@@ -432,7 +420,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Apparel</span>
         </div>
         <div class="b">
           <h3>Premium Athletic Jersey</h3>
