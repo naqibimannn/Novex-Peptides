@@ -2,21 +2,112 @@
 
 @section('content')
 <style>
-.c-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:start}
-.c-wa-box{background:var(--ink);color:#fff;padding:32px;position:relative;overflow:hidden;border-radius:26px}
-.c-wa-box h3{font-size:28px;color:#fff;margin-bottom:10px}
-.c-wa-box p{font-size:14px;color:#C8DCEF;margin-bottom:22px;max-width:420px}
-.c-specs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
-.c-spec{background:var(--card);border:1px solid var(--line);padding:20px;border-radius:22px}
-.c-spec small{display:block;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-.c-spec h4{font-family:var(--serif);font-size:21px;font-weight:500;margin-bottom:6px;color:var(--ink)}
-.c-spec p{font-size:13px;color:var(--mut);line-height:1.5}
-.c-form-wrap{background:var(--card);border:1px solid var(--line);padding:40px;position:relative;border-radius:26px}
+.c-grid{
+  display:grid;
+  grid-template-columns:1.05fr 1fr;
+  gap:48px;
+  align-items:start;
+}
+.c-wa-box{
+  background:linear-gradient(145deg, #162638, #0E1A27);
+  border:1px solid var(--line);
+  color:#fff;
+  padding:32px;
+  position:relative;
+  overflow:hidden;
+  border-radius:26px;
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+}
+.c-wa-box h3{
+  font-size:28px;
+  color:#fff;
+  margin-bottom:10px;
+}
+.c-wa-box p{
+  font-size:14px;
+  color:#C8DCEF;
+  margin-bottom:22px;
+  max-width:420px;
+}
+.c-specs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-top:20px;
+}
+.c-spec{
+  background:var(--card);
+  border:1px solid var(--line);
+  padding:20px;
+  border-radius:22px;
+  transition:background-color .25s ease, border-color .25s ease;
+}
+.c-spec small{
+  display:block;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:6px;
+}
+.c-spec h4{
+  font-family:var(--serif);
+  font-size:21px;
+  font-weight:500;
+  margin-bottom:6px;
+  color:var(--ink);
+}
+.c-spec p{
+  font-size:13px;
+  color:var(--mut);
+  line-height:1.5;
+}
+.c-form-wrap{
+  background:var(--card-surface);
+  border:1px solid var(--line);
+  padding:40px;
+  position:relative;
+  border-radius:26px;
+  box-shadow:0 10px 30px rgba(14,40,66,.05);
+  transition:background-color .25s ease, border-color .25s ease;
+}
+.c-form-wrap h3{
+  color:var(--ink);
+}
 .form{display:grid;gap:18px}
 .f-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .f-grp{display:flex;flex-direction:column;gap:6px}
-.f-grp label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
-.form input,.form select,.form textarea{width:100%;padding:13px 14px;border:1px solid var(--line);background:#fff;font:inherit;color:var(--ink);border-radius:14px;box-sizing:border-box}
+.f-grp label{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink);
+}
+.form input,
+.form select,
+.form textarea{
+  width:100%;
+  padding:13px 14px;
+  border:1px solid var(--line);
+  background:var(--card);
+  font:inherit;
+  color:var(--ink);
+  border-radius:14px;
+  box-sizing:border-box;
+  outline:none;
+  transition:border-color .2s ease, background-color .25s ease, color .25s ease;
+}
+.form input::placeholder,
+.form textarea::placeholder{
+  color:var(--mut);
+}
+.form input:focus,
+.form select:focus,
+.form textarea:focus{
+  border-color:var(--green);
+}
 
 @media(max-width:900px){
   .c-grid{grid-template-columns:1fr;gap:36px}
@@ -29,7 +120,7 @@
 </style>
 
 <section class="hero">
-  <img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=1800&q=85" alt="Contact Desk" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
+  <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D" alt="Contact Desk" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
   <div class="wrap">
     <div class="in">
       <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px;display:block">Contact Desk</span>
@@ -102,7 +193,7 @@
 <script>
 function handleEnquirySubmit(formEl){
   formEl.innerHTML = `
-    <div style="padding:36px 20px;text-align:center;background:var(--bg2);border-radius:18px">
+    <div style="padding:36px 20px;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:18px">
       <h3 style="margin-bottom:8px;color:var(--green);font-size:22px">Enquiry Received</h3>
       <p style="color:var(--mut);font-size:14px;line-height:1.6">Thank you for contacting Novex Peptides. We will respond within one business day.</p>
     </div>
