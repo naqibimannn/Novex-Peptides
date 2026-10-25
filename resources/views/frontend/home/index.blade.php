@@ -659,12 +659,12 @@ footer li{list-style:none;margin-bottom:6px}
     <section class="sec"><div class="wrap">
       <div class="head"><div><h2>Explore by Series</h2><p>Six specialized series engineered for weight management, cellular rejuvenation, performance, and daily care.</p></div></div>
       <div class="g6">
-        <a class="cat" href="{{ route('products.show', 'retatrutide') }}"><img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=700" alt="Retatrutide"><div><h3>01 | Retatrutide</h3><p>Weight Management</p></div></a>
-        <a class="cat" href="{{ route('products.show', 'reta-plus') }}"><img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700" alt="Retatrutide Plus"><div><h3>02 | Retatrutide Plus</h3><p>Dual Action Formulation</p></div></a>
-        <a class="cat" href="{{ route('products.index') }}"><img src="https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=700" alt="Skincare Peptides"><div><h3>03 | Skincare Peptides</h3><p>Cellular Rejuvenation</p></div></a>
-        <a class="cat" href="{{ route('products.index') }}"><img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=700" alt="Performance"><div><h3>04 | Performance</h3><p>Longevity & Power</p></div></a>
-        <a class="cat" href="{{ route('products.index') }}"><img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700" alt="Novex Skincare"><div><h3>05 | Novex Skincare</h3><p>Serums & Cream</p></div></a>
-        <a class="cat" href="{{ route('products.show', 'jersey-01') }}"><img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=700" alt="Athletic Apparel"><div><h3>06 | Athletic Apparel</h3><p>Performance Jersey</p></div></a>
+        <a class="cat" href="{{ route('products.show', 'retatrutide') }}"><img src="{{ asset('assets/website/category/c1.webp') }}" alt="Retatrutide"><div><h3>01 | Retatrutide</h3><p>Weight Management</p></div></a>
+        <a class="cat" href="{{ route('products.show', 'reta-plus') }}"><img src="{{ asset('assets/website/category/c2.webp') }}" alt="Retatrutide Plus"><div><h3>02 | Retatrutide Plus</h3><p>Dual Action Formulation</p></div></a>
+        <a class="cat" href="{{ route('products.index') }}"><img src="{{ asset('assets/website/category/c3.webp') }}" alt="Skincare Peptides"><div><h3>03 | Skincare Peptides</h3><p>Cellular Rejuvenation</p></div></a>
+        <a class="cat" href="{{ route('products.index') }}"><img src="{{ asset('assets/website/category/c4.webp') }}" alt="Performance"><div><h3>04 | Performance</h3><p>Longevity & Power</p></div></a>
+        <a class="cat" href="{{ route('products.index') }}"><img src="{{ asset('assets/website/category/c5.webp') }}" alt="Novex Skincare"><div><h3>05 | Novex Skincare</h3><p>Serums & Cream</p></div></a>
+        <a class="cat" href="{{ route('products.show', 'jersey-01') }}"><img src="{{ asset('assets/website/category/c6.webp') }}" alt="Athletic Apparel"><div><h3>06 | Athletic Apparel</h3><p>Performance Jersey</p></div></a>
       </div>
     </div></section>
 
@@ -851,25 +851,25 @@ footer li{list-style:none;margin-bottom:6px}
       <div class="g4 art">
         <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
-            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=500&q=85" alt="Understanding Retatrutide">
+            <img src="{{ asset('assets/website/science/s1.webp') }}" alt="Understanding Retatrutide">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">Understanding Retatrutide</h3></div>
         </a>
         <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
-            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=500&q=85" alt="The Science of GHK-Cu">
+            <img src="{{ asset('assets/website/science/s2.webp') }}" alt="The Science of GHK-Cu">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">The Science of GHK-Cu</h3></div>
         </a>
         <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
-            <img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=500&q=85" alt="Benefits of NAD+">
+            <img src="{{ asset('assets/website/science/s3.webp') }}" alt="Benefits of NAD+">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">Benefits of NAD+</h3></div>
         </a>
         <a class="card" href="{{ route('resources') }}" style="background:var(--card-surface);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
           <div class="ph" style="aspect-ratio:16/10;border-radius:0">
-            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=500&q=85" alt="What is Tesamorelin">
+            <img src="{{ asset('assets/website/science/s4.webp') }}" alt="What is Tesamorelin">
           </div>
           <div class="b" style="padding:18px"><h3 style="font-size:20px">What is Tesamorelin</h3></div>
         </a>
