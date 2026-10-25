@@ -3,19 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\Admin\AdminLoginController;
 
-/*
-|--------------------------------------------------------------------------
-| Sekatan Keselamatan Laluan Terbuka
-|--------------------------------------------------------------------------
-*/
 Route::any('/login', fn () => abort(404));
 Route::any('/admin', fn () => abort(404));
 
-/*
-|--------------------------------------------------------------------------
-| Laluan Frontend
-|--------------------------------------------------------------------------
-*/
 Route::prefix('/')->group(function () {
     Route::get('/', fn () => view('frontend.home.index'))->name('home');
     Route::get('/about', fn () => view('frontend.about.index'))->name('about');
@@ -29,16 +19,10 @@ Route::prefix('/')->group(function () {
     Route::get('/cart', fn () => view('frontend.cart.index'))->name('cart');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Laluan Khas Admin
-|--------------------------------------------------------------------------
-*/
-$adminSecret = env('ADMIN_SECRET_KEY');
+$adminSecret = config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
 
 Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($adminSecret) {
 
-    // Akses Pelawat Pentadbir (Guest)
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [AdminLoginController::class, 'login'])

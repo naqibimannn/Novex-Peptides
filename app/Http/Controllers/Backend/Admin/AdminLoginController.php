@@ -29,15 +29,30 @@ class AdminLoginController extends Controller
         ]);
 
         $email = trim($credentials['email']);
-        $clientIp = $request->header('CF-Connecting-IP') ?? $request->ip();
 
-        $user = collect(DB::select(
+        $clientIp = $request->header('CF-Connecting-IP') 
+                 ?? $request->header('X-Forwarded-For') 
+                 ?? $request->ip();
+
+        $users = DB::select(
             "SELECT id, name, email, password FROM users WHERE email = ? LIMIT 1",
             [$email]
-        ))->first();
+        );
 
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            $this->audit('login_failed', ['email' => $email], $clientIp, null);
+        $user = !empty($users) ? $users[0] : null;
+
+        $isPasswordValid = false;
+        try {
+            $isPasswordValid = $user && Hash::check($credentials['password'], $user->password);
+        } catch (\RuntimeException $e) {
+            $isPasswordValid = false;
+        }
+
+        if (!$isPasswordValid) {
+            $this->audit('login_failed', [
+                'attempted_email' => $email,
+                'status'          => 'rejected',
+            ], $clientIp, null);
 
             throw ValidationException::withMessages([
                 'email' => ['Akses ditolak: Kredensial tidak sah untuk terminal ini.'],
@@ -47,26 +62,33 @@ class AdminLoginController extends Controller
         Auth::loginUsingId($user->id, $request->boolean('remember'));
         $request->session()->regenerate();
 
-        $this->audit('login_success', ['email' => $user->email], $clientIp, $user->id);
+        $this->audit('login_success', [
+            'email'  => $user->email,
+            'status' => 'authorized',
+        ], $clientIp, $user->id);
 
-        $secret = env('ADMIN_SECRET_KEY');
-        return redirect()->intended(url("admin/{$secret}"))
+        return redirect()->intended(route('admin.dashboard'))
             ->with('success', 'Terminal security session initialized successfully.');
     }
 
     public function logout(Request $request)
     {
         $userId = Auth::id();
-        $clientIp = $request->header('CF-Connecting-IP') ?? $request->ip();
+        $clientIp = $request->header('CF-Connecting-IP') 
+                 ?? $request->header('X-Forwarded-For') 
+                 ?? $request->ip();
 
-        $this->audit('logout', ['status' => 'session_terminated'], $clientIp, $userId);
+        if ($userId) {
+            $this->audit('logout', [
+                'status' => 'session_terminated',
+            ], $clientIp, $userId);
+        }
 
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        $secret = env('ADMIN_SECRET_KEY');
-        return redirect("admin/{$secret}/login");
+        return redirect()->route('admin.login');
     }
 
     private function audit(string $event, array $payload, string $ip, ?int $userId): void
@@ -78,7 +100,6 @@ class AdminLoginController extends Controller
                 [$userId, $event, json_encode($payload), $ip]
             );
         } catch (\Throwable) {
-        
         }
     }
 }
