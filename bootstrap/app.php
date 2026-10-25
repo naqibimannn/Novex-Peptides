@@ -12,9 +12,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->trustProxies(at: '*');
+
+        $middleware->redirectTo(
+            guests: function (Request $request) {
+                $secret = env('ADMIN_SECRET_KEY');
+                return url("admin/{$secret}/login");
+            },
+            users: function (Request $request) {
+                $secret = env('ADMIN_SECRET_KEY');
+                return url("admin/{$secret}/dashboard");
+            }
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Pengendalian respons JSON API
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
