@@ -209,7 +209,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cart-trigger-btn svg{width:25px;height:25px;stroke:var(--green);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .cart-badge{position:absolute;top:-2px;right:-5px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;line-height:18px;text-align:center;font-weight:700;padding:0 4px;border:2px solid var(--card-surface)}
 
-/* Hero Section: Typography Putih Bersih */
 .hero{position:relative;height:calc(100vh - var(--off, 110px));height:calc(100svh - var(--off, 110px));min-height:520px;overflow:hidden;color:#fff !important;display:flex;align-items:center}
 .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) brightness(1.05)}
 .hero:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,17,26,.82),rgba(10,17,26,.25) 75%)}
@@ -306,42 +305,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .pc .meta span{font-size:11px;background:var(--bg2);color:var(--ink);padding:4px 10px;border-radius:999px;border:1px solid var(--line)}
 .btn-details{background:var(--green);color:#fff;padding:12px;border-radius:999px;font-size:13px;font-weight:600;text-align:center;margin-top:10px;transition:background .2s}
 .btn-details:hover{background:#266391}
-
-.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:var(--card-surface)}
-.prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:var(--card-surface)}
-.prod-slide{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  opacity:0;
-  transition:opacity .65s ease-in-out;
-  padding:0;
-  margin:0;
-  overflow:hidden;
-  border-radius:inherit;
-  background:var(--card-surface);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.prod-slide.active{opacity:1;pointer-events:auto}
-.prod-slide img{
-  max-width:100% !important;
-  max-height:100% !important;
-  width:auto !important;
-  height:auto !important;
-  object-fit:contain !important;
-  object-position:center !important;
-  padding:0 !important;
-  margin:0 !important;
-  border-radius:12px !important;
-  display:block;
-  background:transparent;
-}
-.ps-dots{position:absolute;bottom:6px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:6px}
-.ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.ps-dot.active{background:var(--green);transform:scale(1.25)}
 
 .t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
 .t-slider-wrap{position:relative;width:100%;max-width:540px;margin:0 auto}
@@ -516,7 +479,6 @@ footer li{list-style:none;margin-bottom:6px}
       </nav>
 
       <div class="tools">
-        <!-- Switcher Tema Desktop: Light, Night & System -->
         <div class="theme-menu-wrap" id="themeMenuWrap">
           <button type="button" class="theme-btn" id="themeToggleBtn" onclick="toggleThemeDropdown(event)" aria-label="Toggle Night/Light/System theme">
             <svg id="themeIconActive" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -707,7 +669,6 @@ footer li{list-style:none;margin-bottom:6px}
               </div>
             </div>
 
-            <!-- Dots Navigasi Di Bawah Kad Gambar -->
             <div class="t-dots">
               @for ($i = 0; $i < 8; $i++)
                 <span class="t-dot {{ $i === 0 ? 'active' : '' }}" onclick="setTransformSlide({{ $i }}, event)"></span>
@@ -740,7 +701,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Featured Formulations -->
+    <!-- Seksyen Featured Formulations (Dinamik dari Database & Admin Manage) -->
     <section class="sec alt"><div class="wrap">
       <div class="head">
         <div>
@@ -750,111 +711,36 @@ footer li{list-style:none;margin-bottom:6px}
         <a class="btn line" href="{{ route('products.index') }}">View all</a>
       </div>
       <div class="g4">
-        <div class="card pc">
-          <div class="ph">
-            <div class="prod-slider">
-              <div class="prod-slides">
-                <div class="prod-slide active"><img src="{{ asset('reta1.webp') }}" alt="Retatrutide 1" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('reta2.webp') }}" alt="Retatrutide 2" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('reta3.webp') }}" alt="Retatrutide 3" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('reta4.webp') }}" alt="Retatrutide 4" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('reta5.webp') }}" alt="Retatrutide 5" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'"></div>
-              </div>
-              <div class="ps-dots">
-                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 2)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 3)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 4)"></span>
-              </div>
-            </div>
-          </div>
-          <div class="b">
-            <h3>Retatrutide</h3>
-            <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM280.00 - RM980.00</div>
-            <div class="meta">
-              <span style="font-weight:600">10mg - 100mg</span>
-              <span>Research grade</span>
-            </div>
-            <a class="btn-details" href="{{ route('products.show', 'retatrutide') }}">See Details</a>
-          </div>
-        </div>
+        @php
+            $items = $featuredProducts ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC LIMIT 4");
+        @endphp
 
-        <div class="card pc">
-          <div class="ph">
-            <div class="prod-slider">
-              <div class="prod-slides">
-                <div class="prod-slide active"><img src="{{ asset('retaplus1.webp') }}" alt="Retatrutide Plus 1" onerror="this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('retaplus2.webp') }}" alt="Retatrutide Plus 2" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600'"></div>
+        @forelse($items as $item)
+          <div class="card pc">
+            <div class="ph">
+              @if(!empty($item->image) && file_exists(public_path($item->image)))
+                <img src="{{ asset($item->image) }}" alt="{{ $item->title }}" loading="lazy">
+              @else
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:14px;user-select:none;transition:background-color .25s ease;">
+                  N
+                </div>
+              @endif
+            </div>
+            <div class="b">
+              <h3>{{ $item->title }}</h3>
+              <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
+              <div class="meta">
+                <span style="font-weight:600">{{ $item->dosage_spec ?? 'Laboratory Grade' }}</span>
+                <span>{{ $item->badge_category ?? 'Research grade' }}</span>
               </div>
-              <div class="ps-dots">
-                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
-              </div>
+              <a class="btn-details" href="{{ route('products.show', $item->slug) }}">See Details</a>
             </div>
           </div>
-          <div class="b">
-            <h3>Retatrutide Plus (RETA PLUS)</h3>
-            <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM590.00</div>
-            <div class="meta">
-              <span style="font-weight:600">40mg</span>
-              <span>Research grade</span>
-            </div>
-            <a class="btn-details" href="{{ route('products.show', 'reta-plus') }}">See Details</a>
+        @empty
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--mut); font-size: 14px;">
+            Katalog formulasi sedang dikemaskini.
           </div>
-        </div>
-
-        <div class="card pc">
-          <div class="ph">
-            <div class="prod-slider">
-              <div class="prod-slides">
-                <div class="prod-slide active"><img src="{{ asset('gluta1.webp') }}" alt="GlutaGlow Serum 1" onerror="this.src='https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('gluta2.webp') }}" alt="GlutaGlow Serum 2" onerror="this.src='https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('gluta3.webp') }}" alt="GlutaGlow Serum 3" onerror="this.src='https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('gluta4.webp') }}" alt="GlutaGlow Serum 4" onerror="this.src='https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=600'"></div>
-              </div>
-              <div class="ps-dots">
-                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 2)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 3)"></span>
-              </div>
-            </div>
-          </div>
-          <div class="b">
-            <h3>GlutaGlow Serum</h3>
-            <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM59.90</div>
-            <div class="meta">
-              <span style="font-weight:600">10ml</span>
-              <span>Novex Beauty</span>
-            </div>
-            <a class="btn-details" href="{{ route('products.show', 'glutaglow-serum') }}">See Details</a>
-          </div>
-        </div>
-
-        <div class="card pc">
-          <div class="ph">
-            <div class="prod-slider">
-              <div class="prod-slides">
-                <div class="prod-slide active"><img src="{{ asset('jry1.webp') }}" alt="Jersey 1" onerror="this.src='https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600'"></div>
-                <div class="prod-slide"><img src="{{ asset('jry2.webp') }}" alt="Jersey 2" onerror="this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'"></div>
-              </div>
-              <div class="ps-dots">
-                <span class="ps-dot active" onclick="setCardSlide(this, 0)"></span>
-                <span class="ps-dot" onclick="setCardSlide(this, 1)"></span>
-              </div>
-            </div>
-          </div>
-          <div class="b">
-            <h3>Premium Athletic Jersey</h3>
-            <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">RM40.00</div>
-            <div class="meta">
-              <span style="font-weight:600">Adult Size</span>
-              <span>Merchandise</span>
-            </div>
-            <a class="btn-details" href="{{ route('products.show', 'jersey-01') }}">See Details</a>
-          </div>
-        </div>
+        @endforelse
       </div>
 
       <div class="div2" style="margin-top:48px">
@@ -951,9 +837,9 @@ footer li{list-style:none;margin-bottom:6px}
 
 <script>
 const themeIcons = {
-  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor"></line><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor"></line><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor"></line><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor"></line>`,
+  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
   dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" fill="none"></path>`,
-  system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" fill="none"></rect><line x1="8" y1="21" x2="16" y2="21" stroke="currentColor"></line><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor"></line>`
+  system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" fill="none"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>`
 };
 
 function applyTheme(mode) {
@@ -1041,37 +927,6 @@ function go(n){
   dots.forEach((d, i) => d.classList.toggle('on', i === hi));
 }
 
-function setCardSlide(dot, idx){
-  if(window.event){
-    window.event.preventDefault();
-    window.event.stopPropagation();
-  }
-  const slider = dot.closest('.prod-slider');
-  if(!slider) return;
-  const slides = slider.querySelectorAll('.prod-slide');
-  const dots = slider.querySelectorAll('.ps-dot');
-  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
-  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-}
-
-var prodSlideTimer = null;
-function startProdAutoSlide(){
-  clearInterval(prodSlideTimer);
-  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  prodSlideTimer = setInterval(() => {
-    document.querySelectorAll('.card .prod-slider').forEach(box => {
-      const slides = box.querySelectorAll('.prod-slide');
-      const dots = box.querySelectorAll('.ps-dot');
-      if(slides.length < 2) return;
-      let cur = 0;
-      slides.forEach((s, idx) => { if(s.classList.contains('active')) cur = idx; });
-      let next = (cur + 1) % slides.length;
-      slides.forEach((s, idx) => s.classList.toggle('active', idx === next));
-      dots.forEach((d, idx) => d.classList.toggle('active', idx === next));
-    });
-  }, 4500);
-}
-
 let tSlideIndex = 0;
 const totalTSlides = 8;
 let tSlideTimer = null;
@@ -1130,7 +985,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if(document.querySelector('.hero.sl .slide')){
     ht = setInterval(() => go(hi + 1), 7000);
   }
-  startProdAutoSlide();
   startTransformTimer();
 
   const transformBox = document.getElementById('transformSlider');
