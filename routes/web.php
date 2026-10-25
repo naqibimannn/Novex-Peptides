@@ -1,21 +1,27 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Backend\Admin\AdminLoginController;
+use App\Http\Controllers\Backend\Admin\ProductsController;
 
 Route::any('/login', fn () => abort(404));
 Route::any('/admin', fn () => abort(404));
 
 Route::prefix('/')->group(function () {
-    Route::get('/', fn () => view('frontend.home.index'))->name('home');
+    Route::get('/', function () {
+        $featuredProducts = DB::select("SELECT * FROM products ORDER BY id DESC LIMIT 4");
+        return view('frontend.home.index', compact('featuredProducts'));
+    })->name('home');
+
     Route::get('/about', fn () => view('frontend.about.index'))->name('about');
     Route::get('/products', fn () => view('frontend.products.index'))->name('products.index');
-    Route::get('/products/{id}', fn ($id) => view('frontend.products.show', ['id' => $id, 'productId' => $id]))->name('products.show');
+    Route::get('/products/{id}', fn ($id) => view('frontend.products.show', ['id' => $id, 'productId' =>$id]))->name('products.show');
     Route::get('/science', fn () => view('frontend.science.index'))->name('science');
     Route::get('/resources', fn () => view('frontend.resources.index'))->name('resources');
     Route::get('/contact', fn () => view('frontend.contact.index'))->name('contact');
     Route::get('/accessory', fn () => view('frontend.accessory.index'))->name('accessory');
-    Route::get('/accessory/{id}', fn ($id) => view('frontend.products.show', ['id' => $id, 'productId' => $id]))->name('accessory.show');
+    Route::get('/accessory/{id}', fn ($id) => view('frontend.products.show', ['id' => $id, 'productId' =>$id]))->name('accessory.show');
     Route::get('/cart', fn () => view('frontend.cart.index'))->name('cart');
 });
 
@@ -42,10 +48,10 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
             'secret' => $adminSecret,
         ]))->name('dashboard');
 
-        Route::get('/products', fn () => view('backend.admin.dashboard.admin', [
-            'section' => 'products',
-            'secret' => $adminSecret,
-        ]))->name('products');
+        Route::get('/products', [ProductsController::class, 'index'])->name('products');
+        Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
+        Route::put('/products/{id}', [ProductsController::class, 'update'])->name('products.update');
+        Route::delete('/products/{id}', [ProductsController::class, 'destroy'])->name('products.destroy');
 
         Route::get('/audience', fn () => view('backend.admin.dashboard.admin', [
             'section' => 'audience',
