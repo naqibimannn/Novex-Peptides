@@ -2,36 +2,54 @@
 
 @section('content')
 <style>
-.cart-page-card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:32px;
-  box-shadow:0 10px 30px rgba(14,40,66,.04);
+.cart-page-wrap{
+  max-width:680px;
+  margin:0 auto;
 }
-.cart-item-row{
+.cart-card{
+  background:var(--card-surface);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:32px;
+  box-shadow:0 12px 36px rgba(14,40,66,.05);
+  transition:background-color .25s ease, border-color .25s ease;
+}
+.cart-items{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.cart-item{
   display:grid;
-  grid-template-columns:70px 1fr auto auto;
-  gap:16px;
+  grid-template-columns:64px 1fr auto auto;
+  gap:14px;
   align-items:center;
   border-bottom:1px solid var(--line);
-  padding:16px 0;
+  padding-bottom:14px;
+  transition:border-color .25s ease;
 }
-.cart-item-row:first-child{padding-top:0}
+.cart-item:last-child{
+  border-bottom:none;
+  padding-bottom:0;
+}
 .cart-item-img{
   aspect-ratio:1;
-  border-radius:14px;
+  border-radius:12px;
   overflow:hidden;
-  background:#fff;
+  background:var(--card-surface);
   border:1px solid var(--line);
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:4px;
 }
 .cart-item-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius:8px;
 }
 .qty-box{
   display:inline-flex;
@@ -40,24 +58,27 @@
   border-radius:999px;
   background:var(--card);
   overflow:hidden;
+  transform:scale(0.88);
+  transform-origin:center;
+  transition:background-color .25s ease, border-color .25s ease;
 }
 .qty-box button{
-  width:36px;
-  height:36px;
+  width:38px;
+  height:38px;
   background:none;
   border:none;
   font-size:16px;
   font-weight:600;
-  cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
+  cursor:pointer;
   color:var(--ink);
   transition:background .2s ease;
 }
 .qty-box button:hover{background:var(--bg2)}
 .qty-box input{
-  width:40px;
+  width:42px;
   text-align:center;
   border:0;
   background:none;
@@ -78,147 +99,157 @@
   transition:background .2s ease, color .2s ease;
 }
 .cart-del-btn:hover{
-  background:#ffe4e6;
-  color:#be123c;
+  background:rgba(225,29,72,.12);
+  color:var(--red);
 }
-.cart-summary{
+.cart-footer{
   margin-top:24px;
-  padding-top:20px;
+  padding-top:22px;
   border-top:1px solid var(--line);
 }
-.cart-total-bar{
+.cart-total-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:20px;
-  font-size:17px;
+  margin-bottom:18px;
+  font-size:16px;
+  color:var(--ink);
 }
-.cart-total-val{
-  font-size:28px;
+.cart-total-price{
+  font-size:26px;
   font-weight:700;
   color:var(--green);
   font-family:var(--serif);
 }
-.btn-wa-checkout{
+.btn-wa-proceed{
+  width:100%;
   background:#25D366;
   color:#fff;
-  padding:15px 36px;
-  font-weight:700;
+  padding:15px;
   border-radius:999px;
-  font-size:15px;
-  display:inline-flex;
+  font-weight:700;
+  font-size:14px;
+  display:flex;
   align-items:center;
   justify-content:center;
   gap:10px;
-  width:100%;
-  transition:background .2s ease, transform .1s ease;
   border:none;
   cursor:pointer;
   text-decoration:none;
+  transition:background .2s ease, transform .1s ease;
 }
-.btn-wa-checkout:hover{background:#1ebe5a}
-.btn-wa-checkout:active{transform:scale(0.98)}
+.btn-wa-proceed:hover{background:#1ebe5a}
+.btn-wa-proceed:active{transform:scale(0.98)}
+.btn-wa-proceed svg{width:20px;height:20px;fill:#fff}
 
 @media(max-width:640px){
-  .cart-page-card{padding:20px 16px}
-  .cart-item-row{grid-template-columns:56px 1fr auto auto;gap:10px}
-  .cart-total-bar{font-size:15px}
-  .cart-total-val{font-size:24px}
+  .cart-card{padding:20px 16px}
+  .cart-item{grid-template-columns:54px 1fr auto auto;gap:10px}
+  .cart-total-price{font-size:22px}
 }
 </style>
 
 <section class="sec">
-  <div class="wrap" style="max-width:800px">
-    <!-- Header Sedia Ada -->
-    <div class="head">
+  <div class="wrap cart-page-wrap">
+    <div class="head" style="margin-bottom:28px">
       <div>
-        <h1 style="font-size:38px">Your Research Cart</h1>
+        <h1 style="font-size:clamp(32px,4vw,42px)">Your Research Cart</h1>
         <p>Review your selected compounds and items before proceeding to WhatsApp checkout.</p>
       </div>
     </div>
 
-    <div class="cart-page-card">
-      <p style="color:var(--mut);font-size:15px;margin-bottom:20px;text-align:center">
-        Your items are synced directly with our WhatsApp ordering system.
-      </p>
+    <div class="cart-card">
+      <div class="cart-items" id="cartItemsList"></div>
 
-      <div id="cartItemsList"></div>
-
-      <div class="cart-summary" id="cartSummarySection">
-        <div class="cart-total-bar">
+      <div class="cart-footer" id="cartFooterSection">
+        <div class="cart-total-row">
           <span style="font-weight:600">Total Order:</span>
-          <span class="cart-total-val" id="pageCartTotal">RM 0.00</span>
+          <span class="cart-total-price" id="cartTotal">RM 0.00</span>
         </div>
         
-        <a id="btnWaCheckout" class="btn-wa-checkout" href="https://wa.me/601112085054?text=Hello%20Novex%20Peptides%20I%20want%20to%20order" target="_blank">
-          <svg viewBox="0 0 32 32" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3.6 4.5 1.7 6.4L3 29l6.8-1.8A13 13 0 0 0 16 29c7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.8c-2 0-3.9-.6-5.6-1.6l-.4-.2-4 1 1.1-3.9-.3-.4A10.7 10.7 0 1 1 16 26.8zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1-1.900-.9-3.100-1.700-4.300-3.800-.3-.6.3-.5.9-1.700.1-.2 0-.4 0-.5l-1-2.300c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.200 1.100-1.200 2.800s1.200 3.300 1.400 3.500c.2.2 2.400 3.700 5.900 5.200 2.200.9 3 1 4.100.8.700-.1 1.900-.8 2.200-1.500.3-.7.3-1.400.2-1.500-.1-.2-.3-.2-.6-.4z"/></svg>
-          <span>Proceed via WhatsApp Checkout</span>
-        </a>
+        <button type="button" class="btn-wa-proceed" onclick="proceedToWhatsApp()">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C8.8 3 3 8.8 3 16c0 2.3.6 4.5 1.7 6.4L3 29l6.8-1.8A13 13 0 0 0 16 29c7.2 0 13-5.8 13-13S23.2 3 16 3zm0 23.8c-2 0-3.9-.6-5.6-1.6l-.4-.2-4 1 1.1-3.9-.3-.4A10.7 10.7 0 1 1 16 26.8zm5.9-8c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1-1.900-.9-3.100-1.700-4.300-3.800-.3-.6.3-.5.9-1.700.1-.2 0-.4 0-.5l-1-2.300c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.200 1.100-1.200 2.800s1.200 3.300 1.400 3.500c.2.2 2.400 3.700 5.900 5.200 2.200.9 3 1 4.100.8.700-.1 1.900-.8 2.200-1.500.3-.7.3-1.400.2-1.500-.1-.2-.3-.2-.6-.4z"/></svg>
+          <span>Click To Proceed</span>
+        </button>
       </div>
     </div>
   </div>
 </section>
 
 <script>
-const WA_PHONE = '601112085054';
+const WA = '601112085054';
 
-function loadCartItems(){
-  return JSON.parse(localStorage.getItem('nvx_cart') || '[]');
-}
+let CART = JSON.parse(localStorage.getItem('nvx_cart') || '[]');
 
-function saveCartItems(cart){
-  localStorage.setItem('nvx_cart', JSON.stringify(cart));
+function saveCart(){
+  localStorage.setItem('nvx_cart', JSON.stringify(CART));
   if(typeof updateCartBadge === 'function') updateCartBadge();
 }
 
-function renderCartPage(){
-  const cart = loadCartItems();
-  const listEl = document.getElementById('cartItemsList');
-  const summaryEl = document.getElementById('cartSummarySection');
-  const totalEl = document.getElementById('pageCartTotal');
-  const checkoutBtn = document.getElementById('btnWaCheckout');
+function changeCartQty(index, delta){
+  if(!CART[index]) return;
+  CART[index].qty += delta;
+  if(CART[index].qty <= 0){
+    CART.splice(index, 1);
+  }
+  saveCart();
+  renderCart();
+}
 
+function removeCartItem(index){
+  if(!CART[index]) return;
+  CART.splice(index, 1);
+  saveCart();
+  renderCart();
+  if(typeof showToast === 'function') showToast('Item removed from cart');
+}
+
+function renderCart(){
+  const listEl = document.getElementById('cartItemsList');
+  const footerEl = document.getElementById('cartFooterSection');
+  const totalEl = document.getElementById('cartTotal');
   if(!listEl) return;
 
-  if(cart.length === 0){
+  if(CART.length === 0){
     listEl.innerHTML = `
       <div style="text-align:center;padding:48px 0;color:var(--mut)">
-        <p style="font-size:16px;margin-bottom:12px">Your research cart is currently empty.</p>
-        <a href="{{ route('products.index') }}" class="btn" style="padding:10px 24px;font-size:13px">Browse Products</a>
+        <p style="font-size:16px;margin-bottom:12px">Your cart is empty.</p>
+        <a href="{{ route('products.index') }}" class="btn" style="padding:10px 24px;font-size:13px">Explore Products</a>
       </div>
     `;
-    if(summaryEl) summaryEl.style.display = 'none';
+    if(footerEl) footerEl.style.display = 'none';
+    if(totalEl) totalEl.innerText = 'RM 0.00';
     return;
   }
 
-  if(summaryEl) summaryEl.style.display = 'block';
+  if(footerEl) footerEl.style.display = 'block';
 
-  let grandTotal = 0;
-  listEl.innerHTML = cart.map((item, idx) => {
+  let total = 0;
+  listEl.innerHTML = CART.map((item, idx) => {
     const subtotal = item.val * item.qty;
-    grandTotal += subtotal;
+    total += subtotal;
     const detailLabel = item.size ? item.size : item.s;
-    const imgSrc = item.i ? (item.i.startsWith('http') || item.i.endsWith('.webp') || item.i.endsWith('.png') ? item.i : `https://images.unsplash.com/photo-${item.i}?auto=format&fit=crop&w=150&q=80`) : '{{ asset("reta1.webp") }}';
+    const imgSrc = item.i.startsWith('http') ? item.i : `{{ asset('') }}/${item.i}`.replace(/([^:]\/)\/+/g, "$1");
 
     return `
-      <div class="cart-item-row">
+      <div class="cart-item">
         <div class="cart-item-img">
           <img src="${imgSrc}" alt="${item.n}" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=150'">
         </div>
         <div>
-          <h4 style="font-size:15px;line-height:1.25;margin-bottom:3px;color:var(--ink)">${item.n}</h4>
+          <h4 style="font-size:14px;line-height:1.25;margin-bottom:3px;color:var(--ink)">${item.n}</h4>
           <span style="font-size:12px;color:var(--mut)">${detailLabel} • RM ${item.val.toFixed(2)}</span>
-          <div style="font-size:14px;font-weight:700;color:var(--green);margin-top:4px">RM ${subtotal.toFixed(2)}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-top:4px">RM ${subtotal.toFixed(2)}</div>
         </div>
         <div>
           <div class="qty-box">
-            <button type="button" onclick="updateQty(${idx}, -1)" aria-label="Decrease quantity">-</button>
+            <button type="button" onclick="changeCartQty(${idx}, -1)" aria-label="Decrease quantity">-</button>
             <input type="text" readonly value="${item.qty}">
-            <button type="button" onclick="updateQty(${idx}, 1)" aria-label="Increase quantity">+</button>
+            <button type="button" onclick="changeCartQty(${idx}, 1)" aria-label="Increase quantity">+</button>
           </div>
         </div>
         <div>
-          <button type="button" class="cart-del-btn" onclick="removeItem(${idx})" aria-label="Remove item" title="Remove item">
+          <button type="button" class="cart-del-btn" onclick="removeCartItem(${idx})" aria-label="Delete ${item.n}" title="Delete item">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -231,39 +262,37 @@ function renderCartPage(){
     `;
   }).join('');
 
-  if(totalEl) totalEl.innerText = `RM ${grandTotal.toFixed(2)}`;
+  if(totalEl) totalEl.innerText = `RM ${total.toFixed(2)}`;
+}
 
+function proceedToWhatsApp(){
+  if(CART.length === 0){
+    alert('Please add products to your cart first.');
+    return;
+  }
+
+  let total = 0;
   let itemsText = '';
-  cart.forEach((item, index) => {
+  CART.forEach((item, index) => {
     const subtotal = item.val * item.qty;
+    total += subtotal;
     const detail = item.size ? `(${item.size})` : `(${item.s})`;
     itemsText += `${index + 1}. *${item.n}* ${detail}\n   • Quantity: ${item.qty} unit/vial\n   • Price: RM${item.val.toFixed(2)} x ${item.qty} = RM${subtotal.toFixed(2)}\n\n`;
   });
 
-  const message = `Hello Novex Peptides, I would like to place an order for the following items:\n\n${itemsText}*Total Order: RM ${grandTotal.toFixed(2)}*\n\nPlease confirm stock availability and payment / shipping details. Thank you!`;
-  
-  if(checkoutBtn){
-    checkoutBtn.setAttribute('href', `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(message)}`);
-  }
+  const message = 
+`Hello Novex Peptides, I would like to place an order for the following items:
+
+${itemsText}*Total Order: RM ${total.toFixed(2)}*
+
+Please confirm stock availability and payment / shipping details. Thank you!`;
+
+  const url = `https://wa.me/${WA}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
 }
 
-function updateQty(index, delta){
-  const cart = loadCartItems();
-  if(!cart[index]) return;
-  cart[index].qty += delta;
-  if(cart[index].qty <= 0) cart.splice(index, 1);
-  saveCartItems(cart);
-  renderCartPage();
-}
-
-function removeItem(index){
-  const cart = loadCartItems();
-  if(!cart[index]) return;
-  cart.splice(index, 1);
-  saveCartItems(cart);
-  renderCartPage();
-}
-
-document.addEventListener('DOMContentLoaded', renderCartPage);
+document.addEventListener('DOMContentLoaded', () => {
+  renderCart();
+});
 </script>
 @endsection
