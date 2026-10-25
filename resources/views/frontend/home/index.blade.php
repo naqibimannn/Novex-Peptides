@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- Skrip Pencegah Kedipan Tema (Anti-FOUC) -->
 <script>
 (function() {
   const savedTheme = localStorage.getItem('nvx_theme') || 'system';
@@ -74,6 +75,7 @@ nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
 nav.dnav a{padding:6px 0;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
 nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 
+/* Logo Styling */
 .logo{text-align:center;font-family:var(--serif);font-size:32px;font-weight:600;line-height:1;letter-spacing:.06em;color:var(--ink);transition:all .25s ease}
 .logo small{display:block;font:500 9px var(--sans);letter-spacing:.38em;margin-top:5px;color:var(--gold);transition:color .25s ease}
 [data-theme="dark"] .logo{color:#FFFFFF !important;text-shadow:0 0 20px rgba(92,165,218,.3)}
@@ -85,6 +87,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .rt{display:flex;align-items:center;justify-content:flex-end;gap:20px}
 .tools{display:flex;align-items:center;gap:10px}
 
+/* Theme Switcher */
 .theme-menu-wrap{position:relative}
 .theme-btn{
   background:none;
@@ -170,7 +173,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cart-trigger-btn svg{width:25px;height:25px;stroke:var(--green);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .cart-badge{position:absolute;top:-2px;right:-5px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;line-height:18px;text-align:center;font-weight:700;padding:0 4px;border:2px solid var(--card-surface)}
 
-/* Hero Section: Typography Kekal Putih Bersih */
+/* Hero Section: Typography Putih Bersih */
 .hero{position:relative;height:calc(100vh - var(--off, 110px));height:calc(100svh - var(--off, 110px));min-height:520px;overflow:hidden;color:#fff !important;display:flex;align-items:center}
 .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) brightness(1.05)}
 .hero:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,17,26,.82),rgba(10,17,26,.25) 75%)}
@@ -305,7 +308,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .ps-dot.active{background:var(--green);transform:scale(1.25)}
 
-/* Slaid Gambar Bahagian Real Transformations (t1.webp hingga t8.webp) - Tanpa Ruang Putih & Tanpa Butang Kiri Kanan */
+/* Slaid Gambar Real Transformations (t1.webp - t8.webp): Auto-Busting & Penuh */
 .t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
 .t-slider-wrap{position:relative;width:100%;max-width:540px;margin:0 auto}
 .t-slider{
@@ -483,6 +486,7 @@ footer li{list-style:none;margin-bottom:6px}
  .g3,.g4,.steps{grid-template-columns:1fr}
  .g6{grid-template-columns:repeat(2,1fr);gap:12px}
  .camp{min-height:unset}
+ .t-slider{aspect-ratio:1.38/1}
  .t-metrics{flex-wrap:wrap;gap:16px}
 }
 </style>
@@ -509,6 +513,7 @@ footer li{list-style:none;margin-bottom:6px}
       </nav>
 
       <div class="tools">
+        <!-- Switcher Tema Desktop: Light, Night & System -->
         <div class="theme-menu-wrap" id="themeMenuWrap">
           <button type="button" class="theme-btn" id="themeToggleBtn" onclick="toggleThemeDropdown(event)" aria-label="Toggle Night/Light/System theme">
             <svg id="themeIconActive" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
@@ -666,7 +671,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Real Transformations (Slaid Gambar t1.webp hingga t8.webp) -->
+    <!-- Seksyen Real Transformations (Slaid Gambar Auto-Update t1.webp hingga t8.webp) -->
     <section class="sec" id="testimonies">
       <div class="wrap">
         <div class="t-single-grid">
@@ -674,8 +679,14 @@ footer li{list-style:none;margin-bottom:6px}
             <div class="t-slider" id="transformSlider">
               <div class="t-slides">
                 @for ($i = 1; $i <= 8; $i++)
-                  <a href="{{ asset('t' . $i . '.webp') }}" onclick="openLightboxModal('{{ asset('t' . $i . '.webp') }}', 'Client Transformation #{{ $i }} - Real Results'); return false;" class="t-slide {{ $i === 1 ? 'active' : '' }}">
-                    <img src="{{ asset('t' . $i . '.webp') }}" alt="Client Transformation {{ $i }}" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
+                  @php
+                    $tFilename = 't' . $i . '.webp';
+                    $tDiskPath = public_path($tFilename);
+                    $tVersion = file_exists($tDiskPath) ? filemtime($tDiskPath) : time();
+                    $tFullUrl = asset($tFilename) . '?v=' . $tVersion;
+                  @endphp
+                  <a href="{{ $tFullUrl }}" onclick="openLightboxModal('{{ $tFullUrl }}', 'Client Transformation #{{ $i }} - Real Results'); return false;" class="t-slide {{ $i === 1 ? 'active' : '' }}">
+                    <img src="{{ $tFullUrl }}" alt="Client Transformation {{ $i }}" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
                     <div class="t-badge-zoom">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                       <span>Enlarge</span>
@@ -931,6 +942,9 @@ footer li{list-style:none;margin-bottom:6px}
 </div></footer>
 
 <script>
+/* =========================================================================
+ * NIGHT, LIGHT & SYSTEM THEME CONTROLLER
+ * ========================================================================= */
 const themeIcons = {
   light: `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
   dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`,
@@ -982,6 +996,9 @@ document.addEventListener('click', (e) => {
   }
 });
 
+/* =========================================================================
+ * SLIDER & HERO SCRIPTS
+ * ========================================================================= */
 let hi = 0, ht;
 function go(n){
   const slides = document.querySelectorAll('.hero.sl .slide');
