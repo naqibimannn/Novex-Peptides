@@ -6,6 +6,78 @@
     $categories = collect($rawProducts)->pluck('badge_category')->filter()->unique()->values();
 @endphp
 
+<style>
+  /* Slider Engine Scoped to Product Cards */
+  .admin-prod-slider {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 14px;
+    background: transparent;
+  }
+  .admin-prod-slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+  .admin-prod-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.65s ease-in-out;
+    padding: 0;
+    margin: 0;
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .admin-prod-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .admin-prod-slide img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    border-radius: 12px !important;
+    display: block;
+    background: transparent;
+  }
+  .admin-ps-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    right: 0;
+    z-index: 25;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+  }
+  .admin-ps-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.6);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  .admin-ps-dot.active {
+    background: #0071E3;
+    transform: scale(1.3);
+  }
+</style>
+
 <div class="m-0 flex flex-col gap-8">
 
   <!-- HEADER & PRIMARY ACTION BUTTON -->
@@ -88,7 +160,7 @@
 
   </div>
 
-  <!-- PRODUCT VAULT CARDS GRID -->
+  <!-- PRODUCT VAULT CARDS GRID WITH REAL-TIME SLIDER -->
   <div id="productGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @forelse($rawProducts as $product)
       @php
@@ -99,7 +171,7 @@
                 ? $decoded 
                 : [$product->image];
         }
-        $validImages = array_values(array_filter($imgList, fn($p) => file_exists(public_path($p))));
+        $validImages = array_values(array_filter($imgList, fn($p) => !empty($p) && file_exists(public_path($p))));
         $hasImage = count($validImages) > 0;
       @endphp
 
@@ -109,7 +181,7 @@
         data-dosage="{{ strtolower($product->dosage_spec ?? '') }}">
         
         <div class="flex flex-col gap-4">
-          <!-- CARD HEADER (TEKS /products/... TELAH DIBUANG) -->
+          <!-- CARD HEADER (NO URL /products/... TEXT) -->
           <div class="flex items-center justify-between gap-3">
             <div class="truncate">
               <h3 class="font-bold text-sm sm:text-base text-slate-900 truncate" title="{{ $product->title }}">
@@ -121,27 +193,52 @@
             </span>
           </div>
 
-          <!-- IMAGE VAULT BOX / SLIDER INDICATOR -->
-          <div class="relative w-full border-2 border-dashed border-slate-200/90 hover:border-brand/60 rounded-2xl p-4 bg-white/80 backdrop-blur-xs flex flex-col items-center justify-center text-center transition-all duration-200 group overflow-hidden h-48">
-            @if($hasImage)
-              <div class="w-full h-full flex items-center justify-center p-2 relative">
+          <!-- IMAGE VAULT BOX: SLIDER CONTAINER -->
+          <div class="relative w-full border border-slate-200/90 hover:border-brand/60 rounded-2xl p-3 bg-white/80 backdrop-blur-xs flex flex-col items-center justify-center text-center transition-all duration-200 group overflow-hidden h-52">
+            @if(count($validImages) > 1)
+              <!-- MULTI-IMAGE AUTO SLIDER WITH DOTS -->
+              <div class="admin-prod-slider">
+                <div class="admin-prod-slides">
+                  @foreach($validImages as $idx => $img)
+                    <div class="admin-prod-slide {{ $idx === 0 ? 'active' : '' }}">
+                      <img src="{{ asset($img) }}?v={{ time() }}" alt="{{ $product->title }} - Slide {{ $idx + 1 }}" loading="lazy">
+                    </div>
+                  @endforeach
+                </div>
+                <div class="admin-ps-dots">
+                  @foreach($validImages as $idx => $img)
+                    <span class="admin-ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setAdminCardSlide(this, {{ $idx }})"></span>
+                  @endforeach
+                </div>
+              </div>
+
+              <span class="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold tracking-tight shadow-sm z-20 pointer-events-none">
+                {{ count($validImages) }} Slides
+              </span>
+
+              <!-- HOVER ACTION OVERLAY -->
+              <div class="absolute inset-0 bg-slate-900/35 backdrop-blur-2xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-2xl flex items-center justify-center z-15 pointer-events-none">
+                <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
+                  class="pointer-events-auto px-3.5 py-2 rounded-xl bg-white/95 text-slate-900 font-extrabold text-xs shadow-md flex items-center gap-1.5 transform translate-y-1 group-hover:translate-y-0 transition-transform cursor-pointer">
+                  <span>Manage Slides</span>
+                </button>
+              </div>
+
+            @elseif(count($validImages) === 1)
+              <!-- SINGLE IMAGE DISPLAY -->
+              <div class="w-full h-full flex items-center justify-center p-1 relative">
                 <img src="{{ asset($validImages[0]) }}?v={{ time() }}" alt="{{ $product->title }}" 
                   class="max-w-full max-h-full object-contain rounded-xl opacity-90 group-hover:opacity-100 transition-opacity duration-200">
                 
-                @if(count($validImages) > 1)
-                  <span class="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold tracking-tight shadow-sm">
-                    {{ count($validImages) }} Slides
-                  </span>
-                @endif
-
-                <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-2xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center">
+                <div class="absolute inset-0 bg-slate-900/35 backdrop-blur-2xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl flex items-center justify-center z-15">
                   <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
                     class="px-3.5 py-2 rounded-xl bg-white/95 text-slate-900 font-extrabold text-xs shadow-md flex items-center gap-1.5 transform translate-y-1 group-hover:translate-y-0 transition-transform cursor-pointer">
-                    <span>Manage Images</span>
+                    <span>Replace Visual Asset</span>
                   </button>
                 </div>
               </div>
             @else
+              <!-- DEFAULT PLACEHOLDER WITH LETTER N -->
               <div class="flex flex-col items-center justify-center gap-2 pointer-events-none select-none">
                 <div class="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-400 font-serif font-bold text-2xl group-hover:scale-105 group-hover:border-brand/30 group-hover:text-brand transition-all">
                   N
@@ -264,7 +361,7 @@
   </div>
 </div>
 
-<!-- MODAL: EDIT PRODUCT FORM (DENGAN PILIHAN REPLACE ATAU ADD TO SLIDER) -->
+<!-- MODAL: EDIT PRODUCT FORM -->
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -309,7 +406,7 @@
         <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80"></div>
       </div>
 
-      <!-- UPLOAD ACTION MODE (REPLACE VS APPEND/ADD SLIDE) -->
+      <!-- UPLOAD ACTION MODE -->
       <div class="space-y-1.5">
         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Upload Action Mode</label>
         <div class="grid grid-cols-2 gap-2">
@@ -494,6 +591,45 @@
     }
   }
 
+  /* Slider Engine Controller for Admin Cards */
+  function setAdminCardSlide(dot, idx) {
+    if (window.event) {
+      window.event.preventDefault();
+      window.event.stopPropagation();
+    }
+    const slider = dot.closest('.admin-prod-slider');
+    if (!slider) return;
+
+    const slides = slider.querySelectorAll('.admin-prod-slide');
+    const dots = slider.querySelectorAll('.admin-ps-dot');
+
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+
+  var adminProdSlideTimer = null;
+  function startAdminProdAutoSlide() {
+    clearInterval(adminProdSlideTimer);
+    if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+    adminProdSlideTimer = setInterval(() => {
+      document.querySelectorAll('.admin-prod-slider').forEach(slider => {
+        const slides = slider.querySelectorAll('.admin-prod-slide');
+        const dots = slider.querySelectorAll('.admin-ps-dot');
+        if (slides.length < 2) return;
+
+        let cur = 0;
+        slides.forEach((s, idx) => {
+          if (s.classList.contains('active')) cur = idx;
+        });
+
+        let next = (cur + 1) % slides.length;
+        slides.forEach((s, idx) => s.classList.toggle('active', idx === next));
+        dots.forEach((d, idx) => d.classList.toggle('active', idx === next));
+      });
+    }, 4500);
+  }
+
   document.addEventListener('click', function(e) {
     const wrapper = document.getElementById('customCategoryDropdownWrapper');
     const menu = document.getElementById('categoryDropdownMenu');
@@ -502,5 +638,9 @@
       menu.classList.add('hidden');
       if (arrow) arrow.classList.remove('rotate-180');
     }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    startAdminProdAutoSlide();
   });
 </script>
