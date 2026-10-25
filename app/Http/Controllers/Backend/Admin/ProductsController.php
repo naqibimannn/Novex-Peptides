@@ -25,9 +25,12 @@ class ProductsController extends Controller
     {
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
+            'subtitle'       => 'nullable|string|max:255',
             'price'          => 'required|string|max:100',
             'dosage_spec'    => 'nullable|string|max:100',
             'badge_category' => 'nullable|string|max:100',
+            'category'       => 'nullable|string|max:100',
+            'keywords'       => 'nullable|string',
             'images'         => 'nullable|array',
             'images.*'       => 'image|mimes:jpeg,png,webp,jpg|max:3072',
         ]);
@@ -53,14 +56,17 @@ class ProductsController extends Controller
         $finalImageJson = !empty($imagePaths) ? json_encode($imagePaths) : null;
 
         DB::insert(
-            "INSERT INTO products (title, slug, price, dosage_spec, badge_category, image, created_at, updated_at) 
-             VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())",
+            "INSERT INTO products (title, subtitle, slug, price, dosage_spec, badge_category, category, keywords, image, created_at, updated_at) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
             [
                 $validated['title'],
+                $validated['subtitle'] ?? null,
                 $slug,
                 $validated['price'],
                 $validated['dosage_spec'] ?? null,
                 $validated['badge_category'] ?? null,
+                $validated['category'] ?? 'Weight Management',
+                $validated['keywords'] ?? strtolower($validated['title']),
                 $finalImageJson,
             ]
         );
@@ -72,9 +78,12 @@ class ProductsController extends Controller
     {
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
+            'subtitle'       => 'nullable|string|max:255',
             'price'          => 'required|string|max:100',
             'dosage_spec'    => 'nullable|string|max:100',
             'badge_category' => 'nullable|string|max:100',
+            'category'       => 'nullable|string|max:100',
+            'keywords'       => 'nullable|string',
             'images'         => 'nullable|array',
             'images.*'       => 'image|mimes:jpeg,png,webp,jpg|max:3072',
             'image_mode'     => 'nullable|in:replace,append',
@@ -109,7 +118,7 @@ class ProductsController extends Controller
                 $finalImageList = array_merge($existingImages, $newUploadedPaths);
             } else {
                 foreach ($existingImages as $oldFile) {
-                    if ($oldFile && file_exists(public_path($oldFile))) {
+                    if ($oldFile && file_exists(public_path($oldFile)) && str_starts_with($oldFile, 'uploads/')) {
                         @unlink(public_path($oldFile));
                     }
                 }
@@ -121,13 +130,16 @@ class ProductsController extends Controller
 
         DB::update(
             "UPDATE products 
-             SET title = ?, price = ?, dosage_spec = ?, badge_category = ?, image = ?, updated_at = NOW() 
+             SET title = ?, subtitle = ?, price = ?, dosage_spec = ?, badge_category = ?, category = ?, keywords = ?, image = ?, updated_at = NOW() 
              WHERE id = ?",
             [
                 $validated['title'],
+                $validated['subtitle'] ?? null,
                 $validated['price'],
                 $validated['dosage_spec'] ?? null,
                 $validated['badge_category'] ?? null,
+                $validated['category'] ?? 'Weight Management',
+                $validated['keywords'] ?? strtolower($validated['title']),
                 $imagePathJson,
                 $id,
             ]
@@ -148,7 +160,7 @@ class ProductsController extends Controller
                     : [$product[0]->image];
 
                 foreach ($files as $filePath) {
-                    if ($filePath && file_exists(public_path($filePath))) {
+                    if ($filePath && file_exists(public_path($filePath)) && str_starts_with($filePath, 'uploads/')) {
                         @unlink(public_path($filePath));
                     }
                 }
