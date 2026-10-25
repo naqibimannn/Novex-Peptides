@@ -67,7 +67,7 @@ h1{font-size:clamp(34px,5.5vw,72px)}h2{font-size:clamp(26px,3.8vw,44px)}h3{font-
 .top{background:var(--green);color:#E3EFF8;font-size:12px;text-align:center;padding:7px 12px;letter-spacing:.03em;transition:background-color .25s ease}
 [data-theme="dark"] .top{background:#071018;border-bottom:1px solid var(--line);color:#9FB9D0}
 
-header{position:sticky;top:0;z-index:40;background:var(--header-bg);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03);margin:0;transition:background-color .25s ease, border-color .25s ease}
+header{position:sticky;top:0;z-index:100;background:var(--header-bg);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.03);margin:0;transition:background-color .25s ease, border-color .25s ease}
 .bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:78px;gap:20px;position:relative}
 
 nav.dnav{display:flex;gap:24px;font-size:13px;font-weight:500}
@@ -98,9 +98,16 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   justify-content:center;
   cursor:pointer;
   transition:all .2s ease;
+  flex-shrink:0;
 }
 .theme-btn:hover{background:var(--bg2);border-color:var(--gold)}
-.theme-btn svg{width:18px;height:18px;stroke:currentColor;fill:none}
+.theme-btn svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+  fill:none;
+  display:block;
+}
 .theme-dropdown{
   position:absolute;
   top:calc(100% + 8px);
@@ -114,7 +121,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   display:none;
   flex-direction:column;
   gap:2px;
-  z-index:90;
+  z-index:110;
 }
 .theme-dropdown.open{display:flex}
 .theme-opt{
@@ -135,13 +142,45 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .theme-opt:hover{background:var(--bg2);color:var(--green)}
 .theme-opt.active{background:var(--green);color:#fff}
 
-.burger-btn{display:none;background:none;border:1px solid var(--line);padding:7px;border-radius:10px;cursor:pointer;align-items:center;justify-content:center;color:var(--ink);transition:all .2s ease}
+.burger-btn{
+  display:none;
+  background:none;
+  border:1px solid var(--line);
+  padding:7px;
+  border-radius:10px;
+  cursor:pointer;
+  align-items:center;
+  justify-content:center;
+  color:var(--ink);
+  transition:all .2s ease;
+  position:relative;
+  z-index:105;
+  flex-shrink:0;
+}
 .burger-btn:hover{background:var(--bg2);border-color:var(--gold)}
+.burger-btn svg{pointer-events:none}
 .burger-btn.open .icon-open{display:none}
 .burger-btn.open .icon-close{display:block !important}
 
 .mnav{display:none}
-.mnav.open{display:flex;position:absolute;top:100%;left:0;right:0;background:var(--header-bg);backdrop-filter:blur(12px);flex-direction:column;gap:0;padding:12px 24px 24px;border-bottom:1px solid var(--line);box-shadow:0 16px 32px rgba(14,40,66,.12);z-index:99}
+.mnav.open{
+  display:flex !important;
+  position:absolute;
+  top:100%;
+  left:0;
+  right:0;
+  background:var(--header-bg);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  flex-direction:column;
+  gap:0;
+  padding:12px 24px 24px;
+  border-bottom:1px solid var(--line);
+  box-shadow:0 16px 32px rgba(14,40,66,.12);
+  z-index:104;
+  max-height:calc(100vh - 78px);
+  overflow-y:auto;
+}
 .mnav a{padding:14px 0;border-bottom:1px solid var(--line);font-size:15px;font-weight:500;color:var(--ink);transition:color .2s ease}
 .mnav a:hover, .mnav a.on{color:var(--green);font-weight:600}
 
@@ -422,43 +461,13 @@ footer li{list-style:none;margin-bottom:6px}
 .copy{border-top:1px solid rgba(255,255,255,.2);margin-top:40px;padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;opacity:.85}
 [data-theme="dark"] .copy{border-top:1px solid var(--line);color:var(--mut)}
 
-/* Penyelarasan Global Halaman Anak */
-[data-theme="dark"] .rows>div,
-[data-theme="dark"] .gl div{background:var(--card) !important;border:1px solid var(--line) !important}
-[data-theme="dark"] .rows p,
-[data-theme="dark"] .gl p,
-[data-theme="dark"] .detail-desc p{color:var(--mut) !important}
-[data-theme="dark"] .rows b{color:var(--gold) !important}
-[data-theme="dark"] .gl b{color:var(--ink) !important}
-[data-theme="dark"] .lab-item{background:var(--card-surface) !important;border-color:var(--line) !important}
-[data-theme="dark"] .lab-item h3{color:var(--ink) !important}
-[data-theme="dark"] .lab-item p{color:var(--mut) !important}
-[data-theme="dark"] .sq{background:var(--card) !important;color:var(--ink) !important;border-color:var(--line) !important}
-[data-theme="dark"] .filter button{color:var(--ink) !important;border-color:var(--line) !important}
-[data-theme="dark"] .filter button:hover{background:var(--bg2) !important}
-[data-theme="dark"] .filter button.on{background:var(--green) !important;color:#fff !important;border-color:var(--green) !important}
-[data-theme="dark"] .size-btn{background:var(--card-surface) !important;color:var(--ink) !important;border-color:var(--line) !important}
-[data-theme="dark"] .size-btn.active{background:var(--green) !important;color:#fff !important;border-color:var(--green) !important}
-[data-theme="dark"] .qty-box{background:var(--card) !important;border-color:var(--line) !important}
-[data-theme="dark"] .qty-box button,
-[data-theme="dark"] .qty-box input{color:var(--ink) !important}
-[data-theme="dark"] .cart-drawer{background:var(--card-surface) !important;color:var(--ink) !important;border-left:1px solid var(--line)}
-[data-theme="dark"] .cart-header,
-[data-theme="dark"] .cart-footer,
-[data-theme="dark"] .cart-item{border-color:var(--line) !important}
-[data-theme="dark"] .cart-footer{background:var(--card) !important}
-[data-theme="dark"] .modal-content{background:var(--card-surface) !important;color:var(--ink) !important;border:1px solid var(--line)}
-[data-theme="dark"] .size-table th{background:var(--bg2) !important;color:var(--gold) !important}
-[data-theme="dark"] .size-table td,
-[data-theme="dark"] .size-table th{border-color:var(--line) !important}
-
 @media(max-width:1080px){
  .bar{display:flex;justify-content:space-between;align-items:center;height:68px}
  nav.dnav{display:none !important}
- .burger-btn{display:inline-flex}
+ .burger-btn{display:inline-flex !important}
  .logo{text-align:left;font-size:24px}
  .logo small{letter-spacing:.26em}
- .rt{gap:12px}
+ .rt{gap:10px}
 }
 @media(max-width:960px){
  .t-single-grid{grid-template-columns:1fr;gap:32px}
@@ -510,19 +519,29 @@ footer li{list-style:none;margin-bottom:6px}
         <!-- Switcher Tema Desktop: Light, Night & System -->
         <div class="theme-menu-wrap" id="themeMenuWrap">
           <button type="button" class="theme-btn" id="themeToggleBtn" onclick="toggleThemeDropdown(event)" aria-label="Toggle Night/Light/System theme">
-            <svg id="themeIconActive" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+            <svg id="themeIconActive" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
           </button>
           <div class="theme-dropdown" id="themeDropdown">
             <button type="button" class="theme-opt" data-theme-val="light" onclick="chooseTheme('light')">
-              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
               <span>Light</span>
             </button>
             <button type="button" class="theme-opt" data-theme-val="dark" onclick="chooseTheme('dark')">
-              <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
               <span>Night</span>
             </button>
             <button type="button" class="theme-opt" data-theme-val="system" onclick="chooseTheme('system')">
-              <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
               <span>System</span>
             </button>
           </div>
@@ -533,7 +552,7 @@ footer li{list-style:none;margin-bottom:6px}
           <span class="cart-badge" id="cartCount">0</span>
         </a>
 
-        <button class="burger-btn" id="mobileBurgerBtn" onclick="toggleMobileNav()" aria-label="Toggle Menu">
+        <button type="button" class="burger-btn" id="mobileBurgerBtn" onclick="toggleMobileNav(event)" aria-label="Toggle Menu">
           <svg class="icon-open" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
           <svg class="icon-close" style="display:none" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
@@ -554,15 +573,15 @@ footer li{list-style:none;margin-bottom:6px}
       <span class="m-theme-title">Display Mode</span>
       <div class="m-theme-btns">
         <button type="button" class="m-theme-btn" data-theme-val="light" onclick="chooseTheme('light')">
-          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
           Light
         </button>
         <button type="button" class="m-theme-btn" data-theme-val="dark" onclick="chooseTheme('dark')">
-          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           Night
         </button>
         <button type="button" class="m-theme-btn" data-theme-val="system" onclick="chooseTheme('system')">
-          <svg viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
           System
         </button>
       </div>
@@ -650,7 +669,6 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </div></section>
 
-    <!-- Seksyen Lab Reports (Background baharu) -->
     <section class="sec alt" id="lab-reports">
       <div class="wrap">
         <div class="head" style="justify-content:center;text-align:center;margin-bottom:0">
@@ -665,7 +683,6 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Real Transformations (Slaid Gambar Auto-Update t1.webp hingga t8.webp) -->
     <section class="sec" id="testimonies">
       <div class="wrap">
         <div class="t-single-grid">
@@ -723,7 +740,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Featured Formulations (Tag Ayat / Chip telah dibuang) -->
+    <!-- Seksyen Featured Formulations -->
     <section class="sec alt"><div class="wrap">
       <div class="head">
         <div>
@@ -934,9 +951,9 @@ footer li{list-style:none;margin-bottom:6px}
 
 <script>
 const themeIcons = {
-  light: `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
-  dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`,
-  system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>`
+  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor"></line><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor"></line><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor"></line><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor"></line>`,
+  dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" fill="none"></path>`,
+  system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" fill="none"></rect><line x1="8" y1="21" x2="16" y2="21" stroke="currentColor"></line><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor"></line>`
 };
 
 function applyTheme(mode) {
@@ -960,7 +977,10 @@ function chooseTheme(mode) {
 }
 
 function toggleThemeDropdown(e) {
-  if (e) e.stopPropagation();
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   const dropdown = document.getElementById('themeDropdown');
   if (dropdown) dropdown.classList.toggle('open');
 }
@@ -977,10 +997,37 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
   }
 });
 
+function toggleMobileNav(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const navM = document.getElementById('navM');
+  const btn = document.getElementById('mobileBurgerBtn');
+  if (navM) {
+    const isOpen = navM.classList.toggle('open');
+    if (btn) btn.classList.toggle('open', isOpen);
+  }
+}
+
+function closeMobileNav() {
+  const navM = document.getElementById('navM');
+  const btn = document.getElementById('mobileBurgerBtn');
+  if (navM) navM.classList.remove('open');
+  if (btn) btn.classList.remove('open');
+}
+
 document.addEventListener('click', (e) => {
   const wrap = document.getElementById('themeMenuWrap');
   if (wrap && !wrap.contains(e.target)) {
     closeThemeDropdown();
+  }
+  const navM = document.getElementById('navM');
+  const burgerBtn = document.getElementById('mobileBurgerBtn');
+  if (navM && navM.classList.contains('open')) {
+    if (!navM.contains(e.target) && burgerBtn && !burgerBtn.contains(e.target)) {
+      closeMobileNav();
+    }
   }
 });
 
@@ -1007,7 +1054,7 @@ function setCardSlide(dot, idx){
   dots.forEach((d, i) => d.classList.toggle('active', i === idx));
 }
 
-let prodSlideTimer;
+var prodSlideTimer = null;
 function startProdAutoSlide(){
   clearInterval(prodSlideTimer);
   if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
@@ -1065,13 +1112,6 @@ function openLightboxModal(src, title=''){
 function closeLightboxModal(){
   const m = document.getElementById('tLightbox');
   if(m) m.classList.remove('open');
-}
-
-function toggleMobileNav(){
-  const navM = document.getElementById('navM');
-  const btn = document.getElementById('mobileBurgerBtn');
-  if(navM) navM.classList.toggle('open');
-  if(btn) btn.classList.toggle('open');
 }
 
 const setOff = () => {

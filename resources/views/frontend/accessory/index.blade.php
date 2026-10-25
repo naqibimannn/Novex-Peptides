@@ -134,7 +134,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Accessory</span>
         </div>
         <div class="b">
           <h3>Injection Kit</h3>
@@ -160,7 +159,6 @@
               <span class="ps-dot" onclick="setCardSlideCatalog(this, 1)"></span>
             </div>
           </div>
-          <span class="chip">Accessory</span>
         </div>
         <div class="b">
           <h3>Insulin Needle 1 ml</h3>
@@ -234,27 +232,5 @@ function filterAccessories(){
     noMatch.style.display = visibleCount === 0 ? 'block' : 'none';
   }
 }
-
-let prodSlideTimer;
-function startProdAutoSlide(){
-  clearInterval(prodSlideTimer);
-  if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  prodSlideTimer = setInterval(() => {
-    document.querySelectorAll('#pg .card .prod-slider').forEach(box => {
-      const slides = box.querySelectorAll('.prod-slide');
-      const dots = box.querySelectorAll('.ps-dot');
-      if(slides.length < 2) return;
-      let cur = 0;
-      slides.forEach((s, idx) => { if(s.classList.contains('active')) cur = idx; });
-      let next = (cur + 1) % slides.length;
-      slides.forEach((s, idx) => s.classList.toggle('active', idx === next));
-      dots.forEach((d, idx) => d.classList.toggle('active', idx === next));
-    });
-  }, 4500);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  startProdAutoSlide();
-});
 </script>
 @endsection
