@@ -21,16 +21,85 @@ class ProductsController extends Controller
         ]);
     }
 
+    private function extractNumericPrice($priceString, $explicitVal = null)
+    {
+        if ($explicitVal !== null && $explicitVal !== '' && is_numeric($explicitVal) && (float)$explicitVal > 0) {
+            return (float)$explicitVal;
+        }
+        if (preg_match('/([0-9]+(?:\.[0-9]+)?)/', $priceString, $matches)) {
+            return (float)$matches[1];
+        }
+        return 0.00;
+    }
+
+    private function processVariants(Request $request)
+    {
+        $hasVariants = $request->boolean('has_variants') ? 1 : 0;
+        if (!$hasVariants) {
+            return [0, null, null];
+        }
+
+        $variantTitle = $request->input('variant_title') ?: 'Select Vial Concentration / Dosage:';
+        $labels = $request->input('variant_label', []);
+        $prices = $request->input('variant_price', []);
+        $vals   = $request->input('variant_val', []);
+        $stocks = $request->input('variant_stock', []);
+
+        $variantsArray = [];
+        foreach ($labels as $idx => $label) {
+            $cleanLabel = trim($label ?? '');
+            if ($cleanLabel === '') continue;
+
+            $rawPrice = trim($prices[$idx] ?? '');
+            $numVal = isset($vals[$idx]) && $vals[$idx] !== ''
+                ? (float)$vals[$idx]
+                : $this->extractNumericPrice($rawPrice);
+
+            if ($rawPrice === '' && $numVal > 0) {
+                $rawPrice = 'RM' . number_format($numVal, 2);
+            }
+
+            $vStock = isset($stocks[$idx]) && is_numeric($stocks[$idx]) ? (int)$stocks[$idx] : 0;
+
+            $variantsArray[] = [
+                'label' => $cleanLabel,
+                'val'   => $numVal,
+                'price' => $rawPrice,
+                'stock' => $vStock,
+            ];
+        }
+
+        if (empty($variantsArray)) {
+            return [0, null, null];
+        }
+
+        return [1, $variantTitle, json_encode($variantsArray)];
+    }
+
+    private function processSizes(Request $request)
+    {
+        $rawSizes = trim($request->input('sizes', ''));
+        if ($rawSizes === '') {
+            return null;
+        }
+        $parts = array_values(array_filter(array_map('trim', explode(',', $rawSizes))));
+        return !empty($parts) ? json_encode($parts) : null;
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'subtitle'       => 'nullable|string|max:255',
             'price'          => 'required|string|max:100',
+            'price_val'      => 'nullable|numeric',
             'dosage_spec'    => 'nullable|string|max:100',
+            'stock'          => 'nullable|integer|min:0',
             'badge_category' => 'nullable|string|max:100',
             'category'       => 'nullable|string|max:100',
+            'page_type'      => 'nullable|in:products,accessory',
             'keywords'       => 'nullable|string',
+            'description'    => 'nullable|string',
             'images'         => 'nullable|array',
             'images.*'       => 'image|mimes:jpeg,png,webp,jpg|max:3072',
         ]);
@@ -54,19 +123,43 @@ class ProductsController extends Controller
         }
 
         $finalImageJson = !empty($imagePaths) ? json_encode($imagePaths) : null;
+        [$hasVariants, $variantTitle, $variantsJson] = $this->processVariants($request);
+        $sizesJson = $this->processSizes($request);
+        $priceVal = $this->extractNumericPrice($validated['price'], $validated['price_val'] ?? null);
+
+        // Jika ada varian, hitung total stok otomatis jika stok utama kosong
+        $totalStock = (int)($validated['stock'] ?? 0);
+        if ($hasVariants && $variantsJson) {
+            $decodedVars = json_decode($variantsJson, true);
+            $sumVariantStock = array_sum(array_column($decodedVars, 'stock'));
+            if ($sumVariantStock > 0) {
+                $totalStock = $sumVariantStock;
+            }
+        }
 
         DB::insert(
-            "INSERT INTO products (title, subtitle, slug, price, dosage_spec, badge_category, category, keywords, image, created_at, updated_at) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
+            "INSERT INTO products (
+                title, subtitle, slug, price, price_val, dosage_spec, stock, 
+                badge_category, category, page_type, keywords, description, 
+                has_variants, variant_title, variants, sizes, image, created_at, updated_at
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
             [
                 $validated['title'],
                 $validated['subtitle'] ?? null,
                 $slug,
                 $validated['price'],
+                $priceVal,
                 $validated['dosage_spec'] ?? null,
+                $totalStock,
                 $validated['badge_category'] ?? null,
                 $validated['category'] ?? 'Weight Management',
+                $validated['page_type'] ?? 'products',
                 $validated['keywords'] ?? strtolower($validated['title']),
+                $validated['description'] ?? null,
+                $hasVariants,
+                $variantTitle,
+                $variantsJson,
+                $sizesJson,
                 $finalImageJson,
             ]
         );
@@ -80,10 +173,14 @@ class ProductsController extends Controller
             'title'          => 'required|string|max:255',
             'subtitle'       => 'nullable|string|max:255',
             'price'          => 'required|string|max:100',
+            'price_val'      => 'nullable|numeric',
             'dosage_spec'    => 'nullable|string|max:100',
+            'stock'          => 'nullable|integer|min:0',
             'badge_category' => 'nullable|string|max:100',
             'category'       => 'nullable|string|max:100',
+            'page_type'      => 'nullable|in:products,accessory',
             'keywords'       => 'nullable|string',
+            'description'    => 'nullable|string',
             'images'         => 'nullable|array',
             'images.*'       => 'image|mimes:jpeg,png,webp,jpg|max:3072',
             'image_mode'     => 'nullable|in:replace,append',
@@ -127,19 +224,41 @@ class ProductsController extends Controller
         }
 
         $imagePathJson = !empty($finalImageList) ? json_encode($finalImageList) : null;
+        [$hasVariants, $variantTitle, $variantsJson] = $this->processVariants($request);
+        $sizesJson = $this->processSizes($request);
+        $priceVal = $this->extractNumericPrice($validated['price'], $validated['price_val'] ?? null);
+
+        $totalStock = (int)($validated['stock'] ?? 0);
+        if ($hasVariants && $variantsJson) {
+            $decodedVars = json_decode($variantsJson, true);
+            $sumVariantStock = array_sum(array_column($decodedVars, 'stock'));
+            if ($sumVariantStock > 0) {
+                $totalStock = $sumVariantStock;
+            }
+        }
 
         DB::update(
             "UPDATE products 
-             SET title = ?, subtitle = ?, price = ?, dosage_spec = ?, badge_category = ?, category = ?, keywords = ?, image = ?, updated_at = NOW() 
+             SET title = ?, subtitle = ?, price = ?, price_val = ?, dosage_spec = ?, stock = ?, 
+                 badge_category = ?, category = ?, page_type = ?, keywords = ?, description = ?, 
+                 has_variants = ?, variant_title = ?, variants = ?, sizes = ?, image = ?, updated_at = NOW() 
              WHERE id = ?",
             [
                 $validated['title'],
                 $validated['subtitle'] ?? null,
                 $validated['price'],
+                $priceVal,
                 $validated['dosage_spec'] ?? null,
+                $totalStock,
                 $validated['badge_category'] ?? null,
                 $validated['category'] ?? 'Weight Management',
+                $validated['page_type'] ?? 'products',
                 $validated['keywords'] ?? strtolower($validated['title']),
+                $validated['description'] ?? null,
+                $hasVariants,
+                $variantTitle,
+                $variantsJson,
+                $sizesJson,
                 $imagePathJson,
                 $id,
             ]
