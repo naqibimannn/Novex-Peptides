@@ -21,12 +21,14 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    border-radius: 14px;
     background: transparent;
   }
   .admin-prod-slides {
     position: relative;
     width: 100%;
     height: 100%;
+    border-radius: inherit;
     overflow: hidden;
   }
   .admin-prod-slide {
@@ -35,8 +37,10 @@
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    padding: 1rem;
+    transition: opacity 0.65s ease-in-out;
+    padding: 0.75rem;
+    margin: 0;
+    border-radius: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -53,6 +57,7 @@
     height: auto !important;
     object-fit: contain !important;
     object-position: center !important;
+    border-radius: 12px !important;
     display: block;
     background: transparent;
   }
@@ -91,25 +96,25 @@
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200">
     <div>
       <div class="flex items-center gap-2.5">
-        <h1 class="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Product &amp; Accessory Vault
         </h1>
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200/80 tabular-nums">
-          {{ count($rawProducts) }} {{ count($rawProducts) === 1 ? 'item' : 'items' }}
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-tight bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
+          {{ count($rawProducts) }} Total {{ count($rawProducts) === 1 ? 'Item' : 'Items' }}
         </span>
       </div>
-      <p class="text-xs sm:text-sm text-slate-500 mt-1">
-        Manage laboratory formulations, multi-price variants, stock inventory, and storefront placement.
+      <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+        CentraDesk Catalog &middot; Manage laboratory formulations, multi-price variants, stock inventory, and page placement.
       </p>
     </div>
 
     <div class="flex items-center gap-2.5 shrink-0">
       <button type="button" onclick="openCreateProductModal()"
-        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-brand hover:bg-brand-hover text-white font-medium text-xs shadow-2xs transition-all active:scale-[0.99] cursor-pointer">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        <span>Add Product</span>
+        <span>Add New Product</span>
       </button>
     </div>
   </div>
@@ -119,33 +124,33 @@
     
     <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
       <!-- Segmented Page Filter -->
-      <div class="inline-flex p-1 rounded-lg bg-slate-100 border border-slate-200/60">
-        <button type="button" onclick="switchPageTypeFilter('all', this)" class="page-type-btn px-3 py-1.5 rounded-md text-xs font-medium bg-white text-slate-900 shadow-2xs transition-all cursor-pointer">
+      <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200/80">
+        <button type="button" onclick="switchPageTypeFilter('all', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-2xs transition-all cursor-pointer">
           All Pages
         </button>
-        <button type="button" onclick="switchPageTypeFilter('products', this)" class="page-type-btn px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
-          Products
+        <button type="button" onclick="switchPageTypeFilter('products', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+          Products Page
         </button>
-        <button type="button" onclick="switchPageTypeFilter('accessory', this)" class="page-type-btn px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
-          Accessories
+        <button type="button" onclick="switchPageTypeFilter('accessory', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+          Accessory Page
         </button>
       </div>
 
       <!-- Category Dropdown -->
       <div class="relative w-full sm:w-56" id="customCategoryDropdownWrapper">
         <button type="button" onclick="toggleCategoryDropdown()" id="selectedCategoryBtn"
-          class="w-full bg-white border border-slate-200 hover:border-slate-300 rounded-lg px-3.5 py-2 flex items-center justify-between gap-2 text-xs font-medium text-slate-700 transition-all cursor-pointer">
+          class="w-full bg-slate-100/90 border border-slate-200 hover:border-brand/50 rounded-xl px-4 py-2 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
           <span id="selectedCategoryText" class="truncate">All Categories</span>
-          <svg class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 shrink-0" id="dropdownArrow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="dropdownArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
         </button>
 
-        <div id="categoryDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg z-50 p-1 flex flex-col gap-0.5 max-h-64 overflow-y-auto">
+        <div id="categoryDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 p-1.5 flex flex-col gap-1 max-h-64 overflow-y-auto">
           <button type="button" onclick="switchCategoryFilter('all', 'All Categories')"
-            class="category-option-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 flex items-center justify-between transition-colors cursor-pointer">
+            class="category-option-btn w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
             <span>All Categories</span>
-            <span class="text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 tabular-nums">{{ count($rawProducts) }}</span>
+            <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">{{ count($rawProducts) }}</span>
           </button>
 
           @foreach($categories as $cat)
@@ -153,9 +158,9 @@
               $catCount = collect($rawProducts)->where('category', $cat)->count();
             @endphp
             <button type="button" onclick="switchCategoryFilter('{{ strtolower($cat) }}', '{{ $cat }}')"
-              class="category-option-btn w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 flex items-center justify-between transition-colors cursor-pointer">
+              class="category-option-btn w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
               <span class="truncate pr-2">{{ $cat }}</span>
-              <span class="text-[11px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 tabular-nums">{{ $catCount }}</span>
+              <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">{{ $catCount }}</span>
             </button>
           @endforeach
         </div>
@@ -165,16 +170,16 @@
     <!-- Search & Count -->
     <div class="flex items-center gap-3 w-full lg:w-auto">
       <div class="relative flex-1 sm:w-64">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <input type="text" id="productSearchInput" onkeyup="onSearchInput()" placeholder="Search name, dosage, keyword..."
-          class="w-full bg-slate-50/60 focus:bg-white border border-slate-200 rounded-lg py-2 pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/15 focus:border-brand transition-all">
+        <input type="text" id="productSearchInput" onkeyup="onSearchInput()" placeholder="Search formulation or keyword..."
+          class="w-full bg-slate-50/70 focus:bg-white border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
       </div>
 
-      <span class="text-xs text-slate-400 whitespace-nowrap shrink-0 tabular-nums" id="productCountText">
+      <span class="text-xs font-semibold text-slate-400 whitespace-nowrap shrink-0" id="productCountText">
         Total {{ count($rawProducts) }} {{ count($rawProducts) === 1 ? 'item' : 'items' }}
       </span>
     </div>
@@ -203,7 +208,7 @@
         $stockCount = (int) ($product->stock ?? 0);
       @endphp
 
-      <div class="product-vault-card group bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between"
+      <div class="product-vault-card group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs hover:shadow-md hover:border-brand/40 transition-all duration-200 flex flex-col justify-between"
         data-title="{{ strtolower($product->title) }}"
         data-subtitle="{{ strtolower($product->subtitle ?? '') }}"
         data-category="{{ strtolower($product->category ?? 'weight management') }}"
@@ -213,18 +218,16 @@
         
         <div>
           <!-- MEDIA HEADER -->
-          <div class="relative w-full h-48 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
+          <div class="relative w-full h-52 p-3 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
             
             <!-- Top Floating Meta Badges -->
             <div class="absolute top-3 left-3 right-3 z-20 flex items-center justify-between gap-2 pointer-events-none">
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/90 backdrop-blur-xs border border-slate-200/80 text-slate-700 shadow-2xs">
-                <span class="w-1.5 h-1.5 rounded-full {{ $pagePlacement === 'accessory' ? 'bg-amber-500' : 'bg-sky-500' }}"></span>
-                {{ $pagePlacement === 'accessory' ? 'Accessory' : 'Catalog' }}
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider {{ $pagePlacement === 'accessory' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-sky-100 text-sky-800 border border-sky-200' }} shadow-2xs">
+                {{ $pagePlacement === 'accessory' ? 'Accessory Page' : 'Products Page' }}
               </span>
 
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium backdrop-blur-xs border shadow-2xs tabular-nums {{ $stockCount > 10 ? 'bg-emerald-50/95 border-emerald-200 text-emerald-700' : ($stockCount > 0 ? 'bg-amber-50/95 border-amber-200 text-amber-700' : 'bg-rose-50/95 border-rose-200 text-rose-700') }}">
-                <span class="w-1.5 h-1.5 rounded-full {{ $stockCount > 10 ? 'bg-emerald-500' : ($stockCount > 0 ? 'bg-amber-500' : 'bg-rose-500') }}"></span>
-                {{ $stockCount > 0 ? $stockCount . ' in stock' : 'Out of stock' }}
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs {{ $stockCount > 10 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : ($stockCount > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-rose-50 border-rose-200 text-rose-700') }}">
+                Stock: {{ $stockCount }}
               </span>
             </div>
 
@@ -244,21 +247,21 @@
                 </div>
               </div>
 
-              <span class="absolute bottom-2.5 right-3 px-2 py-0.5 rounded text-[10px] font-medium bg-slate-900/75 text-white z-20 pointer-events-none tabular-nums">
-                {{ count($validImages) }} photos
+              <span class="absolute bottom-2.5 right-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-tight bg-slate-900/80 text-white z-20 pointer-events-none shadow-sm">
+                {{ count($validImages) }} Slides
               </span>
 
             @elseif(count($validImages) === 1)
-              <div class="w-full h-full flex items-center justify-center p-4">
+              <div class="w-full h-full flex items-center justify-center p-2 overflow-hidden rounded-xl">
                 <img src="{{ asset($validImages[0]) }}?v={{ time() }}" alt="{{ $product->title }}" 
-                  class="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105">
+                  class="max-w-full max-h-full object-contain rounded-xl transition-transform duration-300 group-hover:scale-105">
               </div>
             @else
-              <div class="flex flex-col items-center justify-center gap-1.5 text-slate-400 select-none">
-                <svg class="w-8 h-8 stroke-1 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                </svg>
-                <span class="text-[11px] font-medium text-slate-400">No image uploaded</span>
+              <div class="flex flex-col items-center justify-center gap-2 pointer-events-none select-none">
+                <div class="w-14 h-14 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-400 font-serif font-bold text-2xl group-hover:scale-105 group-hover:border-brand/30 group-hover:text-brand transition-all">
+                  N
+                </div>
+                <p class="font-bold text-xs text-slate-700 tracking-tight">No image uploaded</p>
               </div>
             @endif
           </div>
@@ -267,36 +270,36 @@
           <div class="p-4 sm:p-5 flex flex-col gap-4">
             <div>
               <div class="flex items-center justify-between gap-2 mb-1">
-                <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider truncate">
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">
                   {{ $product->category ?? 'Laboratory' }}
                 </span>
                 @if(!empty($product->badge_category))
-                  <span class="text-[10px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                  <span class="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/80">
                     {{ $product->badge_category }}
                   </span>
                 @endif
               </div>
 
-              <h3 class="font-semibold text-base text-slate-900 truncate" title="{{ $product->title }}">
+              <h3 class="font-bold text-sm sm:text-base text-slate-900 truncate" title="{{ $product->title }}">
                 {{ $product->title }}
               </h3>
 
-              <p class="text-xs text-slate-500 truncate mt-0.5 min-h-[1rem]" title="{{ $product->subtitle ?? '' }}">
+              <p class="text-xs text-slate-500 font-medium truncate mt-0.5 min-h-[1rem]" title="{{ $product->subtitle ?? '' }}">
                 {{ !empty($product->subtitle) ? $product->subtitle : 'Standard formulation entry' }}
               </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-2.5 p-3 rounded-lg bg-slate-50 border border-slate-100">
+            <div class="grid grid-cols-2 gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/60">
               <div>
-                <span class="block text-[11px] text-slate-400">Display Price</span>
-                <span class="font-semibold text-xs sm:text-sm text-slate-900 tabular-nums mt-0.5 block truncate" title="{{ $product->price }}">
+                <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Unit Pricing</span>
+                <span class="font-extrabold text-sm text-emerald-600 tracking-tight mt-0.5 block truncate" title="{{ $product->price }}">
                   {{ $product->price }}
                 </span>
               </div>
               <div class="border-l border-slate-200/70 pl-3">
-                <span class="block text-[11px] text-slate-400">Dosage / Spec</span>
-                <span class="font-medium text-xs sm:text-sm text-slate-700 mt-0.5 block truncate" title="{{ $product->dosage_spec ?? 'Standard' }}">
-                  {{ !empty($product->dosage_spec) ? $product->dosage_spec : 'Standard' }}
+                <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Dosage / Spec</span>
+                <span class="font-semibold text-xs text-slate-700 mt-0.5 block truncate" title="{{ $product->dosage_spec ?? 'N/A' }}">
+                  {{ !empty($product->dosage_spec) ? $product->dosage_spec : 'N/A' }}
                 </span>
               </div>
             </div>
@@ -304,24 +307,21 @@
             @if(!empty($product->has_variants) && count($decodedVariants) > 0)
               <div class="flex flex-col gap-1.5">
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] font-medium text-slate-500 truncate">
-                    {{ $product->variant_title ?: 'Configured Variants' }}
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">
+                    {{ $product->variant_title ?: 'Multi-Price Options:' }}
                   </span>
-                  <span class="text-[11px] text-slate-400 tabular-nums">{{ count($decodedVariants) }} options</span>
+                  <span class="text-[10px] font-semibold text-slate-400">{{ count($decodedVariants) }} options</span>
                 </div>
                 <div class="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto pr-1">
                   @foreach($decodedVariants as $v)
-                    <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-slate-200 text-[11px]">
-                      <span class="font-medium text-slate-700">{{ $v['label'] ?? '' }}</span>
-                      <span class="text-slate-300">&middot;</span>
-                      <span class="font-semibold text-emerald-600 tabular-nums">{{ $v['price'] ?? '' }}</span>
-                      <span class="text-[10px] text-slate-400 tabular-nums">({{ $v['stock'] ?? 0 }})</span>
-                    </div>
+                    <span class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
+                      {{ $v['label'] ?? '' }}: <b class="text-emerald-600">{{ $v['price'] ?? '' }}</b> ({{ $v['stock'] ?? 0 }})
+                    </span>
                   @endforeach
                 </div>
               </div>
             @else
-              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-md border border-dashed border-slate-200 text-[11px] text-slate-400">
+              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl border border-dashed border-slate-200 text-[11px] font-medium text-slate-400">
                 <span>Single pricing configuration</span>
                 <span>No variants</span>
               </div>
@@ -331,21 +331,21 @@
         </div>
 
         <!-- CARD FOOTER ACTIONS -->
-        <div class="px-4 sm:px-5 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div class="px-4 sm:px-5 py-3.5 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between gap-2">
           <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
-            class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-medium text-xs shadow-2xs transition-all cursor-pointer">
-            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand/40 text-slate-700 hover:text-brand font-bold text-xs shadow-2xs transition-all cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
             </svg>
-            <span>Edit Product</span>
+            <span>Edit Details &amp; Variants</span>
           </button>
 
           <form action="{{ url($secretPrefix . '/products/' . $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this formulation?');" class="m-0">
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="inline-flex items-center justify-center p-2 rounded-lg bg-white border border-slate-200 hover:border-rose-200 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer" title="Delete Product">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+              class="inline-flex items-center justify-center p-2 rounded-xl bg-white border border-slate-200 hover:border-rose-300 text-slate-400 hover:text-rose-600 hover:bg-rose-50 shadow-2xs transition-all cursor-pointer" title="Delete Product">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
               </svg>
             </button>
@@ -354,17 +354,8 @@
 
       </div>
     @empty
-      <div class="col-span-full py-16 px-6 text-center bg-white rounded-xl border border-slate-200">
-        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-          </svg>
-        </div>
-        <h3 class="text-sm font-semibold text-slate-900">No products in catalog</h3>
-        <p class="text-xs text-slate-500 mt-1 mb-4">Get started by adding your first formulation or accessory item.</p>
-        <button type="button" onclick="openCreateProductModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand text-white text-xs font-medium cursor-pointer">
-          + Add Product
-        </button>
+      <div class="col-span-full p-12 text-center bg-white/80 rounded-2xl border border-slate-200 text-slate-400 text-xs font-medium">
+        No formulations currently available in the database. Click "Add New Product" to initialize.
       </div>
     @endforelse
   </div>
@@ -378,7 +369,7 @@
     </nav>
 
     <!-- Status Ringkas di Bawah Kapsul -->
-    <div class="text-xs font-medium text-slate-400 tabular-nums" id="paginationResultText">
+    <div class="text-xs font-semibold text-slate-400" id="paginationResultText">
       Showing 0 &ndash; 0 of 0 products
     </div>
 
@@ -387,30 +378,30 @@
 </div>
 
 <!-- CREATE PRODUCT MODAL -->
-<div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
-  <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden">
-    <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
-      <div>
-        <h3 class="font-semibold text-base text-slate-900">Add New Product</h3>
-        <p class="text-xs text-slate-500 mt-0.5">Configure product specifications, pricing variants, and storefront placement.</p>
+<div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-100 flex flex-col max-h-[92vh] overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+      <div class="flex flex-col">
+        <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Add New Formulation / Accessory</h3>
+        <p class="text-xs text-slate-400 font-medium">Configure product details, stock count, multi-price options, and target storefront page.</p>
       </div>
-      <button type="button" onclick="closeCreateProductModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      <button type="button" onclick="closeCreateProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
 
     <form action="{{ url($secretPrefix . '/products') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
       @csrf
-      <div class="p-6 overflow-y-auto space-y-5 flex-1">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="p-6 overflow-y-auto space-y-4 flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Target Display Page <span class="text-rose-500">*</span></label>
-            <select name="page_type" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/15 focus:border-brand">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
+            <select name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
               <option value="products">Products Catalog Page (/products)</option>
               <option value="accessory">Accessory Page (/accessory)</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Catalog Category <span class="text-rose-500">*</span></label>
-            <select name="category" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/15 focus:border-brand">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+            <select name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
               @foreach($categories as $cat)
                 <option value="{{ $cat }}">{{ $cat }}</option>
               @endforeach
@@ -418,152 +409,146 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Title <span class="text-rose-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
             <input type="text" name="title" required placeholder="e.g. Retatrutide"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/15 focus:border-brand">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Subtitle / Tagline</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
             <input type="text" name="subtitle" placeholder="e.g. Advanced Weight Management"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/15 focus:border-brand">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
           </div>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Display Price <span class="text-rose-500">*</span></label>
-            <input type="text" name="price" required placeholder="RM280.00"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-brand">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Display Price *</label>
+            <input type="text" name="price" required placeholder="RM280.00 - RM980.00"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
           </div>
           <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Base Price (RM)</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Base Price (RM)</label>
             <input type="number" step="0.01" name="price_val" placeholder="280.00"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-brand">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
           </div>
           <div class="col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Dosage / Spec</label>
-            <input type="text" name="dosage_spec" placeholder="10mg / 100ml"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-brand">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
+            <input type="text" name="dosage_spec" placeholder="10mg - 100mg / 100ml"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
           </div>
           <div class="col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Total Stock <span class="text-rose-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
             <input type="number" name="stock" value="25" min="0" required
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-emerald-700 focus:outline-none focus:border-brand">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700 focus:outline-none focus:border-brand">
           </div>
         </div>
 
-        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
           <div class="flex items-center justify-between gap-4">
             <div>
-              <span class="text-xs font-semibold text-slate-800 block">Multi-Option Pricing &amp; Variants</span>
-              <p class="text-[11px] text-slate-500">Enable if this product has multiple sizes, volumes, or dosages with different prices.</p>
+              <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
+              <p class="text-[11px] text-slate-500">Enable if this product has multiple sizes/volumes with different prices (e.g. 100ml vs 200ml, 10mg vs 30mg).</p>
             </div>
             <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
-              <input type="checkbox" name="has_variants" value="1" id="create_has_variants" onchange="toggleVariantSection('create')" class="w-4 h-4 rounded border-slate-300 text-brand focus:ring-brand">
-              <span class="text-xs font-medium text-slate-700">Enable</span>
+              <input type="checkbox" name="has_variants" value="1" id="create_has_variants" onchange="toggleVariantSection('create')" class="w-4 h-4 rounded text-brand focus:ring-brand">
+              <span class="text-xs font-bold text-slate-700">Enable Options</span>
             </label>
           </div>
 
-          <div id="create_variant_section" class="hidden space-y-3 pt-3 border-t border-slate-200">
+          <div id="create_variant_section" class="hidden space-y-3 pt-2 border-t border-slate-200/80">
             <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1">Option Prompt Title</label>
-              <input type="text" name="variant_title" value="Select Vial Concentration / Volume:" placeholder="e.g. Select Volume or Dosage:"
-                class="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800">
-            </div>
-
-            <div class="grid grid-cols-12 gap-2 px-1 text-[11px] font-medium text-slate-400">
-              <div class="col-span-4">Option Label</div>
-              <div class="col-span-3">Display Price</div>
-              <div class="col-span-2">Numeric (RM)</div>
-              <div class="col-span-2">Stock</div>
-              <div class="col-span-1"></div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
+              <input type="text" name="variant_title" value="Select Vial Concentration / Volume:" placeholder="e.g. Select Volume (100ml / 200ml) or Dosage:"
+                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
             </div>
 
             <div class="space-y-2" id="create_variants_rows"></div>
 
             <button type="button" onclick="addVariantRow('create_variants_rows')"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-medium text-xs shadow-2xs cursor-pointer">
-              <span>+ Add Option Row</span>
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs cursor-pointer">
+              <span>+ Add Price / Volume Option (e.g. 100ml, 200ml)</span>
             </button>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Description</label>
-          <textarea name="description" rows="3" placeholder="Enter scientific overview or product details..."
-            class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-brand"></textarea>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description (Show Page)</label>
+          <textarea name="description" rows="3" placeholder="Enter detailed scientific description or product overview..."
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Badge Label</label>
-            <input type="text" name="badge_category" placeholder="e.g. Research Grade"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+            <input type="text" name="badge_category" placeholder="e.g. Research grade"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Apparel Sizes (Optional)</label>
-            <input type="text" name="sizes" placeholder="S, M, L, XL"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Optional)</label>
+            <input type="text" name="sizes" placeholder="e.g. S, M, L, XL"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Search Keywords</label>
-            <input type="text" name="keywords" placeholder="retatrutide, peptide"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Search Keywords</label>
+            <input type="text" name="keywords" placeholder="e.g. retatrutide 10mg"
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Images (Multiple Allowed)</label>
-          <div class="border border-dashed border-slate-300 hover:border-brand rounded-xl p-5 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group transition-colors">
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Visual Assets (Multiple Allowed)</label>
+          <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
             <input type="file" name="images[]" multiple accept="image/*"
               onchange="previewMultiImages(event, 'createImagesPreviewGrid')"
               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-            <div id="createImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-3 justify-center"></div>
-            <span class="text-xs font-medium text-slate-700 group-hover:text-brand">Click or drag images here to upload</span>
+            <div id="createImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
+            <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
+              <span>Click or drag multiple files to create slider</span>
+            </div>
             <span class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, or WEBP up to 3MB each</span>
           </div>
         </div>
       </div>
 
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
         <button type="button" onclick="closeCreateProductModal()"
-          class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer">Cancel</button>
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
         <button type="submit"
-          class="px-4 py-2 rounded-lg text-xs font-medium text-white bg-brand hover:bg-brand-hover shadow-2xs transition-all cursor-pointer">Publish Product</button>
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-sm cursor-pointer">Publish Formulation</button>
       </div>
     </form>
   </div>
 </div>
 
 <!-- EDIT PRODUCT MODAL -->
-<div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
-  <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden">
-    <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
-      <div>
-        <h3 class="font-semibold text-base text-slate-900">Edit Product</h3>
-        <p class="text-xs text-slate-500 mt-0.5">Update inventory, multi-price variants, images, and page placement.</p>
+<div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-100 flex flex-col max-h-[92vh] overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+      <div class="flex flex-col">
+        <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Edit Formulation / Accessory</h3>
+        <p class="text-xs text-slate-400 font-medium">Update stock, multi-price options, description, and page display target.</p>
       </div>
-      <button type="button" onclick="closeEditProductModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer">✕</button>
+      <button type="button" onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
 
     <form id="editProductForm" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
       @csrf
       @method('PUT')
 
-      <div class="p-6 overflow-y-auto space-y-5 flex-1">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="p-6 overflow-y-auto space-y-4 flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Target Display Page <span class="text-rose-500">*</span></label>
-            <select id="edit_page_type" name="page_type" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-800">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
+            <select id="edit_page_type" name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800">
               <option value="products">Products Catalog Page (/products)</option>
               <option value="accessory">Accessory Page (/accessory)</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Catalog Category <span class="text-rose-500">*</span></label>
-            <select id="edit_category" name="category" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-800">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+            <select id="edit_category" name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
               @foreach($categories as $cat)
                 <option value="{{ $cat }}">{{ $cat }}</option>
               @endforeach
@@ -571,139 +556,133 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Title <span class="text-rose-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
             <input type="text" id="edit_title" name="title" required
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Subtitle / Tagline</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
             <input type="text" id="edit_subtitle" name="subtitle"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
           </div>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Display Price <span class="text-rose-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Display Price *</label>
             <input type="text" id="edit_price" name="price" required
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
           </div>
           <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Base Price (RM)</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Base Price (RM)</label>
             <input type="number" step="0.01" id="edit_price_val" name="price_val"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
           </div>
           <div class="col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Dosage / Spec</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
             <input type="text" id="edit_dosage_spec" name="dosage_spec"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
           </div>
           <div class="col-span-1">
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Total Stock <span class="text-rose-500">*</span></label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
             <input type="number" id="edit_stock" name="stock" min="0" required
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-emerald-700">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700">
           </div>
         </div>
 
-        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
           <div class="flex items-center justify-between gap-4">
             <div>
-              <span class="text-xs font-semibold text-slate-800 block">Multi-Option Pricing &amp; Variants</span>
-              <p class="text-[11px] text-slate-500">Toggle whether customers can choose between different sizes or volumes.</p>
+              <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
+              <p class="text-[11px] text-slate-500">Toggle whether customers can choose between different sizes/volumes with custom prices.</p>
             </div>
             <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
-              <input type="checkbox" name="has_variants" value="1" id="edit_has_variants" onchange="toggleVariantSection('edit')" class="w-4 h-4 rounded border-slate-300 text-brand focus:ring-brand">
-              <span class="text-xs font-medium text-slate-700">Enable</span>
+              <input type="checkbox" name="has_variants" value="1" id="edit_has_variants" onchange="toggleVariantSection('edit')" class="w-4 h-4 rounded text-brand focus:ring-brand">
+              <span class="text-xs font-bold text-slate-700">Enable Options</span>
             </label>
           </div>
 
-          <div id="edit_variant_section" class="hidden space-y-3 pt-3 border-t border-slate-200">
+          <div id="edit_variant_section" class="hidden space-y-3 pt-2 border-t border-slate-200/80">
             <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1">Option Prompt Title</label>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
               <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Volume:"
-                class="w-full bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800">
-            </div>
-
-            <div class="grid grid-cols-12 gap-2 px-1 text-[11px] font-medium text-slate-400">
-              <div class="col-span-4">Option Label</div>
-              <div class="col-span-3">Display Price</div>
-              <div class="col-span-2">Numeric (RM)</div>
-              <div class="col-span-2">Stock</div>
-              <div class="col-span-1"></div>
+                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
             </div>
 
             <div class="space-y-2" id="edit_variants_rows"></div>
 
             <button type="button" onclick="addVariantRow('edit_variants_rows')"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-medium text-xs shadow-2xs cursor-pointer">
-              <span>+ Add Option Row</span>
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs cursor-pointer">
+              <span>+ Add Price / Volume Option</span>
             </button>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Description</label>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description</label>
           <textarea id="edit_description" name="description" rows="3"
-            class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800"></textarea>
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Badge Label</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
             <input type="text" id="edit_badge_category" name="badge_category"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Apparel Sizes (CSV)</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (CSV)</label>
             <input type="text" id="edit_sizes" name="sizes" placeholder="S, M, L, XL"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-700 mb-1.5">Search Keywords</label>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Search Keywords</label>
             <input type="text" id="edit_keywords" name="keywords"
-              class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800">
+              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
           </div>
         </div>
 
         <div id="existingImagesWrapper" class="space-y-1.5">
-          <label class="block text-xs font-medium text-slate-700">Current Catalog Images</label>
-          <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200"></div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
+          <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80"></div>
         </div>
 
         <div class="space-y-1.5">
-          <label class="block text-xs font-medium text-slate-700">Image Upload Mode</label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 bg-white cursor-pointer text-xs font-medium text-slate-700 hover:bg-slate-50">
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Upload Action Mode</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
               <input type="radio" name="image_mode" value="replace" checked class="text-brand focus:ring-brand">
-              <span>Replace Existing Images</span>
+              <span>Replace Existing</span>
             </label>
-            <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 bg-white cursor-pointer text-xs font-medium text-slate-700 hover:bg-slate-50">
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
               <input type="radio" name="image_mode" value="append" class="text-brand focus:ring-brand">
-              <span>Append to Current Slider</span>
+              <span>Add to Slider</span>
             </label>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-700 mb-1.5">Upload New Image(s)</label>
-          <div class="border border-dashed border-slate-300 hover:border-brand rounded-xl p-5 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group transition-colors">
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Choose New Visual Asset(s)</label>
+          <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
             <input type="file" name="images[]" multiple accept="image/*"
               onchange="previewMultiImages(event, 'editNewImagesPreviewGrid')"
               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-            <div id="editNewImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-3 justify-center"></div>
-            <span class="text-xs font-medium text-slate-700 group-hover:text-brand">Click to select new image files</span>
-            <span class="text-[11px] text-slate-400 mt-0.5">Leave empty to keep existing images</span>
+            <div id="editNewImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
+            <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
+              <span>Click to upload new visual(s)</span>
+            </div>
+            <span class="text-[11px] text-slate-400 mt-0.5">Leave blank to retain current catalog visual assets</span>
           </div>
         </div>
       </div>
 
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
+      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
         <button type="button" onclick="closeEditProductModal()"
-          class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer">Cancel</button>
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
         <button type="submit"
-          class="px-4 py-2 rounded-lg text-xs font-medium text-white bg-brand hover:bg-brand-hover shadow-2xs transition-all cursor-pointer">Save Changes</button>
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-sm cursor-pointer">Save Modifications</button>
       </div>
     </form>
   </div>
@@ -819,7 +798,7 @@
     if (resultTextEl) {
       const fromItem = startIndex + 1;
       const toItem = Math.min(endIndex, totalItems);
-      resultTextEl.innerHTML = `Showing <span class="font-semibold text-slate-700">${fromItem}&ndash;${toItem}</span> of <span class="font-semibold text-slate-700">${totalItems}</span> products`;
+      resultTextEl.innerHTML = `Showing <span class="font-bold text-slate-700">${fromItem}&ndash;${toItem}</span> of <span class="font-bold text-slate-700">${totalItems}</span> products`;
     }
 
     renderPaginationButtons(totalPages);
@@ -831,11 +810,10 @@
 
     let html = '';
 
-    // Gaya tombol di dalam kapsul sesuai gambar referensi
-    const baseItem = "min-w-[36px] h-9 px-2.5 rounded-xl text-xs sm:text-sm tabular-nums flex items-center justify-center select-none transition-all duration-150";
-    const activeBtn = `${baseItem} bg-[#18181b] text-white font-semibold shadow-2xs pointer-events-none`;
-    const inactiveBtn = `${baseItem} bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium cursor-pointer`;
-    const ellipsisSpan = `min-w-[32px] h-9 px-1 flex items-center justify-center text-slate-400 font-semibold text-xs sm:text-sm select-none`;
+    const baseItem = "min-w-[36px] h-9 px-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center select-none transition-all duration-150";
+    const activeBtn = `${baseItem} bg-[#18181b] text-white font-bold shadow-2xs pointer-events-none`;
+    const inactiveBtn = `${baseItem} bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-semibold cursor-pointer`;
+    const ellipsisSpan = `min-w-[32px] h-9 px-1 flex items-center justify-center text-slate-400 font-bold text-xs sm:text-sm select-none`;
     const arrowEnabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer`;
     const arrowDisabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 cursor-not-allowed pointer-events-none`;
 
@@ -854,7 +832,7 @@
       </button>`;
     }
 
-    // 2. Deretan Nomor Halaman & Ellipsis (...)
+    // 2. Deretan Nombor Halaman & Ellipsis (...)
     const pages = getPaginationPageList(currentPage, totalPages);
     pages.forEach(p => {
       if (p === '...') {
@@ -889,17 +867,14 @@
       return Array.from({ length: total }, (_, i) => i + 1);
     }
 
-    // Pola seperti di gambar: [1, 2, 3, '...', total-2, total-1, total] ketika di awal
     if (current <= 3) {
       return [1, 2, 3, '...', total - 2, total - 1, total];
     }
 
-    // Ketika berada di halaman akhir
     if (current >= total - 2) {
       return [1, 2, '...', total - 2, total - 1, total];
     }
 
-    // Ketika berada di tengah
     return [1, '...', current - 1, current, current + 1, '...', total];
   }
 
@@ -934,26 +909,26 @@
     if (!container) return;
 
     const row = document.createElement('div');
-    row.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-lg border border-slate-200';
+    row.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-xl border border-slate-200';
     row.innerHTML = `
       <div class="col-span-4">
-        <input type="text" name="variant_label[]" value="${data.label || ''}" placeholder="e.g. 100ml / 10mg"
-          class="w-full bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-brand">
+        <input type="text" name="variant_label[]" value="${data.label || ''}" placeholder="Option (e.g. 100ml / 10mg)"
+          class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800">
       </div>
       <div class="col-span-3">
-        <input type="text" name="variant_price[]" value="${data.price || ''}" placeholder="RM150.00"
-          class="w-full bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-brand">
+        <input type="text" name="variant_price[]" value="${data.price || ''}" placeholder="Display (RM150.00)"
+          class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800">
       </div>
       <div class="col-span-2">
-        <input type="number" step="0.01" name="variant_val[]" value="${data.val !== undefined ? data.val : ''}" placeholder="150"
-          class="w-full bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-brand">
+        <input type="number" step="0.01" name="variant_val[]" value="${data.val !== undefined ? data.val : ''}" placeholder="Num (150)"
+          class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-800">
       </div>
       <div class="col-span-2">
-        <input type="number" name="variant_stock[]" value="${data.stock !== undefined ? data.stock : 10}" placeholder="10"
-          class="w-full bg-slate-50 border border-slate-200 rounded-md px-2.5 py-1.5 text-xs font-semibold text-emerald-700 focus:bg-white focus:outline-none focus:border-brand">
+        <input type="number" name="variant_stock[]" value="${data.stock !== undefined ? data.stock : 10}" placeholder="Stock"
+          class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-emerald-700">
       </div>
-      <div class="col-span-1 text-center">
-        <button type="button" onclick="this.closest('.grid').remove()" class="w-7 h-7 inline-flex items-center justify-center rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Remove option">✕</button>
+      <div class="col-span-1 text-right">
+        <button type="button" onclick="this.closest('.grid').remove()" class="text-rose-500 hover:text-rose-700 font-bold text-sm px-1.5 cursor-pointer" title="Remove option">✕</button>
       </div>
     `;
     container.appendChild(row);
@@ -1038,8 +1013,8 @@
         wrapper.classList.remove('hidden');
         existingImages.forEach(img => {
           const div = document.createElement('div');
-          div.className = 'w-14 h-14 rounded-lg border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center';
-          div.innerHTML = `<img src="{{ asset('') }}${img}" class="w-full h-full object-contain">`;
+          div.className = 'w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center';
+          div.innerHTML = `<img src="{{ asset('') }}${img}" class="w-full h-full object-contain rounded-lg">`;
           existingGrid.appendChild(div);
         });
       } else {
@@ -1077,8 +1052,8 @@
         const reader = new FileReader();
         reader.onload = function(e) {
           const div = document.createElement('div');
-          div.className = 'w-14 h-14 rounded-lg border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs';
-          div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain">`;
+          div.className = 'w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs';
+          div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded-lg">`;
           container.appendChild(div);
         };
         reader.readAsDataURL(file);
