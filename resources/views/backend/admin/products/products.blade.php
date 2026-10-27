@@ -170,12 +170,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <input type="text" id="productSearchInput" onkeyup="filterProducts()" placeholder="Search name, dosage, keyword..."
+        <input type="text" id="productSearchInput" onkeyup="onSearchInput()" placeholder="Search name, dosage, keyword..."
           class="w-full bg-slate-50/60 focus:bg-white border border-slate-200 rounded-lg py-2 pl-8 pr-3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/15 focus:border-brand transition-all">
       </div>
 
       <span class="text-xs text-slate-400 whitespace-nowrap shrink-0 tabular-nums" id="productCountText">
-        Showing {{ count($rawProducts) }} {{ count($rawProducts) === 1 ? 'item' : 'items' }}
+        Total {{ count($rawProducts) }} {{ count($rawProducts) === 1 ? 'item' : 'items' }}
       </span>
     </div>
 
@@ -265,8 +265,6 @@
 
           <!-- CARD BODY -->
           <div class="p-4 sm:p-5 flex flex-col gap-4">
-            
-            <!-- Category & Title -->
             <div>
               <div class="flex items-center justify-between gap-2 mb-1">
                 <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider truncate">
@@ -288,7 +286,6 @@
               </p>
             </div>
 
-            <!-- Key Metrics Grid -->
             <div class="grid grid-cols-2 gap-2.5 p-3 rounded-lg bg-slate-50 border border-slate-100">
               <div>
                 <span class="block text-[11px] text-slate-400">Display Price</span>
@@ -304,7 +301,6 @@
               </div>
             </div>
 
-            <!-- Variants List -->
             @if(!empty($product->has_variants) && count($decodedVariants) > 0)
               <div class="flex flex-col gap-1.5">
                 <div class="flex items-center justify-between">
@@ -373,15 +369,26 @@
     @endforelse
   </div>
 
+  <!-- PAGINATION SECTION (Centered Modern Pill Container) -->
+  <div id="paginationWrapper" class="mt-4 pt-6 border-t border-slate-200/80 flex flex-col items-center justify-center gap-3">
+    
+    <!-- Kapsul Pagination -->
+    <nav aria-label="Pagination" class="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xs" id="paginationNav">
+      <!-- Dijana secara dinamik oleh JavaScript -->
+    </nav>
+
+    <!-- Status Ringkas di Bawah Kapsul -->
+    <div class="text-xs font-medium text-slate-400 tabular-nums" id="paginationResultText">
+      Showing 0 &ndash; 0 of 0 products
+    </div>
+
+  </div>
+
 </div>
 
-<!-- ==========================================
-     CREATE PRODUCT MODAL
-     ========================================== -->
+<!-- CREATE PRODUCT MODAL -->
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden">
-    
-    <!-- Modal Header -->
     <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
       <div>
         <h3 class="font-semibold text-base text-slate-900">Add New Product</h3>
@@ -390,13 +397,9 @@
       <button type="button" onclick="closeCreateProductModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer">✕</button>
     </div>
 
-    <!-- Modal Body -->
     <form action="{{ url($secretPrefix . '/products') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
       @csrf
-
       <div class="p-6 overflow-y-auto space-y-5 flex-1">
-        
-        <!-- Placement & Category -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1.5">Target Display Page <span class="text-rose-500">*</span></label>
@@ -415,7 +418,6 @@
           </div>
         </div>
 
-        <!-- Title & Subtitle -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Title <span class="text-rose-500">*</span></label>
@@ -429,7 +431,6 @@
           </div>
         </div>
 
-        <!-- Pricing, Dosage & Stock -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div class="col-span-2 sm:col-span-1">
             <label class="block text-xs font-medium text-slate-700 mb-1.5">Display Price <span class="text-rose-500">*</span></label>
@@ -453,7 +454,6 @@
           </div>
         </div>
 
-        <!-- Variants Configuration -->
         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
           <div class="flex items-center justify-between gap-4">
             <div>
@@ -490,14 +490,12 @@
           </div>
         </div>
 
-        <!-- Description -->
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Description</label>
           <textarea name="description" rows="3" placeholder="Enter scientific overview or product details..."
             class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-brand"></textarea>
         </div>
 
-        <!-- Additional Metadata -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1.5">Badge Label</label>
@@ -516,7 +514,6 @@
           </div>
         </div>
 
-        <!-- Image Upload -->
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1.5">Product Images (Multiple Allowed)</label>
           <div class="border border-dashed border-slate-300 hover:border-brand rounded-xl p-5 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group transition-colors">
@@ -528,10 +525,8 @@
             <span class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, or WEBP up to 3MB each</span>
           </div>
         </div>
-
       </div>
 
-      <!-- Modal Footer -->
       <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
         <button type="button" onclick="closeCreateProductModal()"
           class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer">Cancel</button>
@@ -542,13 +537,9 @@
   </div>
 </div>
 
-<!-- ==========================================
-     EDIT PRODUCT MODAL
-     ========================================== -->
+<!-- EDIT PRODUCT MODAL -->
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-2xl max-w-2xl w-full shadow-xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden">
-    
-    <!-- Modal Header -->
     <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
       <div>
         <h3 class="font-semibold text-base text-slate-900">Edit Product</h3>
@@ -557,13 +548,11 @@
       <button type="button" onclick="closeEditProductModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer">✕</button>
     </div>
 
-    <!-- Modal Body -->
     <form id="editProductForm" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
       @csrf
       @method('PUT')
 
       <div class="p-6 overflow-y-auto space-y-5 flex-1">
-        
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-medium text-slate-700 mb-1.5">Target Display Page <span class="text-rose-500">*</span></label>
@@ -618,7 +607,6 @@
           </div>
         </div>
 
-        <!-- Variants Configuration -->
         <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
           <div class="flex items-center justify-between gap-4">
             <div>
@@ -679,13 +667,11 @@
           </div>
         </div>
 
-        <!-- Existing Images -->
         <div id="existingImagesWrapper" class="space-y-1.5">
           <label class="block text-xs font-medium text-slate-700">Current Catalog Images</label>
           <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200"></div>
         </div>
 
-        <!-- Upload Action Mode -->
         <div class="space-y-1.5">
           <label class="block text-xs font-medium text-slate-700">Image Upload Mode</label>
           <div class="grid grid-cols-2 gap-3">
@@ -700,7 +686,6 @@
           </div>
         </div>
 
-        <!-- New Images Upload -->
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1.5">Upload New Image(s)</label>
           <div class="border border-dashed border-slate-300 hover:border-brand rounded-xl p-5 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group transition-colors">
@@ -712,10 +697,8 @@
             <span class="text-[11px] text-slate-400 mt-0.5">Leave empty to keep existing images</span>
           </div>
         </div>
-
       </div>
 
-      <!-- Modal Footer -->
       <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
         <button type="button" onclick="closeEditProductModal()"
           class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer">Cancel</button>
@@ -729,6 +712,11 @@
 <script>
   let activeCategoryFilter = 'all';
   let activePageTypeFilter = 'all';
+  
+  // Konfigurasi Pagination (6 Produk Per Halaman)
+  let currentPage = 1;
+  const itemsPerPage = 6;
+  let filteredCards = [];
 
   function toggleCategoryDropdown() {
     const menu = document.getElementById('categoryDropdownMenu');
@@ -747,6 +735,7 @@
     });
     btnEl.classList.add('bg-white', 'text-slate-900', 'shadow-2xs');
     btnEl.classList.remove('text-slate-600');
+    currentPage = 1;
     filterProducts();
   }
 
@@ -760,6 +749,12 @@
     if (menu) menu.classList.add('hidden');
     if (arrow) arrow.classList.remove('rotate-180');
 
+    currentPage = 1;
+    filterProducts();
+  }
+
+  function onSearchInput() {
+    currentPage = 1;
     filterProducts();
   }
 
@@ -767,8 +762,8 @@
     const input = document.getElementById('productSearchInput');
     const q = input ? input.value.toLowerCase().trim() : '';
 
-    const cards = document.querySelectorAll('.product-vault-card');
-    let visibleCount = 0;
+    const cards = Array.from(document.querySelectorAll('.product-vault-card'));
+    filteredCards = [];
 
     cards.forEach(card => {
       const title = card.dataset.title || '';
@@ -783,8 +778,7 @@
       const matchesPageType = (activePageTypeFilter === 'all') || (pageType === activePageTypeFilter);
 
       if (matchesSearch && matchesCategory && matchesPageType) {
-        card.style.display = '';
-        visibleCount++;
+        filteredCards.push(card);
       } else {
         card.style.display = 'none';
       }
@@ -792,7 +786,130 @@
 
     const countText = document.getElementById('productCountText');
     if (countText) {
-      countText.innerText = `Showing ${visibleCount} ${visibleCount === 1 ? 'item' : 'items'}`;
+      countText.innerText = `Total ${filteredCards.length} ${filteredCards.length === 1 ? 'item' : 'items'}`;
+    }
+
+    renderPaginationView();
+  }
+
+  function renderPaginationView() {
+    const totalItems = filteredCards.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    filteredCards.forEach((card, idx) => {
+      card.style.display = (idx >= startIndex && idx < endIndex) ? '' : 'none';
+    });
+
+    const wrapper = document.getElementById('paginationWrapper');
+    const resultTextEl = document.getElementById('paginationResultText');
+
+    if (totalItems === 0) {
+      if (wrapper) wrapper.classList.add('hidden');
+      return;
+    } else {
+      if (wrapper) wrapper.classList.remove('hidden');
+    }
+
+    if (resultTextEl) {
+      const fromItem = startIndex + 1;
+      const toItem = Math.min(endIndex, totalItems);
+      resultTextEl.innerHTML = `Showing <span class="font-semibold text-slate-700">${fromItem}&ndash;${toItem}</span> of <span class="font-semibold text-slate-700">${totalItems}</span> products`;
+    }
+
+    renderPaginationButtons(totalPages);
+  }
+
+  function renderPaginationButtons(totalPages) {
+    const nav = document.getElementById('paginationNav');
+    if (!nav) return;
+
+    let html = '';
+
+    // Gaya tombol di dalam kapsul sesuai gambar referensi
+    const baseItem = "min-w-[36px] h-9 px-2.5 rounded-xl text-xs sm:text-sm tabular-nums flex items-center justify-center select-none transition-all duration-150";
+    const activeBtn = `${baseItem} bg-[#18181b] text-white font-semibold shadow-2xs pointer-events-none`;
+    const inactiveBtn = `${baseItem} bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium cursor-pointer`;
+    const ellipsisSpan = `min-w-[32px] h-9 px-1 flex items-center justify-center text-slate-400 font-semibold text-xs sm:text-sm select-none`;
+    const arrowEnabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer`;
+    const arrowDisabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 cursor-not-allowed pointer-events-none`;
+
+    // 1. Tombol Previous (<)
+    if (currentPage > 1) {
+      html += `<button type="button" onclick="goToPage(${currentPage - 1})" class="${arrowEnabled}" aria-label="Previous page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>`;
+    } else {
+      html += `<button type="button" disabled class="${arrowDisabled}" aria-label="Previous page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>`;
+    }
+
+    // 2. Deretan Nomor Halaman & Ellipsis (...)
+    const pages = getPaginationPageList(currentPage, totalPages);
+    pages.forEach(p => {
+      if (p === '...') {
+        html += `<span class="${ellipsisSpan}">&hellip;</span>`;
+      } else if (p === currentPage) {
+        html += `<button type="button" aria-current="page" class="${activeBtn}">${p}</button>`;
+      } else {
+        html += `<button type="button" onclick="goToPage(${p})" class="${inactiveBtn}">${p}</button>`;
+      }
+    });
+
+    // 3. Tombol Next (>)
+    if (currentPage < totalPages) {
+      html += `<button type="button" onclick="goToPage(${currentPage + 1})" class="${arrowEnabled}" aria-label="Next page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>`;
+    } else {
+      html += `<button type="button" disabled class="${arrowDisabled}" aria-label="Next page">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>`;
+    }
+
+    nav.innerHTML = html;
+  }
+
+  function getPaginationPageList(current, total) {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    // Pola seperti di gambar: [1, 2, 3, '...', total-2, total-1, total] ketika di awal
+    if (current <= 3) {
+      return [1, 2, 3, '...', total - 2, total - 1, total];
+    }
+
+    // Ketika berada di halaman akhir
+    if (current >= total - 2) {
+      return [1, 2, '...', total - 2, total - 1, total];
+    }
+
+    // Ketika berada di tengah
+    return [1, '...', current - 1, current, current + 1, '...', total];
+  }
+
+  function goToPage(page) {
+    currentPage = page;
+    renderPaginationView();
+
+    const grid = document.getElementById('productGridContainer');
+    if (grid) {
+      grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
@@ -1021,5 +1138,6 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     startAdminProdAutoSlide();
+    filterProducts();
   });
 </script>
