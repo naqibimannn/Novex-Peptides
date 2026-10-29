@@ -136,7 +136,7 @@
         </button>
       </div>
 
-      <!-- Category Dropdown -->
+      <!-- Category Dropdown Toolbar -->
       <div class="relative w-full sm:w-56" id="customCategoryDropdownWrapper">
         <button type="button" onclick="toggleCategoryDropdown()" id="selectedCategoryBtn"
           class="w-full bg-slate-100/90 border border-slate-200 hover:border-brand/50 rounded-xl px-4 py-2 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
@@ -374,20 +374,48 @@
       @csrf
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-        <div>
+        <!-- Modern Custom Dropdown: Target Display Page -->
+        <div class="relative" id="createPageTypeWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
-          <select name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
-            <option value="products">Products Catalog Page (/products)</option>
-            <option value="accessory">Accessory Page (/accessory)</option>
-          </select>
+          <input type="hidden" name="page_type" id="create_page_type" value="products">
+          <button type="button" onclick="toggleCustomDropdown('createPageTypeMenu', 'createPageTypeArrow')"
+            class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
+            <span id="createPageTypeText" class="truncate">Products Catalog Page</span>
+            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="createPageTypeArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
+          <div id="createPageTypeMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1">
+            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'products', 'Products Catalog Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Products Catalog Page
+            </button>
+            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'accessory', 'Accessory Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Accessory Page
+            </button>
+          </div>
         </div>
-        <div>
+
+        <!-- Modern Custom Dropdown: Catalog Category -->
+        <div class="relative" id="createCategoryWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
-          <select name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
+          <input type="hidden" name="category" id="create_category" value="Weight Management">
+          <button type="button" onclick="toggleCustomDropdown('createCategoryMenu', 'createCategoryArrow')"
+            class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer">
+            <span id="createCategoryText" class="truncate">Weight Management</span>
+            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="createCategoryArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
+          <div id="createCategoryMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1 max-h-56 overflow-y-auto">
             @foreach($categories as $cat)
-              <option value="{{ $cat }}">{{ $cat }}</option>
+              <button type="button" onclick="selectDropdownOption('create_category', 'createCategoryText', 'createCategoryMenu', 'createCategoryArrow', '{{ $cat }}', '{{ $cat }}')"
+                class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                {{ $cat }}
+              </button>
             @endforeach
-          </select>
+          </div>
         </div>
       </div>
 
@@ -459,7 +487,6 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
       </div>
 
-      <!-- BADGE LABEL & APPAREL SIZES (SEARCH KEYWORDS DIBUANG) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
@@ -513,20 +540,48 @@
       @method('PUT')
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-        <div>
+        <!-- Modern Custom Dropdown: Edit Target Display Page -->
+        <div class="relative" id="editPageTypeWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
-          <select id="edit_page_type" name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800">
-            <option value="products">Products Catalog Page (/products)</option>
-            <option value="accessory">Accessory Page (/accessory)</option>
-          </select>
+          <input type="hidden" name="page_type" id="edit_page_type" value="products">
+          <button type="button" onclick="toggleCustomDropdown('editPageTypeMenu', 'editPageTypeArrow')"
+            class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
+            <span id="editPageTypeText" class="truncate">Products Catalog Page</span>
+            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="editPageTypeArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
+          <div id="editPageTypeMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1">
+            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'products', 'Products Catalog Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Products Catalog Page
+            </button>
+            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'accessory', 'Accessory Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Accessory Page
+            </button>
+          </div>
         </div>
-        <div>
+
+        <!-- Modern Custom Dropdown: Edit Catalog Category -->
+        <div class="relative" id="editCategoryWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
-          <select id="edit_category" name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
+          <input type="hidden" name="category" id="edit_category" value="Weight Management">
+          <button type="button" onclick="toggleCustomDropdown('editCategoryMenu', 'editCategoryArrow')"
+            class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer">
+            <span id="editCategoryText" class="truncate">Weight Management</span>
+            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="editCategoryArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
+          <div id="editCategoryMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1 max-h-56 overflow-y-auto">
             @foreach($categories as $cat)
-              <option value="{{ $cat }}">{{ $cat }}</option>
+              <button type="button" onclick="selectDropdownOption('edit_category', 'editCategoryText', 'editCategoryMenu', 'editCategoryArrow', '{{ $cat }}', '{{ $cat }}')"
+                class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                {{ $cat }}
+              </button>
             @endforeach
-          </select>
+          </div>
         </div>
       </div>
 
@@ -597,7 +652,6 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
       </div>
 
-      <!-- BADGE LABEL & APPAREL SIZES (SEARCH KEYWORDS DIBUANG) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
@@ -670,13 +724,36 @@
     hiddenEl.value = match ? match[1] : '';
   }
 
+  function toggleCustomDropdown(menuId, arrowId) {
+    const menu = document.getElementById(menuId);
+    const arrow = document.getElementById(arrowId);
+    if (!menu) return;
+
+    // Tutup dropdown lain yang sedang terbuka
+    document.querySelectorAll('[id$="Menu"]').forEach(m => {
+      if (m.id !== menuId && !m.classList.contains('hidden')) {
+        m.classList.add('hidden');
+      }
+    });
+
+    menu.classList.toggle('hidden');
+    if (arrow) arrow.classList.toggle('rotate-180');
+  }
+
+  function selectDropdownOption(hiddenInputId, displayTextId, menuId, arrowId, value, text) {
+    const input = document.getElementById(hiddenInputId);
+    const label = document.getElementById(displayTextId);
+    const menu = document.getElementById(menuId);
+    const arrow = document.getElementById(arrowId);
+
+    if (input) input.value = value;
+    if (label) label.innerText = text;
+    if (menu) menu.classList.add('hidden');
+    if (arrow) arrow.classList.remove('rotate-180');
+  }
+
   function toggleCategoryDropdown() {
-    const menu = document.getElementById('categoryDropdownMenu');
-    const arrow = document.getElementById('dropdownArrow');
-    if (menu && arrow) {
-      menu.classList.toggle('hidden');
-      arrow.classList.toggle('rotate-180');
-    }
+    toggleCustomDropdown('categoryDropdownMenu', 'dropdownArrow');
   }
 
   function switchPageTypeFilter(pageType, btnEl) {
@@ -939,9 +1016,17 @@
       document.getElementById('edit_dosage_spec').value = product.dosage_spec || '';
       document.getElementById('edit_stock').value = product.stock !== null && product.stock !== undefined ? product.stock : 25;
       document.getElementById('edit_badge_category').value = product.badge_category || '';
-      document.getElementById('edit_category').value = product.category || 'Weight Management';
-      document.getElementById('edit_page_type').value = product.page_type || (product.category === 'Accessory' ? 'accessory' : 'products');
       document.getElementById('edit_description').value = product.description || '';
+
+      // Set Custom Dropdown Values & Texts
+      const targetPageVal = product.page_type || (product.category === 'Accessory' ? 'accessory' : 'products');
+      const targetCategoryVal = product.category || 'Weight Management';
+
+      document.getElementById('edit_page_type').value = targetPageVal;
+      document.getElementById('editPageTypeText').innerText = (targetPageVal === 'accessory') ? 'Accessory Page' : 'Products Catalog Page';
+
+      document.getElementById('edit_category').value = targetCategoryVal;
+      document.getElementById('editCategoryText').innerText = targetCategoryVal;
 
       let sizesText = '';
       if (product.sizes) {
@@ -1076,6 +1161,7 @@
   }
 
   document.addEventListener('click', function(e) {
+    // Tutup custom category dropdown toolbar jika klik di luar
     const wrapper = document.getElementById('customCategoryDropdownWrapper');
     const menu = document.getElementById('categoryDropdownMenu');
     const arrow = document.getElementById('dropdownArrow');
@@ -1083,6 +1169,24 @@
       menu.classList.add('hidden');
       if (arrow) arrow.classList.remove('rotate-180');
     }
+
+    // Tutup dropdown modal jika klik di luar pembungkus
+    const modalDropdowns = [
+      { wrapper: 'createPageTypeWrapper', menu: 'createPageTypeMenu', arrow: 'createPageTypeArrow' },
+      { wrapper: 'createCategoryWrapper', menu: 'createCategoryMenu', arrow: 'createCategoryArrow' },
+      { wrapper: 'editPageTypeWrapper', menu: 'editPageTypeMenu', arrow: 'editPageTypeArrow' },
+      { wrapper: 'editCategoryWrapper', menu: 'editCategoryMenu', arrow: 'editCategoryArrow' },
+    ];
+
+    modalDropdowns.forEach(item => {
+      const w = document.getElementById(item.wrapper);
+      const m = document.getElementById(item.menu);
+      const a = document.getElementById(item.arrow);
+      if (w && !w.contains(e.target) && m && !m.classList.contains('hidden')) {
+        m.classList.add('hidden');
+        if (a) a.classList.remove('rotate-180');
+      }
+    });
   });
 
   document.addEventListener('DOMContentLoaded', () => {
