@@ -3,7 +3,7 @@
 @section('content')
 @php
 $resolveImageUrl = function($path) {
-    if (empty($path)) return asset('ik1.webp');
+    if (empty($path)) return asset('assets/website/placeholder.webp');
     if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
     if (file_exists(public_path($path))) return asset($path);
     if (file_exists(public_path('uploads/products/' . basename($path)))) {
@@ -15,8 +15,11 @@ $resolveImageUrl = function($path) {
     return asset($path);
 };
 
-$accessories = \Illuminate\Support\Facades\DB::select(
-    "SELECT * FROM products WHERE page_type = 'accessory' OR category IN ('Accessory', 'Injection Kit', 'Syringes') ORDER BY id DESC"
+$accessoryProducts = \Illuminate\Support\Facades\DB::select(
+    "SELECT * FROM products 
+     WHERE page_type = 'accessory' 
+        OR category IN ('Accessory', 'Injection Kit', 'Syringes') 
+     ORDER BY id DESC"
 );
 @endphp
 
@@ -25,118 +28,66 @@ $accessories = \Illuminate\Support\Facades\DB::select(
 
   :root {
     --bg:#FFFFFF;--bg2:#E9F2FA;--ink:#1E2D3B;--mut:#5A6F82;--green:#2F6F9F;
-    --line:#D2E2EF;--card:#F6FAFD;--gold:#3F84B5;--red:#e11d48;
+    --line:#D2E2EF;--card:#F6FAFD;--card-surface:#FFFFFF;--gold:#3F84B5;--red:#e11d48;
     --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
   }
 
-  .hero, .hero.sl, .mq, #lab-reports, #testimonies, .camp, .steps, .art, .g6, .div2,
-  section.sec:not(#cat) {
-    display: none !important;
+  [data-theme="dark"] {
+    --bg:#0A111A;--bg2:#101B27;--ink:#F0F6FC;--mut:#8EA4B8;--green:#327BB3;
+    --line:#1C2D3E;--card:#0E1824;--card-surface:#132232;--gold:#5CA5DA;
   }
 
-  #cat {
+  #view-accessory-page {
     display: block !important;
-    padding: 60px 0 80px !important;
-    background: var(--bg) !important;
-    min-height: 80vh;
   }
-  #cat .wrap {
+
+  #accessory-catalog-sec {
+    padding: 60px 0 80px !important;
+    background: var(--bg);
+  }
+  #accessory-catalog-sec .wrap {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
   }
-  #cat h1 {
-    font-family: var(--serif);
-    font-weight: 500;
-    line-height: 1.15;
-    font-size: clamp(36px, 5vw, 60px);
-    color: var(--ink);
-  }
-  #cat .head {
+  #accessory-catalog-sec .head {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
     gap: 20px;
     flex-wrap: wrap;
   }
-  #cat .head>div {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-width: 720px;
+  #accessory-catalog-sec .head h2 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--ink);
   }
-  #cat .head p {
+  #accessory-catalog-sec .head p {
     font-size: 15px;
     color: var(--mut);
     line-height: 1.6;
+    margin-top: 6px;
   }
 
-  .sq {
-    display: block;
-    width: 100%;
-    max-width: 360px;
-    padding: 11px 16px;
-    border: 1px solid var(--line);
-    background: var(--card);
-    border-radius: 999px;
-    margin-bottom: 20px;
-    font: inherit;
-    font-size: 13px;
-    color: var(--ink);
-    outline: none;
-  }
-  .sq:focus {
-    border-color: var(--green);
-  }
-
-  .filter {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
-    font-size: 13px;
-  }
-  .filter button {
-    background: none;
-    border: 1px solid var(--line);
-    padding: 7px 18px;
-    color: var(--ink);
-    border-radius: 999px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all .2s;
-  }
-  .filter button:hover {
-    border-color: var(--green);
-  }
-  .filter button.on {
-    background: var(--green);
-    color: #fff;
-    border-color: var(--green);
-  }
-
-  .g4 {
+  .g3 {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 24px;
   }
-  @media (max-width: 1024px) {
-    .g4 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 960px) {
+    .g3 { grid-template-columns: repeat(2, 1fr); gap: 18px; }
   }
-  @media (max-width: 768px) {
-    .g4 { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  }
-  @media (max-width: 520px) {
-    .g4 { grid-template-columns: 1fr; }
+  @media (max-width: 600px) {
+    .g3 { grid-template-columns: 1fr; }
   }
 
   .pc {
     padding: 14px;
-    background: #fff;
+    background: var(--card-surface);
     border: 1px solid var(--line);
     border-radius: 26px;
-    transition: transform .3s, box-shadow .3s;
+    transition: transform .3s, box-shadow .3s, background-color .25s ease, border-color .25s ease;
     display: flex;
     flex-direction: column;
   }
@@ -148,9 +99,13 @@ $accessories = \Illuminate\Support\Facades\DB::select(
     aspect-ratio: 1;
     border-radius: 20px;
     position: relative;
-    background: #ffffff;
-    border: 1px solid rgba(210,226,239,.5);
+    background: var(--card-surface);
+    border: 1px solid var(--line);
     overflow: hidden;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .prod-slider {
@@ -159,7 +114,7 @@ $accessories = \Illuminate\Support\Facades\DB::select(
     height: 100%;
     overflow: hidden;
     border-radius: inherit;
-    background: #fff;
+    background: var(--card-surface);
   }
   .prod-slides {
     position: relative;
@@ -167,7 +122,7 @@ $accessories = \Illuminate\Support\Facades\DB::select(
     height: 100%;
     border-radius: inherit;
     overflow: hidden;
-    background: #fff;
+    background: var(--card-surface);
   }
   .prod-slide {
     position: absolute;
@@ -176,28 +131,30 @@ $accessories = \Illuminate\Support\Facades\DB::select(
     height: 100%;
     opacity: 0;
     transition: opacity .65s ease-in-out;
-    pointer-events: none;
-    border-radius: inherit;
+    padding: 14px;
+    margin: 0;
     overflow: hidden;
-    background: #fff;
+    border-radius: inherit;
+    background: var(--card-surface);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    pointer-events: none;
   }
   .prod-slide.active {
     opacity: 1 !important;
     pointer-events: auto !important;
   }
   .prod-slide img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 14px;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    border-radius: 14px !important;
     display: block;
-    background: #fff;
+    background: transparent;
   }
 
   .pc .ps-dots {
@@ -225,6 +182,7 @@ $accessories = \Illuminate\Support\Facades\DB::select(
     background: var(--green);
     width: 18px;
     border-radius: 999px;
+    transform: none;
   }
 
   .pc .b {
@@ -260,162 +218,148 @@ $accessories = \Illuminate\Support\Facades\DB::select(
     color: var(--ink);
     padding: 4px 10px;
     border-radius: 999px;
+    border: 1px solid var(--line);
   }
-  .btn-details {
-    background: var(--green);
-    color: #fff;
-    padding: 12px;
+
+  /* Butang See Details */
+  .btn-see-details {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
     border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--card-surface);
+    color: var(--ink);
     font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 10px;
-    transition: background .2s;
+    font-weight: 700;
+    letter-spacing: .02em;
     text-decoration: none;
-    display: block;
+    transition: all .2s ease;
+    margin-top: 14px;
   }
-  .btn-details:hover {
-    background: #245a82;
+  .btn-see-details:hover {
+    background: var(--green);
+    color: #ffffff;
+    border-color: var(--green);
+    box-shadow: 0 4px 14px rgba(47, 111, 159, 0.25);
   }
 </style>
 
-<section class="sec" id="cat">
-  <div class="wrap">
-    <div class="head">
-      <div>
-        <h1>Research Accessories</h1>
-        <p>Laboratory-grade reconstitution kits, mixing barrels, and ultra-fine micro-dosing needles for scientific protocol preparation.</p>
+<div id="view-accessory-page">
+  <section class="sec" id="accessory-catalog-sec">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h2>Research Accessories &amp; Essentials</h2>
+          <p>Sterile medical supplies, specialized injection tools, and research accessories verified for laboratory accuracy.</p>
+        </div>
       </div>
-    </div>
 
-    <input id="q" class="sq" type="search" placeholder="Search accessories, needles or kits..." oninput="filterAccessories()">
+      <div class="g3" id="accessoryGrid">
+        @forelse($accessoryProducts as $item)
+          @php
+              $slides = [];
+              if (!empty($item->image)) {
+                  $decoded = json_decode($item->image, true);
+                  if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p)));
+                  } else {
+                      $slides = [$item->image];
+                  }
+              }
+              if (empty($slides)) {
+                  $slides = ['assets/website/placeholder.webp'];
+              }
 
-    <div class="filter" id="flt">
-      <button type="button" class="on" onclick="setCategoryFilter('All', this)">All</button>
-      <button type="button" onclick="setCategoryFilter('Injection Kit', this)">Reconstitution Sets</button>
-      <button type="button" onclick="setCategoryFilter('Syringes', this)">Precision Syringes</button>
-      <button type="button" onclick="setCategoryFilter('Accessory', this)">General Accessories</button>
-    </div>
-    
-    <div class="g4" id="pg">
-      @forelse($accessories as $acc)
-        @php
-          $imgs = ['ik1.webp'];
-          if (!empty($acc->image)) {
-              $decoded = json_decode($acc->image, true);
-              $imgs = (json_last_error() === JSON_ERROR_NONE && is_array($decoded) && count($decoded) > 0)
-                  ? $decoded
-                  : [$acc->image];
-          }
-          $accKey = property_exists($acc, 'slug') && !empty($acc->slug)
-              ? $acc->slug
-              : \Illuminate\Support\Str::slug($acc->title ?? ('acc-' . $acc->id));
-        @endphp
-        <div class="card pc" data-category="{{ $acc->category }}" data-keywords="{{ strtolower(($acc->title ?? '') . ' ' . ($acc->subtitle ?? '') . ' ' . ($acc->category ?? '') . ' ' . ($acc->keywords ?? '')) }}">
-          <div class="ph">
-            <div class="prod-slider">
-              <div class="prod-slides">
-                @foreach($imgs as $idx => $img)
-                  <div class="prod-slide {{ $idx === 0 ? 'active' : '' }}">
-                    <img src="{{ $resolveImageUrl($img) }}" alt="{{ $acc->title }} {{ $idx + 1 }}" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+              $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
+                  ? $item->slug
+                  : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
+
+              // Tentukan URL perincian produk secara dinamik
+              $detailUrl = url('/products/' . $itemSlug);
+              if (\Illuminate\Support\Facades\Route::has('accessory.show')) {
+                  $detailUrl = route('accessory.show', $itemSlug);
+              } elseif (\Illuminate\Support\Facades\Route::has('products.show')) {
+                  $detailUrl = route('products.show', $itemSlug);
+              }
+          @endphp
+
+          <div class="card pc" data-category="{{ $item->category ?? 'Accessory' }}">
+            <div class="ph">
+              @if(count($slides) > 1)
+                <div class="prod-slider">
+                  <div class="prod-slides">
+                    @foreach($slides as $sIdx => $imgSrc)
+                      <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
+                        <img src="{{ $resolveImageUrl($imgSrc) }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                      </div>
+                    @endforeach
                   </div>
+                </div>
+              @elseif(count($slides) === 1)
+                <div class="prod-slider">
+                  <div class="prod-slides">
+                    <div class="prod-slide active">
+                      <img src="{{ $resolveImageUrl($slides[0]) }}" alt="{{ $item->title }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                    </div>
+                  </div>
+                </div>
+              @else
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:12px;user-select:none;">
+                  N
+                </div>
+              @endif
+            </div>
+
+            @if(count($slides) > 1)
+              <div class="ps-dots">
+                @foreach($slides as $sIdx => $imgSrc)
+                  <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlideAccessory(this, {{ $sIdx }})"></span>
                 @endforeach
+              </div>
+            @endif
+
+            <div class="b">
+              <h3>{{ $item->title }}</h3>
+              @if(!empty($item->subtitle))
+                <p class="s">{{ $item->subtitle }}</p>
+              @endif
+              <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
+              <div class="meta">
+                <span>{{ $item->dosage_spec ?? 'Laboratory Standard' }}</span>
+                <span>{{ $item->badge_category ?? $item->category ?? 'Accessory' }}</span>
+              </div>
+              <div>
+                <a href="{{ $detailUrl }}" class="btn-see-details">See Details</a>
               </div>
             </div>
           </div>
-
-          @if(count($imgs) > 1)
-            <div class="ps-dots">
-              @foreach($imgs as $idx => $img)
-                <span class="ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setCardSlideCatalog(this, {{ $idx }})"></span>
-              @endforeach
-            </div>
-          @endif
-
-          <div class="b">
-            <h3>{{ $acc->title }}</h3>
-            <p class="s">{{ $acc->subtitle }}</p>
-            <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $acc->price }}</div>
-            <div class="meta">
-              <span style="font-weight:600">{{ $acc->dosage_spec ?? 'Standard' }}</span>
-              <span>{{ $acc->badge_category ?? 'Laboratory Item' }} ({{ $acc->stock ?? 0 }} in stock)</span>
-            </div>
-            <a class="btn-details" href="{{ url('/products/' . $accKey) }}">See Details</a>
+        @empty
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--mut);">
+            No accessories currently listed in database.
           </div>
-        </div>
-      @empty
-        <div style="grid-column: 1 / -1; text-align:center; padding:48px 0; color:var(--mut)">
-          <p>No accessories available right now.</p>
-        </div>
-      @endforelse
+        @endforelse
+      </div>
     </div>
-
-    <div id="noMatchMsg" style="display:none;text-align:center;padding:48px 0;color:var(--mut)">
-      <p style="font-size:16px">No accessories match your search or filter.</p>
-    </div>
-
-    <p style="font-size:12px;color:var(--mut);border-top:1px solid var(--line);margin-top:36px;padding-top:16px">
-      All research accessories are individually sealed, sterile, and intended strictly for laboratory and peptide preparation assays.
-    </p>
-  </div>
-</section>
+  </section>
+</div>
 
 <script>
-  let activeFilter = 'All';
-
-  function setCardSlideCatalog(dot, idx) {
-    if (window.event) {
-      window.event.preventDefault();
-      window.event.stopPropagation();
-    }
-    const card = dot.closest('.card') || dot.closest('.pc');
-    if (!card) return;
-    const slider = card.querySelector('.prod-slider');
-    if (!slider) return;
-    const slides = slider.querySelectorAll('.prod-slide');
-    const dots = card.querySelectorAll('.ps-dot');
-    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
-    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+function setCardSlideAccessory(dot, idx){
+  if(window.event){
+    window.event.preventDefault();
+    window.event.stopPropagation();
   }
-
-  function setCategoryFilter(cat, btn) {
-    activeFilter = cat;
-    document.querySelectorAll('#flt button').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    filterAccessories();
-  }
-
-  function filterAccessories() {
-    const q = (document.getElementById('q')?.value || '').trim().toLowerCase();
-    const cards = document.querySelectorAll('#pg .pc');
-    let visibleCount = 0;
-
-    cards.forEach(card => {
-      const cat = card.getAttribute('data-category') || '';
-      const kw = card.getAttribute('data-keywords') || '';
-      const matchCat = (activeFilter === 'All') || (cat === activeFilter);
-      const matchSearch = !q || kw.includes(q);
-
-      if (matchCat && matchSearch) {
-        card.style.display = 'flex';
-        visibleCount++;
-      } else {
-        card.style.display = 'none';
-      }
-    });
-
-    const noMatch = document.getElementById('noMatchMsg');
-    if (noMatch) {
-      noMatch.style.display = (visibleCount === 0 && cards.length > 0) ? 'block' : 'none';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const catSec = document.getElementById('cat');
-    const footerEl = document.querySelector('footer');
-    if (catSec && footerEl && footerEl.parentNode) {
-      footerEl.parentNode.insertBefore(catSec, footerEl);
-    }
-  });
+  const card = dot.closest('.card') || dot.closest('.pc');
+  if(!card) return;
+  const slider = card.querySelector('.prod-slider');
+  if(!slider) return;
+  const slides = slider.querySelectorAll('.prod-slide');
+  const dots = card.querySelectorAll('.ps-dot');
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
 </script>
 @endsection
