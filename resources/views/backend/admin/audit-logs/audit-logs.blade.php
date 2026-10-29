@@ -23,7 +23,7 @@
               $query->where('audit_logs.event', request('event'));
           }
 
-          $logs = $query->paginate(15)->withQueryString();
+          $logs = $query->paginate(5)->withQueryString();
 
           $totalLogs = \Illuminate\Support\Facades\DB::table('audit_logs')->count();
           $loginSuccessCount = \Illuminate\Support\Facades\DB::table('audit_logs')->where('event', 'login_success')->count();
@@ -282,13 +282,83 @@
         </tbody>
       </table>
     </div>
-
-    @if($logs instanceof \Illuminate\Pagination\LengthAwarePaginator && $logs->hasPages())
-      <div class="px-5 py-4 bg-slate-50/50 border-t border-slate-200/80">
-        {{ $logs->links() }}
-      </div>
-    @endif
   </div>
+
+  @if($logs instanceof \Illuminate\Pagination\LengthAwarePaginator && $logs->hasPages())
+    @php
+      $currentPage = $logs->currentPage();
+      $lastPage = $logs->lastPage();
+      $paginationElements = [];
+
+      if ($lastPage <= 7) {
+          $paginationElements = range(1, $lastPage);
+      } else {
+          if ($currentPage <= 4) {
+              $paginationElements = array_merge(range(1, 5), ['...', $lastPage]);
+          } elseif ($currentPage >= $lastPage - 3) {
+              $paginationElements = array_merge([1, '...'], range($lastPage - 4, $lastPage));
+          } else {
+              $paginationElements = array_merge([1, '...'], range($currentPage - 1, $currentPage + 1), ['...', $lastPage]);
+          }
+      }
+    @endphp
+
+    <div class="flex items-center justify-between bg-white rounded-full px-5 sm:px-7 py-3 border border-slate-200 shadow-2xs">
+      <div class="flex items-center gap-3 sm:gap-6">
+        @if ($logs->onFirstPage())
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 cursor-not-allowed select-none">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+            <span>Previous</span>
+          </span>
+        @else
+          <a href="{{ $logs->previousPageUrl() }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+            <span>Previous</span>
+          </a>
+        @endif
+
+        <div class="flex items-center gap-1 sm:gap-2">
+          @foreach ($paginationElements as $element)
+            @if ($element === '...')
+              <span class="w-7 h-7 flex items-center justify-center text-xs font-bold text-slate-400 select-none">...</span>
+            @elseif ($element == $currentPage)
+              <span class="w-8 h-8 rounded-full bg-[#4f46e5] text-white font-bold text-xs flex items-center justify-center ring-4 ring-[#4f46e5]/20 shadow-xs select-none">
+                {{ $element }}
+              </span>
+            @else
+              <a href="{{ $logs->url($element) }}" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+                {{ $element }}
+              </a>
+            @endif
+          @endforeach
+        </div>
+
+        @if ($logs->hasMorePages())
+          <a href="{{ $logs->nextPageUrl() }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors">
+            <span>Next</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </a>
+        @else
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 cursor-not-allowed select-none">
+            <span>Next</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </span>
+        @endif
+      </div>
+
+      <div class="text-xs font-medium text-slate-500 whitespace-nowrap hidden md:block">
+        Showing {{ number_format($logs->lastItem() ?? 0) }} of {{ number_format($logs->total()) }} results
+      </div>
+    </div>
+  @endif
 
 </div>
 
