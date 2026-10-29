@@ -11,7 +11,8 @@
         'Apparel',
         'Accessory',
         'Injection Kit',
-        'Syringes'
+        'Syringes',
+        'Supplements'
     ];
 @endphp
 
@@ -62,15 +63,15 @@
     background: transparent;
   }
 
-  /* Titik Penunjuk Slider di Bawah Gambar */
   .admin-ps-dots {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 10px 0 4px;
-    z-index: 10;
+    padding: 2px 0 6px;
+    background: transparent;
+    border: none;
   }
   .admin-ps-dot {
     width: 7px;
@@ -85,7 +86,6 @@
     background: #0f172a;
   }
 
-  /* Kotak Susunan Gambar Interaktif (Drag & Drop) */
   .img-sort-item {
     cursor: grab;
     user-select: none;
@@ -106,7 +106,6 @@
 
 <div class="m-0 flex flex-col gap-6">
 
-  <!-- TOP HEADER -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200">
     <div>
       <div class="flex items-center gap-2.5">
@@ -133,24 +132,26 @@
     </div>
   </div>
 
-  <!-- FILTER & SEARCH TOOLBAR -->
   <div class="relative z-30 bg-white border border-slate-200 rounded-xl p-3 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-    
     <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-      <!-- Segmented Page Filter -->
-      <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200/80">
+      <div class="inline-flex flex-wrap p-1 rounded-xl bg-slate-100 border border-slate-200/80">
         <button type="button" onclick="switchPageTypeFilter('all', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-2xs transition-all cursor-pointer">
           All Pages
         </button>
         <button type="button" onclick="switchPageTypeFilter('products', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
-          Products Page
+          Products
         </button>
         <button type="button" onclick="switchPageTypeFilter('accessory', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
-          Accessory Page
+          Accessory
+        </button>
+        <button type="button" onclick="switchPageTypeFilter('premium', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+          Premium
+        </button>
+        <button type="button" onclick="switchPageTypeFilter('performance', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+          Performance
         </button>
       </div>
 
-      <!-- Category Dropdown Toolbar -->
       <div class="relative w-full sm:w-56" id="customCategoryDropdownWrapper">
         <button type="button" onclick="toggleCategoryDropdown()" id="selectedCategoryBtn"
           class="w-full bg-slate-100/90 border border-slate-200 hover:border-brand/50 rounded-xl px-4 py-2 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
@@ -181,7 +182,6 @@
       </div>
     </div>
 
-    <!-- Search & Count -->
     <div class="flex items-center gap-3 w-full lg:w-auto">
       <div class="relative flex-1 sm:w-64">
         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -197,10 +197,8 @@
         Total {{ count($rawProducts) }} {{ count($rawProducts) === 1 ? 'item' : 'items' }}
       </span>
     </div>
-
   </div>
 
-  <!-- PRODUCT GRID -->
   <div id="productGridContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
     @forelse($rawProducts as $product)
       @php
@@ -231,7 +229,6 @@
         data-keywords="{{ strtolower($product->keywords ?? '') }}">
         
         <div>
-          <!-- MEDIA HEADER (IMAGE CONTAINER) -->
           <div class="relative w-full h-52 p-3 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
             @if(count($validImages) > 1)
               <div class="admin-prod-slider">
@@ -243,11 +240,6 @@
                   @endforeach
                 </div>
               </div>
-
-              <span class="absolute bottom-2.5 right-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-tight bg-slate-900/80 text-white z-20 pointer-events-none shadow-sm">
-                {{ count($validImages) }} Slides
-              </span>
-
             @elseif(count($validImages) === 1)
               <div class="w-full h-full flex items-center justify-center p-2 overflow-hidden rounded-xl">
                 <img src="{{ asset($validImages[0]) }}?v={{ time() }}" alt="{{ $product->title }}" 
@@ -263,27 +255,20 @@
             @endif
           </div>
 
-          <!-- SLIDER DOTS TERLETAK DI BAWAH GAMBAR -->
-          @if(count($validImages) > 1)
-            <div class="admin-ps-dots bg-slate-50/50 border-b border-slate-100">
-              @foreach($validImages as $idx => $img)
-                <span class="admin-ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setAdminCardSlide(this, {{ $idx }})"></span>
-              @endforeach
-            </div>
-          @endif
+          <div class="p-4 sm:p-5 flex flex-col gap-3.5">
+            @if(count($validImages) > 1)
+              <div class="admin-ps-dots">
+                @foreach($validImages as $idx => $img)
+                  <span class="admin-ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setAdminCardSlide(this, {{ $idx }})"></span>
+                @endforeach
+              </div>
+            @endif
 
-          <!-- CARD BODY -->
-          <div class="p-4 sm:p-5 flex flex-col gap-4">
             <div>
               <div class="flex items-center justify-between gap-2 mb-1">
                 <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">
                   {{ $product->category ?? 'Laboratory' }}
                 </span>
-                @if(!empty($product->badge_category))
-                  <span class="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/80">
-                    {{ $product->badge_category }}
-                  </span>
-                @endif
               </div>
 
               <h3 class="font-bold text-sm sm:text-base text-slate-900 truncate" title="{{ $product->title }}">
@@ -295,22 +280,6 @@
               </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/60">
-              <div>
-                <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Unit Pricing</span>
-                <span class="font-extrabold text-sm text-emerald-600 tracking-tight mt-0.5 block truncate" title="{{ $product->price }}">
-                  {{ $product->price }}
-                </span>
-              </div>
-              <div class="border-l border-slate-200/70 pl-3">
-                <span class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Dosage / Spec</span>
-                <span class="font-semibold text-xs text-slate-700 mt-0.5 block truncate" title="{{ $product->dosage_spec ?? 'N/A' }}">
-                  {{ !empty($product->dosage_spec) ? $product->dosage_spec : 'N/A' }}
-                </span>
-              </div>
-            </div>
-
-            <!-- MULTI-OPTION PILLS LANGSUNG (TANPA TAJUK CONCENTRATION & TANPA SINGLE PRICING BOX) -->
             @if(!empty($product->has_variants) && count($decodedVariants) > 0)
               <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
                 @foreach($decodedVariants as $v)
@@ -320,11 +289,9 @@
                 @endforeach
               </div>
             @endif
-
           </div>
         </div>
 
-        <!-- CARD FOOTER ACTIONS -->
         <div class="px-4 sm:px-5 py-3.5 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between gap-2">
           <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
             class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand/40 text-slate-700 hover:text-brand font-bold text-xs shadow-2xs transition-all cursor-pointer">
@@ -345,7 +312,6 @@
             </button>
           </form>
         </div>
-
       </div>
     @empty
       <div class="col-span-full p-12 text-center bg-white/80 rounded-2xl border border-slate-200 text-slate-400 text-xs font-medium">
@@ -354,7 +320,6 @@
     @endforelse
   </div>
 
-  <!-- PAGINATION SECTION -->
   <div id="paginationWrapper" class="mt-4 pt-6 border-t border-slate-200/80 flex flex-col items-center justify-center gap-3">
     <nav aria-label="Pagination" class="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xs" id="paginationNav">
     </nav>
@@ -365,7 +330,6 @@
 
 </div>
 
-<!-- CREATE PRODUCT MODAL -->
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -380,7 +344,6 @@
       @csrf
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-        <!-- Target Display Page -->
         <div class="relative" id="createPageTypeWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
           <input type="hidden" name="page_type" id="create_page_type" value="products">
@@ -400,14 +363,21 @@
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Accessory Page
             </button>
+            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'premium', 'Premium Supplements Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Premium Supplements Page
+            </button>
+            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'performance', 'Performance Division Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Performance Division Page
+            </button>
           </div>
         </div>
 
-        <!-- Catalog Category -->
         <div class="relative" id="createCategoryWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
           <input type="hidden" name="category" id="create_category" value="Weight Management">
-          <button type="button" onclick="toggleCustomDropdown('createCategoryMenu', 'createCategoryArrow')"
+          <button type="button" onclick="toggleCategoryDropdown()"
             class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer">
             <span id="createCategoryText" class="truncate">Weight Management</span>
             <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="createCategoryArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -438,7 +408,6 @@
         </div>
       </div>
 
-      <!-- PRICE, DOSAGE, BADGE LABEL & TOTAL STOCK (4 COLUMNS ROW) -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
@@ -463,7 +432,6 @@
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -506,7 +474,6 @@
               <span>Add Option</span>
             </button>
 
-            <!-- Quick Preset Size Buttons -->
             <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
               <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
               <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
@@ -525,7 +492,6 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
       </div>
 
-      <!-- VISUAL ASSETS (WITH DRAG & DROP + DELETE BUTTON) -->
       <div>
         <div class="flex items-center justify-between mb-1.5">
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Product Visual Assets (Multiple Allowed)</label>
@@ -533,7 +499,7 @@
         </div>
         
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" id="create_images_input" multiple accept="image/*"
+          <input type="file" id="create_images_input" name="images[]" multiple accept="image/*"
             onchange="handleNewUploadFiles(event, 'createImagesPreviewGrid', 'create')"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           
@@ -557,7 +523,6 @@
   </div>
 </div>
 
-<!-- EDIT PRODUCT MODAL -->
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -573,7 +538,6 @@
       @method('PUT')
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-        <!-- Edit Target Display Page -->
         <div class="relative" id="editPageTypeWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
           <input type="hidden" name="page_type" id="edit_page_type" value="products">
@@ -593,10 +557,17 @@
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Accessory Page
             </button>
+            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'premium', 'Premium Supplements Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Premium Supplements Page
+            </button>
+            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'performance', 'Performance Division Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Performance Division Page
+            </button>
           </div>
         </div>
 
-        <!-- Edit Catalog Category -->
         <div class="relative" id="editCategoryWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
           <input type="hidden" name="category" id="edit_category" value="Weight Management">
@@ -631,7 +602,6 @@
         </div>
       </div>
 
-      <!-- PRICE, DOSAGE, BADGE LABEL & TOTAL STOCK (4 COLUMNS ROW) -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
@@ -656,7 +626,6 @@
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -699,7 +668,6 @@
               <span>Add Option</span>
             </button>
 
-            <!-- Quick Preset Size Buttons -->
             <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
               <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
               <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
@@ -718,7 +686,6 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
       </div>
 
-      <!-- EXISTING VISUAL ASSETS (REARRANGE + DELETE) -->
       <div id="existingImagesWrapper" class="space-y-1.5">
         <div class="flex items-center justify-between">
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
@@ -742,11 +709,10 @@
         </div>
       </div>
 
-      <!-- NEW VISUAL ASSETS -->
       <div>
         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Choose New Visual Asset(s)</label>
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" id="edit_images_input" multiple accept="image/*"
+          <input type="file" id="edit_images_input" name="images[]" multiple accept="image/*"
             onchange="handleNewUploadFiles(event, 'editNewImagesPreviewGrid', 'edit')"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           
@@ -1085,10 +1051,6 @@
     }
   }
 
-  /* ========================================================
-     IMAGE PREVIEW, REORDER (DRAG & DROP) & DELETION SYSTEM
-  ======================================================== */
-
   function handleNewUploadFiles(event, containerId, mode) {
     const files = Array.from(event.target.files);
     if (!files || files.length === 0) return;
@@ -1375,8 +1337,15 @@
       const targetPageVal = product.page_type || (product.category === 'Accessory' ? 'accessory' : 'products');
       const targetCategoryVal = product.category || 'Weight Management';
 
+      const pageLabels = {
+        'products': 'Products Catalog Page',
+        'accessory': 'Accessory Page',
+        'premium': 'Premium Supplements Page',
+        'performance': 'Performance Division Page'
+      };
+
       document.getElementById('edit_page_type').value = targetPageVal;
-      document.getElementById('editPageTypeText').innerText = (targetPageVal === 'accessory') ? 'Accessory Page' : 'Products Catalog Page';
+      document.getElementById('editPageTypeText').innerText = pageLabels[targetPageVal] || 'Products Catalog Page';
 
       document.getElementById('edit_category').value = targetCategoryVal;
       document.getElementById('editCategoryText').innerText = targetCategoryVal;

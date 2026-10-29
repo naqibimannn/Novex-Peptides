@@ -229,7 +229,7 @@
 
       <!-- FOOTER BAWAH KIRI -->
       <div class="relative z-10 pt-4 border-t border-white/10 text-xs text-slate-400 font-medium flex items-center justify-center text-center">
-        <span>Development by NI Studio</span>
+        <span>Development by NI Studio Tech</span>
       </div>
     </div>
 

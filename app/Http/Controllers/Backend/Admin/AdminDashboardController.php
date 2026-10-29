@@ -10,12 +10,10 @@ use Illuminate\Http\JsonResponse;
 
 class AdminDashboardController extends Controller
 {
-    /**
-     * Paparkan konsol pengurusan utama atau seksyen modular.
-     */
+
     public function index(Request $request, string $section = 'dashboard')
     {
-        $secret = env('ADMIN_SECRET_KEY', 'khas-admin-novex-99');
+        $secret = env('ADMIN_SECRET_KEY');
 
         // Pengambilan kiraan statistik pangkalan data secara dinamik
         $articlesCount = Schema::hasTable('blog_posts') 
@@ -42,9 +40,6 @@ class AdminDashboardController extends Controller
         ));
     }
 
-    /**
-     * Endpoint API membekalkan data metrik untuk carta Chart.js.
-     */
     public function getAudienceData(Request $request): JsonResponse
     {
         $period = $request->query('period', 'overview');

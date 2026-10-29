@@ -778,6 +778,17 @@ footer li{list-style:none;margin-bottom:6px}
 @hasSection('content')
     @yield('content')
 @else
+  @php
+      if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+          \Illuminate\Support\Facades\DB::table('page_views')->insert([
+              'page_url'   => 'home',
+              'ip_address' => request()->ip(),
+              'user_agent' => substr((string) request()->userAgent(), 0, 500),
+              'created_at' => now(),
+              'updated_at' => now(),
+          ]);
+      }
+  @endphp
   <div class="nx-view" id="view-home">
     <section class="hero sl">
       <div class="slide on">

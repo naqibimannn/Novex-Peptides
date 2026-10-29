@@ -61,41 +61,6 @@
             class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
             <span>Home Page</span>
           </button>
-
-          <button type="button" onclick="filterAudienceByPage('about', 'About Us Page')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
-            <span>About Us Page</span>
-          </button>
-
-          <button type="button" onclick="filterAudienceByPage('services/health-screening', 'Health Screening Page')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
-            <span>Health Screening Page</span>
-          </button>
-
-          <button type="button" onclick="filterAudienceByPage('services/wellness-program', 'Wellness Program Page')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
-            <span>Wellness Program Page</span>
-          </button>
-
-          <button type="button" onclick="filterAudienceByPage('services/clinic', 'Vealthme Clinic Page')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
-            <span>Vealthme Clinic Page</span>
-          </button>
-
-          <button type="button" onclick="filterAudienceByPage('contact', 'Contact Us Page')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
-            <span>Contact Us Page</span>
-          </button>
-
-          <button type="button" onclick="filterAudienceByPage('app-and-portal', 'App & Employer Portal Page')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
-            <span>App & Employer Portal Page</span>
-          </button>
-
-          <button type="button" onclick="filterAudienceByPage('blog-all', 'All Blog & Insight Pages')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
-            <span>All Blog & Insight Pages</span>
-          </button>
         </div>
       </div>
     </div>
