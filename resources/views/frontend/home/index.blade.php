@@ -342,33 +342,39 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   display:block;
   background:transparent;
 }
-.ps-dots{
-  position:absolute;
-  bottom:8px;
-  left:0;
-  right:0;
-  z-index:5;
+
+.pc .ps-dots{
+  position:relative;
   display:flex;
   justify-content:center;
+  align-items:center;
   gap:6px;
+  margin-top:10px;
+  margin-bottom:2px;
+  z-index:5;
 }
-.ps-dot{
+.pc .ps-dot{
   width:7px;
   height:7px;
   border-radius:50%;
-  background:rgba(47,111,159,.3);
+  background:var(--line);
   cursor:pointer;
-  transition:all .3s ease;
+  transition:all .25s ease;
 }
-.ps-dot.active{
+.pc .ps-dot:hover{
+  background:var(--mut);
+}
+.pc .ps-dot.active{
   background:var(--green);
-  transform:scale(1.25);
+  width:18px;
+  border-radius:999px;
+  transform:none;
 }
 
 .pc .b{
   text-align:left;
   align-items:stretch;
-  padding:16px 8px 8px;
+  padding:14px 8px 8px;
   gap:8px;
   display:flex;
   flex-direction:column;
@@ -569,22 +575,56 @@ footer li{list-style:none;margin-bottom:6px}
 <body>
 <div class="top">Made in USA. High Purity. Research Graded. Cold chain shipping worldwide.</div>
 
+@php
+    $activeNav = 'home';
+    if (request()->routeIs('about*') || request()->is('about*')) {
+        $activeNav = 'about';
+    } elseif (request()->routeIs('accessory*') || request()->is('accessory*')) {
+        $activeNav = 'accessory';
+    } elseif (request()->routeIs('resources*') || request()->is('resources*')) {
+        $activeNav = 'resources';
+    } elseif (request()->routeIs('science*') || request()->is('science*')) {
+        $activeNav = 'science';
+    } elseif (request()->routeIs('contact*') || request()->is('contact*')) {
+        $activeNav = 'contact';
+    } elseif (request()->routeIs('products*') || request()->is('products*')) {
+        $activeNav = 'products';
+        $currParam = request()->route('product') ?? request()->route('id') ?? request()->segment(2);
+        if ($currParam) {
+            $slugCheck = is_object($currParam) ? ($currParam->slug ?? $currParam->id ?? '') : (string)$currParam;
+            $dbRow = \Illuminate\Support\Facades\DB::select(
+                "SELECT page_type, category FROM products WHERE slug = ? OR title = ? OR id = ? LIMIT 1",
+                [$slugCheck, $slugCheck, $slugCheck]
+            );
+            if (!empty($dbRow)) {
+                $pType = strtolower($dbRow[0]->page_type ?? '');
+                $pCat = $dbRow[0]->category ?? '';
+                if ($pType === 'accessory' || in_array($pCat, ['Accessory', 'Injection Kit', 'Syringes'])) {
+                    $activeNav = 'accessory';
+                }
+            } elseif (in_array(strtolower($slugCheck), ['injection-kit', 'insulin-needle-1ml'])) {
+                $activeNav = 'accessory';
+            }
+        }
+    }
+@endphp
+
 <header>
   <div class="wrap bar">
     <nav class="dnav">
-      <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
-      <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
-      <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'on' : '' }}">Products</a>
-      <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
+      <a href="{{ route('home') }}" class="{{ $activeNav === 'home' ? 'on' : '' }}">Home</a>
+      <a href="{{ route('about') }}" class="{{ $activeNav === 'about' ? 'on' : '' }}">About</a>
+      <a href="{{ route('products.index') }}" class="{{ $activeNav === 'products' ? 'on' : '' }}">Products</a>
+      <a href="{{ route('accessory') }}" class="{{ $activeNav === 'accessory' ? 'on' : '' }}">Accessory</a>
     </nav>
     
     <a href="{{ route('home') }}" class="logo">NOVEX<small>PEPTIDES</small></a>
     
     <div class="rt">
       <nav class="dnav">
-        <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
-        <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
-        <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
+        <a href="{{ route('resources') }}" class="{{ $activeNav === 'resources' ? 'on' : '' }}">Resources</a>
+        <a href="{{ route('science') }}" class="{{ $activeNav === 'science' ? 'on' : '' }}">Science</a>
+        <a href="{{ route('contact') }}" class="{{ $activeNav === 'contact' ? 'on' : '' }}">Contact</a>
       </nav>
 
       <div class="tools">
@@ -632,13 +672,13 @@ footer li{list-style:none;margin-bottom:6px}
   </div>
 
   <nav class="mnav" id="navM">
-    <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'on' : '' }}">Home</a>
-    <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'on' : '' }}">About</a>
-    <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? 'on' : '' }}">Products</a>
-    <a href="{{ route('accessory') }}" class="{{ request()->routeIs('accessory') ? 'on' : '' }}">Accessory</a>
-    <a href="{{ route('resources') }}" class="{{ request()->routeIs('resources') ? 'on' : '' }}">Resources</a>
-    <a href="{{ route('science') }}" class="{{ request()->routeIs('science') ? 'on' : '' }}">Science</a>
-    <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'on' : '' }}">Contact</a>
+    <a href="{{ route('home') }}" class="{{ $activeNav === 'home' ? 'on' : '' }}">Home</a>
+    <a href="{{ route('about') }}" class="{{ $activeNav === 'about' ? 'on' : '' }}">About</a>
+    <a href="{{ route('products.index') }}" class="{{ $activeNav === 'products' ? 'on' : '' }}">Products</a>
+    <a href="{{ route('accessory') }}" class="{{ $activeNav === 'accessory' ? 'on' : '' }}">Accessory</a>
+    <a href="{{ route('resources') }}" class="{{ $activeNav === 'resources' ? 'on' : '' }}">Resources</a>
+    <a href="{{ route('science') }}" class="{{ $activeNav === 'science' ? 'on' : '' }}">Science</a>
+    <a href="{{ route('contact') }}" class="{{ $activeNav === 'contact' ? 'on' : '' }}">Contact</a>
     
     <div class="m-theme-box">
       <span class="m-theme-title">Display Mode</span>
@@ -873,15 +913,16 @@ footer li{list-style:none;margin-bottom:6px}
                     </div>
                   @endforeach
                 </div>
-                @if(count($slides) > 1)
-                  <div class="ps-dots">
-                    @foreach($slides as $sIdx => $imgSrc)
-                      <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlide(this, {{ $sIdx }})"></span>
-                    @endforeach
-                  </div>
-                @endif
               </div>
             </div>
+
+            @if(count($slides) > 1)
+              <div class="ps-dots">
+                @foreach($slides as $sIdx => $imgSrc)
+                  <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlide(this, {{ $sIdx }})"></span>
+                @endforeach
+              </div>
+            @endif
 
             <div class="b">
               <h3>{{ $item->title }}</h3>
@@ -995,7 +1036,7 @@ footer li{list-style:none;margin-bottom:6px}
 
 <script>
 const themeIcons = {
-  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor"></line><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
+  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor"></line><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
   dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" fill="none"></path>`,
   system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" fill="none"></rect><line x1="8" y1="21" x2="16" y2="21" stroke="currentColor"></line><line x1="12" y1="17" x2="12" y2="21"></line>`
 };
@@ -1090,10 +1131,12 @@ function setCardSlide(dot, idx){
     window.event.preventDefault();
     window.event.stopPropagation();
   }
-  const slider = dot.closest('.prod-slider');
+  const card = dot.closest('.card') || dot.closest('.pc');
+  if(!card) return;
+  const slider = card.querySelector('.prod-slider');
   if(!slider) return;
   const slides = slider.querySelectorAll('.prod-slide');
-  const dots = slider.querySelectorAll('.ps-dot');
+  const dots = card.querySelectorAll('.ps-dot');
   slides.forEach((s, i) => s.classList.toggle('active', i === idx));
   dots.forEach((d, i) => d.classList.toggle('active', i === idx));
 }
@@ -1103,7 +1146,7 @@ function startProdAutoSlide(){
   clearInterval(prodSlideTimer);
   if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   prodSlideTimer = setInterval(() => {
-    document.querySelectorAll('.card .prod-slider').forEach(box => {
+    document.querySelectorAll('.card.pc').forEach(box => {
       const slides = box.querySelectorAll('.prod-slide');
       const dots = box.querySelectorAll('.ps-dot');
       if(slides.length < 2) return;
