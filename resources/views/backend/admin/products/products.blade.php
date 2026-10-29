@@ -1,6 +1,6 @@
 @php
     $rawProducts = $products ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC");
-    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
+    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY'));
     $secretPrefix = 'admin/' . $secretKey;
 
     $categories = [
@@ -374,7 +374,7 @@
       @csrf
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-        <!-- Modern Custom Dropdown: Target Display Page -->
+        <!-- Target Display Page -->
         <div class="relative" id="createPageTypeWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
           <input type="hidden" name="page_type" id="create_page_type" value="products">
@@ -397,7 +397,7 @@
           </div>
         </div>
 
-        <!-- Modern Custom Dropdown: Catalog Category -->
+        <!-- Catalog Category -->
         <div class="relative" id="createCategoryWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
           <input type="hidden" name="category" id="create_category" value="Weight Management">
@@ -432,8 +432,8 @@
         </div>
       </div>
 
-      <!-- PRICE (COMBINED), DOSAGE & STOCK -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- PRICE, DOSAGE, BADGE LABEL & TOTAL STOCK (4 COLUMNS ROW) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
           <input type="text" name="price" id="create_price" required placeholder="e.g. RM280.00" oninput="syncNumericPrice(this, 'create_price_val')"
@@ -442,7 +442,12 @@
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
-          <input type="text" name="dosage_spec" placeholder="10mg - 100mg / 100ml"
+          <input type="text" name="dosage_spec" placeholder="e.g. 10mg - 100mg"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <input type="text" name="badge_category" placeholder="e.g. Research grade"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
@@ -452,7 +457,7 @@
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & VARIANTS (CLEAN UI & NO AUTO-POPULATED DATA) -->
+      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED) -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -460,7 +465,7 @@
               Multi-Option Pricing &amp; Specification Variants
             </label>
             <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-              Enable if this product offers multiple volumes, dosages, or pack sizes with custom price points.
+              Enable if this product offers multiple volumes, dosages, or apparel sizes with individual pricing.
             </p>
           </div>
           <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
@@ -470,15 +475,27 @@
         </div>
 
         <div id="create_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
-            <input type="text" name="variant_title" value="" placeholder="e.g. Select Vial Concentration / Dosage:"
-              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+              <input type="text" name="variant_title" value="" placeholder="e.g. Select Vial Concentration / Size:"
+                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Quick Presets or Custom CSV)</label>
+              <div class="flex items-center gap-1.5">
+                <input type="text" id="create_sizes" name="sizes" placeholder="e.g. S, M, L, XL"
+                  class="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
+                <button type="button" onclick="applyPresetSizes('create_sizes', 'S, M, L, XL')" class="px-2.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-slate-600 hover:text-brand text-[11px] font-bold shadow-2xs cursor-pointer" title="Apply S, M, L, XL">
+                  + S-XL
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="space-y-2">
             <div class="grid grid-cols-12 gap-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              <span class="col-span-5">Specification / Dosage</span>
+              <span class="col-span-5">Specification / Dosage / Size</span>
               <span class="col-span-4">Price</span>
               <span class="col-span-2 text-center">Stock</span>
               <span class="col-span-1"></span>
@@ -498,19 +515,6 @@
         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description (Show Page)</label>
         <textarea name="description" rows="3" placeholder="Enter detailed scientific description or product overview..."
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
-          <input type="text" name="badge_category" placeholder="e.g. Research grade"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Optional)</label>
-          <input type="text" name="sizes" placeholder="e.g. S, M, L, XL"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-        </div>
       </div>
 
       <div>
@@ -553,7 +557,7 @@
       @method('PUT')
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-        <!-- Modern Custom Dropdown: Edit Target Display Page -->
+        <!-- Edit Target Display Page -->
         <div class="relative" id="editPageTypeWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
           <input type="hidden" name="page_type" id="edit_page_type" value="products">
@@ -576,7 +580,7 @@
           </div>
         </div>
 
-        <!-- Modern Custom Dropdown: Edit Catalog Category -->
+        <!-- Edit Catalog Category -->
         <div class="relative" id="editCategoryWrapper">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
           <input type="hidden" name="category" id="edit_category" value="Weight Management">
@@ -611,8 +615,8 @@
         </div>
       </div>
 
-      <!-- PRICE (COMBINED), DOSAGE & STOCK -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- PRICE, DOSAGE, BADGE LABEL & TOTAL STOCK (4 COLUMNS ROW) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
           <input type="text" id="edit_price" name="price" required oninput="syncNumericPrice(this, 'edit_price_val')"
@@ -625,13 +629,18 @@
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
         </div>
         <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <input type="text" id="edit_badge_category" name="badge_category"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
+        </div>
+        <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
           <input type="number" id="edit_stock" name="stock" min="0" required
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700">
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & VARIANTS (CLEAN UI & NO AUTO-POPULATED DATA) -->
+      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED) -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -639,7 +648,7 @@
               Multi-Option Pricing &amp; Specification Variants
             </label>
             <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-              Enable if this product offers multiple volumes, dosages, or pack sizes with custom price points.
+              Enable if this product offers multiple volumes, dosages, or apparel sizes with individual pricing.
             </p>
           </div>
           <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
@@ -649,15 +658,27 @@
         </div>
 
         <div id="edit_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
-          <div>
-            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
-            <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Dosage:"
-              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+              <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Size:"
+                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Quick Presets or Custom CSV)</label>
+              <div class="flex items-center gap-1.5">
+                <input type="text" id="edit_sizes" name="sizes" placeholder="e.g. S, M, L, XL"
+                  class="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
+                <button type="button" onclick="applyPresetSizes('edit_sizes', 'S, M, L, XL')" class="px-2.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-slate-600 hover:text-brand text-[11px] font-bold shadow-2xs cursor-pointer" title="Apply S, M, L, XL">
+                  + S-XL
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="space-y-2">
             <div class="grid grid-cols-12 gap-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              <span class="col-span-5">Specification / Dosage</span>
+              <span class="col-span-5">Specification / Dosage / Size</span>
               <span class="col-span-4">Price</span>
               <span class="col-span-2 text-center">Stock</span>
               <span class="col-span-1"></span>
@@ -677,19 +698,6 @@
         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description</label>
         <textarea id="edit_description" name="description" rows="3"
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
-          <input type="text" id="edit_badge_category" name="badge_category"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (CSV)</label>
-          <input type="text" id="edit_sizes" name="sizes" placeholder="S, M, L, XL"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-        </div>
       </div>
 
       <div id="existingImagesWrapper" class="space-y-1.5">
@@ -749,6 +757,11 @@
     const val = inputEl.value || '';
     const match = val.match(/([0-9]+(?:\.[0-9]+)?)/);
     hiddenEl.value = match ? match[1] : '';
+  }
+
+  function applyPresetSizes(targetInputId, presetVal) {
+    const input = document.getElementById(targetInputId);
+    if (input) input.value = presetVal;
   }
 
   function toggleCustomDropdown(menuId, arrowId) {
@@ -990,7 +1003,7 @@
     row.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2.5 rounded-xl border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all';
     row.innerHTML = `
       <div class="col-span-5">
-        <input type="text" name="variant_label[]" value="${labelVal}" placeholder="e.g. 100ml or 10mg"
+        <input type="text" name="variant_label[]" value="${labelVal}" placeholder="e.g. 100ml / 10mg / Size L"
           class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-4 relative">
@@ -1048,8 +1061,8 @@
       }
 
       document.getElementById('edit_dosage_spec').value = product.dosage_spec || '';
-      document.getElementById('edit_stock').value = product.stock !== null && product.stock !== undefined ? product.stock : 25;
       document.getElementById('edit_badge_category').value = product.badge_category || '';
+      document.getElementById('edit_stock').value = product.stock !== null && product.stock !== undefined ? product.stock : 25;
       document.getElementById('edit_description').value = product.description || '';
 
       const targetPageVal = product.page_type || (product.category === 'Accessory' ? 'accessory' : 'products');
