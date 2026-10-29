@@ -15,58 +15,12 @@ $resolveImageUrl = function($path) {
     return asset($path);
 };
 
-$dbProducts = \Illuminate\Support\Facades\DB::select(
+$premiumProducts = \Illuminate\Support\Facades\DB::select(
     "SELECT * FROM products 
      WHERE page_type = 'premium' 
         OR category IN ('Premium Supplements', 'Supplements') 
      ORDER BY id DESC"
 );
-
-if (!empty($dbProducts)) {
-    $premiumProducts = $dbProducts;
-} else {
-    $premiumProducts = [
-        (object)[
-            'id' => 101,
-            'title' => 'GLP-1',
-            'subtitle' => 'Metabolic Support Formula',
-            'price' => 'RM99.00',
-            'price_val' => 99.00,
-            'dosage_spec' => '30 Capsules',
-            'badge_category' => 'Dietary Supplement',
-            'image' => 'assets/website/premium/product1.webp',
-            'slug' => 'glp-1',
-            'category' => 'Supplements',
-            'keywords' => 'glp-1 metabolic capsules',
-        ],
-        (object)[
-            'id' => 102,
-            'title' => 'Glutathione',
-            'subtitle' => 'Advanced Antioxidant Formula',
-            'price' => 'RM89.00',
-            'price_val' => 89.00,
-            'dosage_spec' => '30 Capsules',
-            'badge_category' => 'Dietary Supplement',
-            'image' => 'assets/website/premium/product2.webp',
-            'slug' => 'glutathione',
-            'category' => 'Supplements',
-            'keywords' => 'glutathione antioxidant capsules',
-        ],
-        (object)[
-            'id' => 103,
-            'title' => 'Bundle Pack',
-            'subtitle' => '2 Bottle GLP-1 & 2 Bottle Glutathione',
-            'price' => 'RM200.00',
-            'price_val' => 200.00,
-            'dosage_spec' => '4 Bottles (120 Capsules)',
-            'badge_category' => 'Dietary Supplement',
-            'image' => 'assets/website/premium/product3.webp',
-            'slug' => 'bundle-pack',
-            'category' => 'Supplements',
-            'keywords' => 'bundle pack glp-1 glutathione',
-        ],
-    ];
-}
 @endphp
 
 <style>
