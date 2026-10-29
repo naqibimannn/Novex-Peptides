@@ -76,14 +76,29 @@ class ProductsController extends Controller
         return [1, $variantTitle, json_encode($variantsArray)];
     }
 
-    private function processSizes(Request $request)
+    private function processSizes(Request $request, $variantsJson)
     {
-        $rawSizes = trim($request->input('sizes', ''));
-        if ($rawSizes === '') {
-            return null;
+        $extractedSizes = [];
+        if ($variantsJson) {
+            $decodedVars = json_decode($variantsJson, true);
+            if (is_array($decodedVars)) {
+                foreach ($decodedVars as $v) {
+                    $lbl = trim($v['label'] ?? '');
+                    if (preg_match('/^(xs|s|m|l|xl|xxl|2xl|3xl|4xl|free size|size\s*[a-z0-9]+)$/i', $lbl)) {
+                        $extractedSizes[] = strtoupper($lbl);
+                    }
+                }
+            }
         }
-        $parts = array_values(array_filter(array_map('trim', explode(',', $rawSizes))));
-        return !empty($parts) ? json_encode($parts) : null;
+
+        $rawSizes = trim($request->input('sizes', ''));
+        if ($rawSizes !== '') {
+            $parts = array_values(array_filter(array_map('trim', explode(',', $rawSizes))));
+            $extractedSizes = array_merge($extractedSizes, $parts);
+        }
+
+        $uniqueSizes = array_values(array_unique(array_filter($extractedSizes)));
+        return !empty($uniqueSizes) ? json_encode($uniqueSizes) : null;
     }
 
     public function store(Request $request)
@@ -97,7 +112,7 @@ class ProductsController extends Controller
             'stock'          => 'nullable|integer|min:0',
             'badge_category' => 'nullable|string|max:100',
             'category'       => 'nullable|string|max:100',
-            'page_type'      => 'nullable|in:products,accessory',
+            'page_type'      => 'nullable|in:products,accessory,premium,performance',
             'keywords'       => 'nullable|string',
             'description'    => 'nullable|string',
             'images'         => 'nullable|array',
@@ -113,21 +128,25 @@ class ProductsController extends Controller
             $counter++;
         }
 
+        $destination = public_path('uploads/products');
+        if (!file_exists($destination)) {
+            mkdir($destination, 0777, true);
+        }
+
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
                 $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads/products'), $filename);
+                $file->move($destination, $filename);
                 $imagePaths[] = 'uploads/products/' . $filename;
             }
         }
 
         $finalImageJson = !empty($imagePaths) ? json_encode($imagePaths) : null;
         [$hasVariants, $variantTitle, $variantsJson] = $this->processVariants($request);
-        $sizesJson = $this->processSizes($request);
+        $sizesJson = $this->processSizes($request, $variantsJson);
         $priceVal = $this->extractNumericPrice($validated['price'], $validated['price_val'] ?? null);
 
-        // Jika ada varian, hitung total stok otomatis jika stok utama kosong
         $totalStock = (int)($validated['stock'] ?? 0);
         if ($hasVariants && $variantsJson) {
             $decodedVars = json_decode($variantsJson, true);
@@ -178,12 +197,14 @@ class ProductsController extends Controller
             'stock'          => 'nullable|integer|min:0',
             'badge_category' => 'nullable|string|max:100',
             'category'       => 'nullable|string|max:100',
-            'page_type'      => 'nullable|in:products,accessory',
+            'page_type'      => 'nullable|in:products,accessory,premium,performance',
             'keywords'       => 'nullable|string',
             'description'    => 'nullable|string',
             'images'         => 'nullable|array',
             'images.*'       => 'image|mimes:jpeg,png,webp,jpg|max:3072',
             'image_mode'     => 'nullable|in:replace,append',
+            'retained_images'=> 'nullable|array',
+            'retained_images.*' => 'string',
         ]);
 
         $current = DB::select("SELECT * FROM products WHERE id = ? LIMIT 1", [$id]);
@@ -191,6 +212,11 @@ class ProductsController extends Controller
             return back()->withErrors(['msg' => 'Product formulation not found.']);
         }
         $product = $current[0];
+
+        $destination = public_path('uploads/products');
+        if (!file_exists($destination)) {
+            mkdir($destination, 0777, true);
+        }
 
         $existingImages = [];
         if (!empty($product->image)) {
@@ -200,32 +226,35 @@ class ProductsController extends Controller
                 : [$product->image];
         }
 
+        $retained = $request->input('retained_images', []);
         $mode = $request->input('image_mode', 'replace');
-        $finalImageList = $existingImages;
+        $finalImageList = [];
 
-        if ($request->hasFile('images')) {
-            $newUploadedPaths = [];
-            foreach ($request->file('images') as $file) {
-                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads/products'), $filename);
-                $newUploadedPaths[] = 'uploads/products/' . $filename;
-            }
-
-            if ($mode === 'append') {
-                $finalImageList = array_merge($existingImages, $newUploadedPaths);
-            } else {
-                foreach ($existingImages as $oldFile) {
+        if ($mode === 'append') {
+            $finalImageList = !empty($retained) ? $retained : $existingImages;
+        } else {
+            $retainedMap = array_flip($retained);
+            foreach ($existingImages as $oldFile) {
+                if (!isset($retainedMap[$oldFile])) {
                     if ($oldFile && file_exists(public_path($oldFile)) && str_starts_with($oldFile, 'uploads/')) {
                         @unlink(public_path($oldFile));
                     }
                 }
-                $finalImageList = $newUploadedPaths;
+            }
+            $finalImageList = $retained;
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($destination, $filename);
+                $finalImageList[] = 'uploads/products/' . $filename;
             }
         }
 
-        $imagePathJson = !empty($finalImageList) ? json_encode($finalImageList) : null;
+        $imagePathJson = !empty($finalImageList) ? json_encode(array_values($finalImageList)) : null;
         [$hasVariants, $variantTitle, $variantsJson] = $this->processVariants($request);
-        $sizesJson = $this->processSizes($request);
+        $sizesJson = $this->processSizes($request, $variantsJson);
         $priceVal = $this->extractNumericPrice($validated['price'], $validated['price_val'] ?? null);
 
         $totalStock = (int)($validated['stock'] ?? 0);
