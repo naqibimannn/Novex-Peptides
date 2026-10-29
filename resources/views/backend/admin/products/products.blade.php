@@ -61,35 +61,31 @@
     display: block;
     background: transparent;
   }
+
+  /* Titik Penunjuk Slider di Bawah Gambar */
   .admin-ps-dots {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 25;
-    display: inline-flex;
+    position: relative;
+    display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 8px;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 0 4px;
+    z-index: 10;
   }
   .admin-ps-dot {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 9999px;
     background: #cbd5e1;
     cursor: pointer;
     transition: all 0.25s ease;
   }
   .admin-ps-dot.active {
-    width: 16px;
+    width: 18px;
     background: #0f172a;
   }
 
-  /* Interactive Image Preview Box */
+  /* Kotak Susunan Gambar Interaktif (Drag & Drop) */
   .img-sort-item {
     cursor: grab;
     user-select: none;
@@ -235,7 +231,7 @@
         data-keywords="{{ strtolower($product->keywords ?? '') }}">
         
         <div>
-          <!-- MEDIA HEADER -->
+          <!-- MEDIA HEADER (IMAGE CONTAINER) -->
           <div class="relative w-full h-52 p-3 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
             @if(count($validImages) > 1)
               <div class="admin-prod-slider">
@@ -244,11 +240,6 @@
                     <div class="admin-prod-slide {{ $idx === 0 ? 'active' : '' }}">
                       <img src="{{ asset($img) }}?v={{ time() }}" alt="{{ $product->title }} - Slide {{ $idx + 1 }}" loading="lazy">
                     </div>
-                  @endforeach
-                </div>
-                <div class="admin-ps-dots">
-                  @foreach($validImages as $idx => $img)
-                    <span class="admin-ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setAdminCardSlide(this, {{ $idx }})"></span>
                   @endforeach
                 </div>
               </div>
@@ -271,6 +262,15 @@
               </div>
             @endif
           </div>
+
+          <!-- SLIDER DOTS TERLETAK DI BAWAH GAMBAR -->
+          @if(count($validImages) > 1)
+            <div class="admin-ps-dots bg-slate-50/50 border-b border-slate-100">
+              @foreach($validImages as $idx => $img)
+                <span class="admin-ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setAdminCardSlide(this, {{ $idx }})"></span>
+              @endforeach
+            </div>
+          @endif
 
           <!-- CARD BODY -->
           <div class="p-4 sm:p-5 flex flex-col gap-4">
@@ -310,26 +310,14 @@
               </div>
             </div>
 
+            <!-- MULTI-OPTION PILLS LANGSUNG (TANPA TAJUK CONCENTRATION & TANPA SINGLE PRICING BOX) -->
             @if(!empty($product->has_variants) && count($decodedVariants) > 0)
-              <div class="flex flex-col gap-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">
-                    {{ $product->variant_title ?: 'Multi-Price Options:' }}
+              <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
+                @foreach($decodedVariants as $v)
+                  <span class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
+                    {{ $v['label'] ?? '' }}: <b class="text-emerald-600">{{ $v['price'] ?? '' }}</b> ({{ $v['stock'] ?? 0 }})
                   </span>
-                  <span class="text-[10px] font-semibold text-slate-400">{{ count($decodedVariants) }} options</span>
-                </div>
-                <div class="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto pr-1">
-                  @foreach($decodedVariants as $v)
-                    <span class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
-                      {{ $v['label'] ?? '' }}: <b class="text-emerald-600">{{ $v['price'] ?? '' }}</b> ({{ $v['stock'] ?? 0 }})
-                    </span>
-                  @endforeach
-                </div>
-              </div>
-            @else
-              <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl border border-dashed border-slate-200 text-[11px] font-medium text-slate-400">
-                <span>Single pricing configuration</span>
-                <span>No variants</span>
+                @endforeach
               </div>
             @endif
 
@@ -475,7 +463,7 @@
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED CLEAN UI) -->
+      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -518,7 +506,7 @@
               <span>Add Option</span>
             </button>
 
-            <!-- Quick Preset Size Buttons inserted straight into Specification rows -->
+            <!-- Quick Preset Size Buttons -->
             <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
               <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
               <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
@@ -615,7 +603,7 @@
           <button type="button" onclick="toggleCustomDropdown('editCategoryMenu', 'editCategoryArrow')"
             class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer">
             <span id="editCategoryText" class="truncate">Weight Management</span>
-            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="editCategoryArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="editCategoryArrow" fill="none" stroke="currentColor" width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
             </svg>
           </button>
@@ -668,7 +656,7 @@
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED CLEAN UI) -->
+      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -711,7 +699,7 @@
               <span>Add Option</span>
             </button>
 
-            <!-- Quick Preset Size Buttons inserted straight into Specification rows -->
+            <!-- Quick Preset Size Buttons -->
             <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
               <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
               <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
@@ -736,7 +724,6 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
           <span class="text-[11px] text-slate-400">Drag or click &larr; &rarr; to reorder</span>
         </div>
-        <!-- Input terselindung untuk menghantar susunan gambar sedia ada yang dikekalkan -->
         <div id="existingImagesOrderInputs"></div>
         <div id="editExistingImagesGrid" class="flex flex-wrap gap-2.5 p-3 bg-slate-50 rounded-2xl border border-slate-200/80 empty:hidden"></div>
       </div>
@@ -791,11 +778,8 @@
   const itemsPerPage = 6;
   let filteredCards = [];
 
-  // Memory buffer for new file uploads
   let createUploadFiles = [];
   let editUploadFiles = [];
-
-  // Memory buffer for existing images in edit modal
   let editExistingImages = [];
 
   function syncNumericPrice(inputEl, targetHiddenId) {
@@ -818,7 +802,7 @@
     });
 
     menu.classList.toggle('hidden');
-    if (arrow) arrow.classList.remove('rotate-180');
+    if (arrow) arrow.classList.toggle('rotate-180');
   }
 
   function selectDropdownOption(hiddenInputId, displayTextId, menuId, arrowId, value, text) {
@@ -1152,7 +1136,6 @@
       img.className = 'w-full h-full object-contain rounded-lg pointer-events-none';
       img.src = URL.createObjectURL(file);
 
-      // Delete Button (×)
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
       delBtn.className = 'absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shadow-md hover:bg-rose-700 transition-transform active:scale-90 cursor-pointer z-20';
@@ -1164,7 +1147,6 @@
         renderUploadPreview(containerId, filesArray, mode);
       };
 
-      // Arrow Nav (Left & Right)
       const navWrap = document.createElement('div');
       navWrap.className = 'absolute bottom-1 inset-x-1 flex justify-between gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20';
       
@@ -1199,7 +1181,6 @@
       navWrap.appendChild(prevBtn);
       navWrap.appendChild(nextBtn);
 
-      // Slide Badge Number
       const badge = document.createElement('span');
       badge.className = 'absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/70 text-white pointer-events-none group-hover:opacity-0 transition-opacity';
       badge.innerText = index + 1;
@@ -1209,7 +1190,6 @@
       card.appendChild(badge);
       card.appendChild(navWrap);
 
-      // Drag & Drop Listeners
       card.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', index);
         card.classList.add('dragging');
@@ -1236,7 +1216,6 @@
     });
   }
 
-  // Render Existing Catalog Images in Edit Modal
   function renderExistingImages() {
     const grid = document.getElementById('editExistingImagesGrid');
     const inputsWrap = document.getElementById('existingImagesOrderInputs');
@@ -1253,7 +1232,6 @@
     if (wrapper) wrapper.classList.remove('hidden');
 
     editExistingImages.forEach((imgSrc, index) => {
-      // Hidden Input to submit exact sequence
       const hiddenInput = document.createElement('input');
       hiddenInput.type = 'hidden';
       hiddenInput.name = 'retained_images[]';
@@ -1269,7 +1247,6 @@
       img.className = 'w-full h-full object-contain rounded-lg pointer-events-none';
       img.src = `{{ asset('') }}${imgSrc}`;
 
-      // Delete Button (×)
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
       delBtn.className = 'absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shadow-md hover:bg-rose-700 transition-transform active:scale-90 cursor-pointer z-20';
@@ -1281,7 +1258,6 @@
         renderExistingImages();
       };
 
-      // Arrow Nav (Left & Right)
       const navWrap = document.createElement('div');
       navWrap.className = 'absolute bottom-1 inset-x-1 flex justify-between gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20';
       
@@ -1325,7 +1301,6 @@
       card.appendChild(badge);
       card.appendChild(navWrap);
 
-      // Drag & Drop
       card.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', index);
         card.classList.add('dragging');
@@ -1460,11 +1435,13 @@
       window.event.preventDefault();
       window.event.stopPropagation();
     }
-    const slider = dot.closest('.admin-prod-slider');
+    const card = dot.closest('.product-vault-card');
+    if (!card) return;
+    const slider = card.querySelector('.admin-prod-slider');
     if (!slider) return;
 
     const slides = slider.querySelectorAll('.admin-prod-slide');
-    const dots = slider.querySelectorAll('.admin-ps-dot');
+    const dots = card.querySelectorAll('.admin-ps-dot');
 
     slides.forEach((s, i) => s.classList.toggle('active', i === idx));
     dots.forEach((d, i) => d.classList.toggle('active', i === idx));
@@ -1476,9 +1453,11 @@
     if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
 
     adminProdSlideTimer = setInterval(() => {
-      document.querySelectorAll('.admin-prod-slider').forEach(slider => {
+      document.querySelectorAll('.product-vault-card').forEach(card => {
+        const slider = card.querySelector('.admin-prod-slider');
+        if (!slider) return;
         const slides = slider.querySelectorAll('.admin-prod-slide');
-        const dots = slider.querySelectorAll('.admin-ps-dot');
+        const dots = card.querySelectorAll('.admin-ps-dot');
         if (slides.length < 2) return;
 
         let cur = 0;
