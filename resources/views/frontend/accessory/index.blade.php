@@ -200,33 +200,37 @@ $accessories = \Illuminate\Support\Facades\DB::select(
     background: #fff;
   }
 
-  .ps-dots {
-    position: absolute;
-    bottom: 8px;
-    left: 0;
-    right: 0;
-    z-index: 5;
+  .pc .ps-dots {
+    position: relative;
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 6px;
+    margin-top: 10px;
+    margin-bottom: 2px;
+    z-index: 5;
   }
-  .ps-dot {
+  .pc .ps-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: rgba(47,111,159,.25);
+    background: var(--line);
     cursor: pointer;
-    transition: all .3s ease;
+    transition: all .25s ease;
   }
-  .ps-dot.active {
+  .pc .ps-dot:hover {
+    background: var(--mut);
+  }
+  .pc .ps-dot.active {
     background: var(--green);
-    transform: scale(1.25);
+    width: 18px;
+    border-radius: 999px;
   }
 
   .pc .b {
     text-align: left;
     align-items: stretch;
-    padding: 16px 8px 8px;
+    padding: 14px 8px 8px;
     gap: 8px;
     display: flex;
     flex-direction: column;
@@ -317,15 +321,17 @@ $accessories = \Illuminate\Support\Facades\DB::select(
                   </div>
                 @endforeach
               </div>
-              @if(count($imgs) > 1)
-                <div class="ps-dots">
-                  @foreach($imgs as $idx => $img)
-                    <span class="ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setCardSlideCatalog(this, {{ $idx }})"></span>
-                  @endforeach
-                </div>
-              @endif
             </div>
           </div>
+
+          @if(count($imgs) > 1)
+            <div class="ps-dots">
+              @foreach($imgs as $idx => $img)
+                <span class="ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setCardSlideCatalog(this, {{ $idx }})"></span>
+              @endforeach
+            </div>
+          @endif
+
           <div class="b">
             <h3>{{ $acc->title }}</h3>
             <p class="s">{{ $acc->subtitle }}</p>
@@ -362,10 +368,14 @@ $accessories = \Illuminate\Support\Facades\DB::select(
       window.event.preventDefault();
       window.event.stopPropagation();
     }
-    const box = dot.closest('.prod-slider');
-    if (!box) return;
-    box.querySelectorAll('.prod-slide').forEach((s, i) => s.classList.toggle('active', i === idx));
-    box.querySelectorAll('.ps-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    const card = dot.closest('.card') || dot.closest('.pc');
+    if (!card) return;
+    const slider = card.querySelector('.prod-slider');
+    if (!slider) return;
+    const slides = slider.querySelectorAll('.prod-slide');
+    const dots = card.querySelectorAll('.ps-dot');
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
   }
 
   function setCategoryFilter(cat, btn) {
