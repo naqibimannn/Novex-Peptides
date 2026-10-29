@@ -453,29 +453,33 @@
       </div>
 
       <!-- MULTI-OPTION PRICING & VARIANTS (CLEAN UI & NO AUTO-POPULATED DATA) -->
-      <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
-            <p class="text-[11px] text-slate-500">Enable if this product has multiple sizes/volumes with different prices (e.g. 100ml vs 200ml, 10mg vs 30mg).</p>
+      <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex-1">
+            <label class="text-xs font-extrabold text-slate-900 tracking-tight block">
+              Multi-Option Pricing &amp; Specification Variants
+            </label>
+            <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
+              Enable if this product offers multiple volumes, dosages, or pack sizes with custom price points.
+            </p>
           </div>
-          <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" name="has_variants" value="1" id="create_has_variants" onchange="toggleVariantSection('create')" class="w-4 h-4 rounded text-brand focus:ring-brand">
-            <span class="text-xs font-bold text-slate-700">Enable Options</span>
+          <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
+            <input type="checkbox" name="has_variants" value="1" id="create_has_variants" onchange="toggleVariantSection('create')" class="w-4 h-4 rounded text-brand focus:ring-brand/30 cursor-pointer">
+            <span class="text-xs font-bold text-slate-800">Enable Options</span>
           </label>
         </div>
 
-        <div id="create_variant_section" class="hidden space-y-3 pt-3 border-t border-slate-200/80">
+        <div id="create_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
           <div>
-            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
-            <input type="text" name="variant_title" value="" placeholder="e.g. Select Vial Concentration / Volume:"
-              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand">
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+            <input type="text" name="variant_title" value="" placeholder="e.g. Select Vial Concentration / Dosage:"
+              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
           </div>
 
-          <div class="space-y-1.5">
+          <div class="space-y-2">
             <div class="grid grid-cols-12 gap-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              <span class="col-span-5">Option / Dosage</span>
-              <span class="col-span-4">Price (RM)</span>
+              <span class="col-span-5">Specification / Dosage</span>
+              <span class="col-span-4">Price</span>
               <span class="col-span-2 text-center">Stock</span>
               <span class="col-span-1"></span>
             </div>
@@ -483,9 +487,9 @@
           </div>
 
           <button type="button" onclick="addVariantRow('create_variants_rows')"
-            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            <span>Add Option Row</span>
+            <span>Add Option</span>
           </button>
         </div>
       </div>
@@ -628,29 +632,33 @@
       </div>
 
       <!-- MULTI-OPTION PRICING & VARIANTS (CLEAN UI & NO AUTO-POPULATED DATA) -->
-      <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
+      <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
-          <div>
-            <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
-            <p class="text-[11px] text-slate-500">Toggle whether customers can choose between different sizes/volumes with custom prices.</p>
+          <div class="flex-1">
+            <label class="text-xs font-extrabold text-slate-900 tracking-tight block">
+              Multi-Option Pricing &amp; Specification Variants
+            </label>
+            <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
+              Enable if this product offers multiple volumes, dosages, or pack sizes with custom price points.
+            </p>
           </div>
-          <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
-            <input type="checkbox" name="has_variants" value="1" id="edit_has_variants" onchange="toggleVariantSection('edit')" class="w-4 h-4 rounded text-brand focus:ring-brand">
-            <span class="text-xs font-bold text-slate-700">Enable Options</span>
+          <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
+            <input type="checkbox" name="has_variants" value="1" id="edit_has_variants" onchange="toggleVariantSection('edit')" class="w-4 h-4 rounded text-brand focus:ring-brand/30 cursor-pointer">
+            <span class="text-xs font-bold text-slate-800">Enable Options</span>
           </label>
         </div>
 
-        <div id="edit_variant_section" class="hidden space-y-3 pt-3 border-t border-slate-200/80">
+        <div id="edit_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
           <div>
-            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
-            <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Volume:"
-              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand">
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+            <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Dosage:"
+              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
           </div>
 
-          <div class="space-y-1.5">
+          <div class="space-y-2">
             <div class="grid grid-cols-12 gap-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              <span class="col-span-5">Option / Dosage</span>
-              <span class="col-span-4">Price (RM)</span>
+              <span class="col-span-5">Specification / Dosage</span>
+              <span class="col-span-4">Price</span>
               <span class="col-span-2 text-center">Stock</span>
               <span class="col-span-1"></span>
             </div>
@@ -658,9 +666,9 @@
           </div>
 
           <button type="button" onclick="addVariantRow('edit_variants_rows')"
-            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            <span>Add Option Row</span>
+            <span>Add Option</span>
           </button>
         </div>
       </div>
@@ -979,21 +987,21 @@
     const stockVal = data.stock !== undefined ? data.stock : '';
 
     const row = document.createElement('div');
-    row.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-xl border border-slate-200 shadow-2xs transition-all hover:border-slate-300';
+    row.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2.5 rounded-xl border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all';
     row.innerHTML = `
       <div class="col-span-5">
-        <input type="text" name="variant_label[]" value="${labelVal}" placeholder="e.g. 100ml / 10mg"
-          class="w-full bg-slate-50/70 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
+        <input type="text" name="variant_label[]" value="${labelVal}" placeholder="e.g. 100ml or 10mg"
+          class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-4 relative">
         <input type="text" name="variant_price[]" value="${priceVal}" placeholder="e.g. RM150.00"
           oninput="this.nextElementSibling.value = (this.value.match(/([0-9]+(?:\\.[0-9]+)?)/) || ['',''])[1]"
-          class="w-full bg-slate-50/70 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-emerald-700 focus:outline-none focus:border-brand">
+          class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-emerald-700 placeholder:text-slate-400 focus:outline-none focus:border-brand">
         <input type="hidden" name="variant_val[]" value="${numVal}">
       </div>
       <div class="col-span-2">
-        <input type="number" name="variant_stock[]" value="${stockVal}" placeholder="Stock" min="0"
-          class="w-full bg-slate-50/70 focus:bg-white border border-slate-200 rounded-lg px-2.5 py-2 text-xs font-bold text-center text-slate-700 focus:outline-none focus:border-brand">
+        <input type="number" name="variant_stock[]" value="${stockVal}" placeholder="Qty" min="0"
+          class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-2.5 py-2 text-xs font-bold text-center text-slate-700 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-1 flex justify-center">
         <button type="button" onclick="this.closest('.grid').remove()" 
