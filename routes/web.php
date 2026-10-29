@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Backend\Admin\AdminLoginController;
 use App\Http\Controllers\Backend\Admin\ProductsController;
 use App\Http\Controllers\Backend\Admin\AuditController;
+use App\Http\Controllers\Backend\Admin\AudienceController;
 
 
 Route::any('/login', fn() => abort(404));
@@ -124,3 +125,8 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
 
 
 Route::get('/admin/{secret}/audit-logs', [AuditController::class, 'index'])->name('admin.audit-logs');
+
+Route::prefix('admin/{secret?}')->middleware(['web'])->group(function () {
+    Route::get('/audience', [AudienceController::class, 'index'])->name('admin.audience');
+    Route::get('/audience/data', [AudienceController::class, 'data'])->name('admin.audience.data');
+});
