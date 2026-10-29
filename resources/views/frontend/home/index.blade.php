@@ -271,7 +271,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 #lab-reports h2{color:var(--ink)}
 #lab-reports p{color:var(--mut)}
 
-/* Desain Kartu Produk Diselaraskan Sama Persis dengan Halaman Aksesori */
 .pc{
   padding:14px;
   background:var(--card-surface);
@@ -811,7 +810,6 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Featured Formulations (Diselaraskan Sama Persis dengan Desain Kartu Aksesori) -->
     <section class="sec alt"><div class="wrap">
       <div class="head">
         <div>
@@ -835,12 +833,7 @@ footer li{list-style:none;margin-bottom:6px}
                 return asset($path);
             };
 
-            $items = $featuredProducts ?? \Illuminate\Support\Facades\DB::select(
-                "SELECT * FROM products 
-                 WHERE (page_type != 'accessory' OR page_type IS NULL OR page_type = '') 
-                   AND (category NOT IN ('Accessory', 'Injection Kit', 'Syringes') OR category IS NULL) 
-                 ORDER BY id DESC LIMIT 4"
-            );
+            $items = $featuredProducts ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC LIMIT 4");
         @endphp
 
         @forelse($items as $item)
@@ -861,6 +854,13 @@ footer li{list-style:none;margin-bottom:6px}
               $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
                   ? $item->slug
                   : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
+
+              $isItemAcc = (isset($item->page_type) && strtolower($item->page_type) === 'accessory')
+                  || in_array($item->category ?? '', ['Accessory', 'Injection Kit', 'Syringes']);
+
+              $detailUrl = $isItemAcc
+                  ? (\Illuminate\Support\Facades\Route::has('accessory.show') ? route('accessory.show', $itemSlug) : url('/accessory/' . $itemSlug))
+                  : (\Illuminate\Support\Facades\Route::has('products.show') ? route('products.show', $itemSlug) : url('/products/' . $itemSlug));
           @endphp
 
           <div class="card pc" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -891,7 +891,7 @@ footer li{list-style:none;margin-bottom:6px}
                 <span style="font-weight:600">{{ $item->dosage_spec ?? 'Standard' }}</span>
                 <span>{{ $item->badge_category ?? 'Research grade' }}</span>
               </div>
-              <a class="btn-details" href="{{ url('/products/' . $itemSlug) }}">See Details</a>
+              <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
             </div>
           </div>
         @empty
@@ -995,7 +995,7 @@ footer li{list-style:none;margin-bottom:6px}
 
 <script>
 const themeIcons = {
-  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor"></line><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor"></line><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor"></line><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor"></line>`,
+  light: `<circle cx="12" cy="12" r="5" stroke="currentColor" fill="none"></circle><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor"></line><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`,
   dark: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" fill="none"></path>`,
   system: `<rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" fill="none"></rect><line x1="8" y1="21" x2="16" y2="21" stroke="currentColor"></line><line x1="12" y1="17" x2="12" y2="21"></line>`
 };
