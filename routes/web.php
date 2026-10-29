@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Backend\Admin\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Backend\Admin\AdminLoginController;
 use App\Http\Controllers\Backend\Admin\ProductsController;
+use App\Http\Controllers\Backend\Admin\AuditController;
+
 
 Route::any('/login', fn() => abort(404));
 Route::any('/admin', fn() => abort(404));
@@ -118,3 +121,6 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
         Route::match(['get', 'post'], '/logout', [AdminLoginController::class, 'logout'])->name('logout');
     });
 });
+
+
+Route::get('/admin/{secret}/audit-logs', [AuditController::class, 'index'])->name('admin.audit-logs');

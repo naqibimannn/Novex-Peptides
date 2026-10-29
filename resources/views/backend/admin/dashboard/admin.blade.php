@@ -84,9 +84,9 @@
   class="bg-[#EEF2F6] font-sans text-slate-700 antialiased h-screen flex overflow-hidden text-sm select-none relative">
 
   @php
-  $currentSection = $section ?? 'dashboard';
-  $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
-  $secretPrefix = 'admin/' . $secretKey;
+    $currentSection = $section ?? 'dashboard';
+    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
+    $secretPrefix = 'admin/' . $secretKey;
 
     $randomHeroes = [
       [
@@ -118,7 +118,8 @@
     class="hidden fixed inset-0 z-[100] bg-white flex-col items-center justify-center transition-all duration-500 ease-out opacity-100">
     <div class="relative z-10 flex flex-col items-center max-w-xs w-full px-6 text-center">
       <div class="flex items-center justify-center mb-6 animate-pulse select-none">
-        <img src="{{ asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'" alt="CentraDesk Logo" class="h-9 w-auto object-contain">
+        <img src="{{ asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'"
+          alt="CentraDesk Logo" class="h-9 w-auto object-contain">
       </div>
       <div class="w-44 h-1 bg-slate-100 rounded-full overflow-hidden relative mb-3">
         <div class="w-1/2 h-full bg-brand rounded-full animate-simple-scan"></div>
@@ -158,7 +159,8 @@
       <div class="px-2 pt-1 flex items-center">
         <a href="{{ url($secretPrefix) }}"
           class="flex items-center gap-2 w-full group select-none transition-opacity hover:opacity-90">
-          <img src="{{ asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'" alt="CentraDesk" class="h-9 w-auto object-contain">
+          <img src="{{ asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'"
+            alt="CentraDesk" class="h-9 w-auto object-contain">
         </a>
       </div>
 
@@ -265,7 +267,8 @@
         </button>
 
         <div class="flex items-center gap-2.5 shrink-0 pl-1">
-          <div class="h-8 w-8 rounded-lg bg-brand text-white font-bold flex items-center justify-center text-xs shadow-xs">
+          <div
+            class="h-8 w-8 rounded-lg bg-brand text-white font-bold flex items-center justify-center text-xs shadow-xs">
             NP
           </div>
           <div class="flex flex-col text-left">
@@ -284,7 +287,8 @@
         <div class="flex flex-col items-center justify-center text-center my-6 gap-2">
           <div
             class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-300 shadow-xs text-xs font-semibold text-slate-700">
-            <img src="{{ asset('assets/admin/logo.png') }}" onerror="this.src='{{ asset('logo.png') }}'" alt="CentraDesk Logo" class="h-4 w-auto object-contain">
+            <img src="{{ asset('assets/admin/logo.png') }}" onerror="this.src='{{ asset('logo.png') }}'"
+              alt="CentraDesk Logo" class="h-4 w-auto object-contain">
             <span>CentraDesk v1.0 Enterprise</span>
           </div>
 
@@ -477,7 +481,8 @@
                       <a href="{{ url('/blog/' . $dp->slug) }}" target="_blank"
                         class="flex items-center gap-3 group p-3.5 rounded-xl bg-slate-50/80 hover:bg-brand-tint border-0 transition-all">
                         <div class="w-12 h-12 rounded-lg bg-slate-200 overflow-hidden shrink-0">
-                          <img src="{{ $dp->cover_image ?: asset('assets/admin/logo-cms.png') }}" onerror="this.src='{{ asset('logo-cms.png') }}'" alt="{{ $dp->title }}"
+                          <img src="{{ $dp->cover_image ?: asset('assets/admin/logo-cms.png') }}"
+                            onerror="this.src='{{ asset('logo-cms.png') }}'" alt="{{ $dp->title }}"
                             class="w-full h-full object-cover">
                         </div>
                         <div class="truncate flex-1 min-w-0">
@@ -535,7 +540,8 @@
                   </div>
                   <div>
                     <span
-                      class="block truncate text-xs font-bold text-slate-800 group-hover:text-brand transition-colors mt-2">New Product</span>
+                      class="block truncate text-xs font-bold text-slate-800 group-hover:text-brand transition-colors mt-2">New
+                      Product</span>
                     <span class="block text-[11px] text-slate-400 mt-0.5">Add new product</span>
                   </div>
                 </a>
@@ -680,8 +686,8 @@
         @endif
 
       @elseif($currentSection === 'audit-logs')
-        @if(view()->exists('backend.admin.audit-logs'))
-          @include('backend.admin.audit-logs')
+        @if(view()->exists('backend.admin.audit-logs.audit-logs'))
+          @include('backend.admin.audit-logs.audit-logs')
         @else
           <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Audit logs module loaded.</div>
         @endif
@@ -830,8 +836,8 @@
         let html = '';
         for (let m = 0; m < 12; m++) {
           const isSelected = (m === calMonth);
-          const activeClass = isSelected 
-            ? 'bg-[#006FEE] text-white font-bold shadow-sm' 
+          const activeClass = isSelected
+            ? 'bg-[#006FEE] text-white font-bold shadow-sm'
             : 'bg-slate-50 text-slate-700 hover:bg-slate-100 font-semibold';
 
           html += `
