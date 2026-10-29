@@ -31,6 +31,7 @@ if (!empty($dbProducts)) {
             'title' => 'GLP-1',
             'subtitle' => 'Metabolic Support Formula',
             'price' => 'RM99.00',
+            'price_val' => 99.00,
             'dosage_spec' => '30 Capsules',
             'badge_category' => 'Dietary Supplement',
             'image' => 'assets/website/premium/product1.webp',
@@ -43,6 +44,7 @@ if (!empty($dbProducts)) {
             'title' => 'Glutathione',
             'subtitle' => 'Advanced Antioxidant Formula',
             'price' => 'RM89.00',
+            'price_val' => 89.00,
             'dosage_spec' => '30 Capsules',
             'badge_category' => 'Dietary Supplement',
             'image' => 'assets/website/premium/product2.webp',
@@ -55,6 +57,7 @@ if (!empty($dbProducts)) {
             'title' => 'Bundle Pack',
             'subtitle' => '2 Bottle GLP-1 & 2 Bottle Glutathione',
             'price' => 'RM200.00',
+            'price_val' => 200.00,
             'dosage_spec' => '4 Bottles (120 Capsules)',
             'badge_category' => 'Dietary Supplement',
             'image' => 'assets/website/premium/product3.webp',
@@ -116,10 +119,10 @@ if (!empty($dbProducts)) {
   .g3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 26px;
+    gap: 24px;
   }
   @media (max-width: 960px) {
-    .g3 { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .g3 { grid-template-columns: repeat(2, 1fr); gap: 18px; }
   }
   @media (max-width: 600px) {
     .g3 { grid-template-columns: 1fr; }
@@ -263,21 +266,73 @@ if (!empty($dbProducts)) {
     border-radius: 999px;
     border: 1px solid var(--line);
   }
-  .btn-details {
+
+  .buy-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .qty-box {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--card-surface);
+    overflow: hidden;
+    height: 44px;
+    flex-shrink: 0;
+  }
+  .qty-box button {
+    width: 38px;
+    height: 44px;
+    background: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s ease;
+  }
+  .qty-box button:hover {
+    background: var(--bg2);
+    color: var(--green);
+  }
+  .qty-box input {
+    width: 38px;
+    height: 44px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+  }
+  .btn-add-cart-card {
+    flex: 1;
+    height: 44px;
     background: var(--green);
     color: #fff;
-    padding: 12px;
+    border: none;
     border-radius: 999px;
     font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 10px;
-    transition: background .2s;
-    text-decoration: none;
-    display: block;
+    font-weight: 700;
+    letter-spacing: .02em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s ease;
   }
-  .btn-details:hover {
+  .btn-add-cart-card:hover {
     background: #245a82;
+  }
+  .btn-add-cart-card.done {
+    background: #1f8a5b;
   }
 </style>
 
@@ -326,6 +381,12 @@ if (!empty($dbProducts)) {
               }
               if (empty($slides)) {
                   $slides = ['assets/website/premium/product1.webp'];
+              }
+
+              $rawPrice = $item->price ?? 'RM0.00';
+              $numericPrice = (float)($item->price_val ?? 0);
+              if ($numericPrice <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $rawPrice, $m)) {
+                  $numericPrice = (float)$m[1];
               }
 
               $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
@@ -378,7 +439,22 @@ if (!empty($dbProducts)) {
                 <span>{{ $item->dosage_spec ?? '30 Capsules' }}</span>
                 <span>{{ $item->badge_category ?? 'Dietary Supplement' }}</span>
               </div>
-              <a class="btn-details" href="{{ url('/products/' . $itemSlug) }}">See Details</a>
+              <div class="buy-row">
+                <div class="qty-box">
+                  <button type="button" onclick="changeQty(this, -1)" aria-label="Decrease quantity">&minus;</button>
+                  <input type="number" value="1" min="1" max="99" inputmode="numeric" readonly>
+                  <button type="button" onclick="changeQty(this, 1)" aria-label="Increase quantity">+</button>
+                </div>
+                <button type="button" class="btn-add-cart-card" 
+                        data-id="{{ $itemSlug }}" 
+                        data-name="{{ $item->title }}" 
+                        data-price="{{ $numericPrice }}" 
+                        data-img="{{ $resolveImageUrl($slides[0] ?? '') }}"
+                        data-spec="{{ $item->dosage_spec ?? '30 Capsules' }}"
+                        onclick="addToCartPremium(this)">
+                  Add to Cart
+                </button>
+              </div>
             </div>
           </div>
         @empty
@@ -434,6 +510,80 @@ function setCardSlideCatalog(dot, idx){
   const dots = card.querySelectorAll('.ps-dot');
   slides.forEach((s, i) => s.classList.toggle('active', i === idx));
   dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+
+function changeQty(btn, delta) {
+  const input = btn.parentElement.querySelector('input');
+  if (!input) return;
+  let val = parseInt(input.value, 10) || 1;
+  val = Math.max(1, Math.min(99, val + delta));
+  input.value = val;
+}
+
+function addToCartPremium(btn) {
+  const row = btn.closest('.buy-row');
+  const input = row ? row.querySelector('input') : null;
+  const qty = parseInt(input ? input.value : 1, 10) || 1;
+  
+  const id = btn.getAttribute('data-id') || 'product';
+  const name = btn.getAttribute('data-name') || '';
+  const price = parseFloat(btn.getAttribute('data-price')) || 0;
+  const img = btn.getAttribute('data-img') || '';
+  const spec = btn.getAttribute('data-spec') || '';
+  
+  let cart = [];
+  try {
+    cart = JSON.parse(localStorage.getItem('nvx_cart')) || [];
+  } catch (e) {
+    cart = [];
+  }
+  
+  const found = cart.find(item => item.id === id);
+  if (found) {
+    found.qty = (found.qty || 1) + qty;
+  } else {
+    cart.push({
+      id: id,
+      name: name,
+      n: name,
+      price: price,
+      val: price,
+      img: img,
+      i: img,
+      s: spec,
+      spec: spec,
+      qty: qty
+    });
+  }
+  
+  try {
+    localStorage.setItem('nvx_cart', JSON.stringify(cart));
+  } catch (e) {}
+  
+  const totalCount = cart.reduce((acc, item) => acc + (item.qty || 0), 0);
+  const badge = document.getElementById('cartCount');
+  if (badge) {
+    badge.textContent = totalCount;
+    badge.classList.add('cart-bump');
+    setTimeout(() => badge.classList.remove('cart-bump'), 350);
+  }
+  
+  const toast = document.getElementById('nxToast');
+  if (toast) {
+    toast.textContent = 'Added to cart \u2713';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  } else {
+    alert('✓ Added to cart: ' + name);
+  }
+  
+  const originalText = btn.textContent;
+  btn.textContent = 'Added \u2713';
+  btn.classList.add('done');
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.classList.remove('done');
+  }, 1400);
 }
 </script>
 @endsection
