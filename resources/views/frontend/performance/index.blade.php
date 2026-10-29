@@ -15,66 +15,52 @@ $resolveImageUrl = function($path) {
     return asset($path);
 };
 
-$poloProduct = [
-    'id'             => 'nx-polo-navy',
-    'name'           => 'Signature Unisex Half Zip Polo',
-    'title'          => 'Navy · White Panel',
-    'spec'           => 'Adult Fit',
-    'val'            => 79.00,
-    'price'          => 'RM79.00',
-    'category'       => 'Performance Apparel',
-    'badge_category' => 'Novex Performance Division',
-    'stock'          => 45,
-    'imgs'           => [
-        'assets/website/performance/front-view.webp',
-        'assets/website/performance/back-view.webp',
-        'assets/website/performance/left-side-view.webp',
-        'assets/website/performance/right-side-view.webp',
-    ],
-    'sizes'          => ['S', 'M', 'L', 'XL'],
-    'desc'           => 'Designed for movement, built for a higher standard. A half zip polo with signature 3D embroidery and stretch piqué mesh fabric, crafted to move effortlessly from the padel court to everyday lifestyle.',
-];
+$poloProduct = null;
+$dbItem = \Illuminate\Support\Facades\DB::select(
+    "SELECT * FROM products 
+     WHERE page_type = 'performance' 
+        OR category = 'Performance Apparel' 
+        OR slug IN ('nx-polo-navy', 'polo', 'half-zip-polo') 
+     ORDER BY id DESC LIMIT 1"
+);
 
-try {
-    $dbItem = \Illuminate\Support\Facades\DB::select("SELECT * FROM products WHERE page_type = 'performance' OR slug IN ('nx-polo-navy', 'polo', 'half-zip-polo') LIMIT 1");
-    if (!empty($dbItem)) {
-        $row = $dbItem[0];
-        $imgs = [];
-        if (!empty($row->image)) {
-            $decodedImg = json_decode($row->image, true);
-            $imgs = (json_last_error() === JSON_ERROR_NONE && is_array($decodedImg) && count($decodedImg) > 0)
-                ? $decodedImg
-                : [$row->image];
-        }
-        $sizes = [];
-        if (!empty($row->sizes)) {
-            $decodedSizes = is_string($row->sizes) ? json_decode($row->sizes, true) : $row->sizes;
-            if (is_array($decodedSizes)) {
-                $sizes = array_values(array_filter(array_map('trim', $decodedSizes)));
-            } elseif (is_string($row->sizes)) {
-                $sizes = array_values(array_filter(array_map('trim', explode(',', $row->sizes))));
-            }
-        }
-        $val = (float)($row->price_val ?? 0);
-        if ($val <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $row->price ?? '', $m)) {
-            $val = (float)$m[1];
-        }
-        $poloProduct = [
-            'id'             => $row->slug ?? 'nx-polo-navy',
-            'name'           => $row->title ?? $poloProduct['name'],
-            'title'          => $row->subtitle ?? $poloProduct['title'],
-            'spec'           => $row->dosage_spec ?? $poloProduct['spec'],
-            'val'            => $val > 0 ? $val : $poloProduct['val'],
-            'price'          => $row->price ?? $poloProduct['price'],
-            'category'       => $row->category ?? $poloProduct['category'],
-            'badge_category' => $row->badge_category ?? $poloProduct['badge_category'],
-            'stock'          => (int)($row->stock ?? $poloProduct['stock']),
-            'imgs'           => count($imgs) > 0 ? $imgs : $poloProduct['imgs'],
-            'sizes'          => count($sizes) > 0 ? $sizes : $poloProduct['sizes'],
-            'desc'           => !empty($row->description) ? $row->description : $poloProduct['desc'],
-        ];
+if (!empty($dbItem)) {
+    $row = $dbItem[0];
+    $imgs = [];
+    if (!empty($row->image)) {
+        $decodedImg = json_decode($row->image, true);
+        $imgs = (json_last_error() === JSON_ERROR_NONE && is_array($decodedImg) && count($decodedImg) > 0)
+            ? $decodedImg
+            : [$row->image];
     }
-} catch (\Throwable $e) {}
+    $sizes = [];
+    if (!empty($row->sizes)) {
+        $decodedSizes = is_string($row->sizes) ? json_decode($row->sizes, true) : $row->sizes;
+        if (is_array($decodedSizes)) {
+            $sizes = array_values(array_filter(array_map('trim', $decodedSizes)));
+        } elseif (is_string($row->sizes)) {
+            $sizes = array_values(array_filter(array_map('trim', explode(',', $row->sizes))));
+        }
+    }
+    $val = (float)($row->price_val ?? 0);
+    if ($val <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $row->price ?? '', $m)) {
+        $val = (float)$m[1];
+    }
+    $poloProduct = [
+        'id'             => $row->slug ?? ('product-' . $row->id),
+        'name'           => $row->title,
+        'title'          => $row->subtitle ?? '',
+        'spec'           => $row->dosage_spec ?? 'Adult Fit',
+        'val'            => $val,
+        'price'          => $row->price,
+        'category'       => $row->category ?? 'Performance Apparel',
+        'badge_category' => $row->badge_category ?? 'Novex Performance Division',
+        'stock'          => (int)($row->stock ?? 0),
+        'imgs'           => count($imgs) > 0 ? $imgs : ['assets/website/performance/front-view.webp'],
+        'sizes'          => count($sizes) > 0 ? $sizes : ['S', 'M', 'L', 'XL'],
+        'desc'           => $row->description ?? '',
+    ];
+}
 @endphp
 
 <style>
@@ -136,7 +122,6 @@ try {
     transform: scale(1.02) !important;
   }
 
-  /* Susunan Kemas & Sekata bagi 4 Tag Pilihan Pandangan */
   .nx-views {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -403,10 +388,25 @@ try {
       </div>
 
       <div class="nxg-grid c4">
-        <figure class="nxg-fig"><div class="nxg-ph rA"><img src="{{ asset('assets/website/performance/front-view.webp') }}" alt="Front view" loading="lazy"></div><figcaption class="nxg-cap"><b>Front view</b></figcaption></figure>
-        <figure class="nxg-fig"><div class="nxg-ph rA"><img src="{{ asset('assets/website/performance/back-view.webp') }}" alt="Back view" loading="lazy"></div><figcaption class="nxg-cap"><b>Back view</b></figcaption></figure>
-        <figure class="nxg-fig"><div class="nxg-ph rA"><img src="{{ asset('assets/website/performance/left-side-view.webp') }}" alt="Left side view" loading="lazy"></div><figcaption class="nxg-cap"><b>Left side view</b></figcaption></figure>
-        <figure class="nxg-fig"><div class="nxg-ph rA"><img src="{{ asset('assets/website/performance/right-side-view.webp') }}" alt="Right side view" loading="lazy"></div><figcaption class="nxg-cap"><b>Right side view</b></figcaption></figure>
+        @php
+            $viewCaps = ['Front view', 'Back view', 'Left side view', 'Right side view'];
+            $displayImgs = ($poloProduct && !empty($poloProduct['imgs'])) ? $poloProduct['imgs'] : [
+                'assets/website/performance/front-view.webp',
+                'assets/website/performance/back-view.webp',
+                'assets/website/performance/left-side-view.webp',
+                'assets/website/performance/right-side-view.webp'
+            ];
+        @endphp
+        @foreach($displayImgs as $gIdx => $gImg)
+          @if($gIdx < 4)
+            <figure class="nxg-fig">
+              <div class="nxg-ph rA">
+                <img src="{{ $resolveImageUrl($gImg) }}" alt="{{ $viewCaps[$gIdx] ?? ('View ' . ($gIdx + 1)) }}" loading="lazy">
+              </div>
+              <figcaption class="nxg-cap"><b>{{ $viewCaps[$gIdx] ?? ('View ' . ($gIdx + 1)) }}</b></figcaption>
+            </figure>
+          @endif
+        @endforeach
       </div>
 
       <div class="nxg-grid c3">
@@ -432,62 +432,71 @@ try {
 
   <section class="sec alt" id="perf-signature">
     <div class="wrap">
-      <div class="detail-grid">
-        <div class="detail-media-box">
-          <div class="ph">
-            <img id="perfPoloImg" 
-                 src="{{ $resolveImageUrl($poloProduct['imgs'][0] ?? 'assets/website/performance/front-view.webp') }}" 
-                 alt="{{ $poloProduct['name'] }}" 
-                 loading="lazy" 
-                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1000'">
+      @if($poloProduct)
+        <div class="detail-grid">
+          <div class="detail-media-box">
+            <div class="ph">
+              <img id="perfPoloImg" 
+                   src="{{ $resolveImageUrl($poloProduct['imgs'][0] ?? 'assets/website/performance/front-view.webp') }}" 
+                   alt="{{ $poloProduct['name'] }}" 
+                   loading="lazy" 
+                   onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1000'">
+            </div>
+            @if(count($poloProduct['imgs']) > 1)
+              <div class="nx-views">
+                @foreach($poloProduct['imgs'] as $vIdx => $vImg)
+                  <button type="button" class="nx-view-btn {{ $vIdx === 0 ? 'active' : '' }}" onclick="setPoloView('{{ $resolveImageUrl($vImg) }}', this)">
+                    {{ $viewCaps[$vIdx] ?? ('View ' . ($vIdx + 1)) }}
+                  </button>
+                @endforeach
+              </div>
+            @endif
           </div>
-          <div class="nx-views">
-            <button type="button" class="nx-view-btn active" onclick="setPoloView('{{ $resolveImageUrl($poloProduct['imgs'][0] ?? 'assets/website/performance/front-view.webp') }}', this)">Front view</button>
-            <button type="button" class="nx-view-btn" onclick="setPoloView('{{ $resolveImageUrl($poloProduct['imgs'][1] ?? 'assets/website/performance/back-view.webp') }}', this)">Back view</button>
-            <button type="button" class="nx-view-btn" onclick="setPoloView('{{ $resolveImageUrl($poloProduct['imgs'][2] ?? 'assets/website/performance/left-side-view.webp') }}', this)">Left side view</button>
-            <button type="button" class="nx-view-btn" onclick="setPoloView('{{ $resolveImageUrl($poloProduct['imgs'][3] ?? 'assets/website/performance/right-side-view.webp') }}', this)">Right side view</button>
+
+          <div class="detail-info">
+            <span class="detail-badge">{{ $poloProduct['badge_category'] }}</span>
+            <h1 style="font-size:clamp(28px, 4vw, 44px);margin:0">{{ $poloProduct['name'] }}</h1>
+            <p id="detailSubDisplay" style="color:var(--mut);font-size:16px;margin:0">
+              {{ $poloProduct['title'] }} ({{ $poloProduct['spec'] }})
+            </p>
+            <div id="detailPriceDisplay" class="detail-price">{{ $poloProduct['price'] }}</div>
+            
+            <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $poloProduct['stock'] }} units available)</div>
+
+            <div style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <label style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--mut)">Select Size:</label>
+                <a class="chart-link" onclick="openSizeModal()">View Size Chart</a>
+              </div>
+              <div class="size-picker" id="sizePickerGroup">
+                @foreach($poloProduct['sizes'] as $sIdx => $sz)
+                  <button type="button" class="size-btn {{ $sIdx === 0 ? 'active' : '' }}" onclick="selectProductSize('{{ $sz }}', this)">
+                    {{ $sz }}
+                  </button>
+                @endforeach
+              </div>
+            </div>
+
+            <div class="detail-desc">
+              <h4 style="font-family:var(--serif);font-size:20px;margin-bottom:8px">Product Overview</h4>
+              <p>{{ $poloProduct['desc'] }}</p>
+            </div>
+
+            <div class="qty-row">
+              <div class="qty-box">
+                <button type="button" onclick="changeDetailQty(-1, {{ (int)$poloProduct['stock'] }})">-</button>
+                <input type="text" id="detailQtyInput" readonly value="1">
+                <button type="button" onclick="changeDetailQty(1, {{ (int)$poloProduct['stock'] }})">+</button>
+              </div>
+              <button class="btn-add-cart" onclick="triggerAddToCart()">Add to Cart</button>
+            </div>
           </div>
         </div>
-
-        <div class="detail-info">
-          <span class="detail-badge">{{ $poloProduct['badge_category'] }}</span>
-          <h1 style="font-size:clamp(28px, 4vw, 44px);margin:0">{{ $poloProduct['name'] }}</h1>
-          <p id="detailSubDisplay" style="color:var(--mut);font-size:16px;margin:0">
-            {{ $poloProduct['title'] }} ({{ $poloProduct['spec'] }})
-          </p>
-          <div id="detailPriceDisplay" class="detail-price">{{ $poloProduct['price'] }}</div>
-          
-          <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $poloProduct['stock'] }} units available)</div>
-
-          <div style="margin-top:10px">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <label style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--mut)">Select Size:</label>
-              <a class="chart-link" onclick="openSizeModal()">View Size Chart</a>
-            </div>
-            <div class="size-picker" id="sizePickerGroup">
-              @foreach($poloProduct['sizes'] as $sIdx => $sz)
-                <button type="button" class="size-btn {{ $sIdx === 0 ? 'active' : '' }}" onclick="selectProductSize('{{ $sz }}', this)">
-                  {{ $sz }}
-                </button>
-              @endforeach
-            </div>
-          </div>
-
-          <div class="detail-desc">
-            <h4 style="font-family:var(--serif);font-size:20px;margin-bottom:8px">Product Overview</h4>
-            <p>{{ $poloProduct['desc'] }}</p>
-          </div>
-
-          <div class="qty-row">
-            <div class="qty-box">
-              <button type="button" onclick="changeDetailQty(-1, {{ (int)$poloProduct['stock'] }})">-</button>
-              <input type="text" id="detailQtyInput" readonly value="1">
-              <button type="button" onclick="changeDetailQty(1, {{ (int)$poloProduct['stock'] }})">+</button>
-            </div>
-            <button class="btn-add-cart" onclick="triggerAddToCart()">Add to Cart</button>
-          </div>
+      @else
+        <div style="text-align:center;padding:60px 0;color:var(--mut)">
+          No performance signature products currently available.
         </div>
-      </div>
+      @endif
     </div>
   </section>
 
@@ -532,7 +541,7 @@ try {
 <script>
   let currentDetailProduct = @json($poloProduct);
   let currentDetailQty = 1;
-  let currentDetailSize = (currentDetailProduct.sizes && currentDetailProduct.sizes.length > 0) ? currentDetailProduct.sizes[0] : 'S';
+  let currentDetailSize = (currentDetailProduct && currentDetailProduct.sizes && currentDetailProduct.sizes.length > 0) ? currentDetailProduct.sizes[0] : 'S';
 
   function setPoloView(src, el) {
     const img = document.getElementById('perfPoloImg');
@@ -566,6 +575,7 @@ try {
   }
 
   function triggerAddToCart(){
+    if(!currentDetailProduct) return;
     let cart = [];
     try {
       cart = JSON.parse(localStorage.getItem('nvx_cart')) || [];
