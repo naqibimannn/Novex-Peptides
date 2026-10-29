@@ -219,18 +219,6 @@
         <div>
           <!-- MEDIA HEADER -->
           <div class="relative w-full h-52 p-3 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
-            
-            <!-- Top Floating Meta Badges -->
-            <div class="absolute top-3 left-3 right-3 z-20 flex items-center justify-between gap-2 pointer-events-none">
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider {{ $pagePlacement === 'accessory' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-sky-100 text-sky-800 border border-sky-200' }} shadow-2xs">
-                {{ $pagePlacement === 'accessory' ? 'Accessory Page' : 'Products Page' }}
-              </span>
-
-              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border shadow-2xs {{ $stockCount > 10 ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : ($stockCount > 0 ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-rose-50 border-rose-200 text-rose-700') }}">
-                Stock: {{ $stockCount }}
-              </span>
-            </div>
-
             @if(count($validImages) > 1)
               <div class="admin-prod-slider">
                 <div class="admin-prod-slides">
@@ -360,27 +348,21 @@
     @endforelse
   </div>
 
-  <!-- PAGINATION SECTION (Centered Modern Pill Container) -->
+  <!-- PAGINATION SECTION -->
   <div id="paginationWrapper" class="mt-4 pt-6 border-t border-slate-200/80 flex flex-col items-center justify-center gap-3">
-    
-    <!-- Kapsul Pagination -->
     <nav aria-label="Pagination" class="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xs" id="paginationNav">
-      <!-- Dijana secara dinamik oleh JavaScript -->
     </nav>
-
-    <!-- Status Ringkas di Bawah Kapsul -->
     <div class="text-xs font-semibold text-slate-400" id="paginationResultText">
       Showing 0 &ndash; 0 of 0 products
     </div>
-
   </div>
 
 </div>
 
 <!-- CREATE PRODUCT MODAL -->
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
-  <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-100 flex flex-col max-h-[92vh] overflow-hidden">
-    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+  <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Add New Formulation / Accessory</h3>
         <p class="text-xs text-slate-400 font-medium">Configure product details, stock count, multi-price options, and target storefront page.</p>
@@ -388,133 +370,126 @@
       <button type="button" onclick="closeCreateProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
 
-    <form action="{{ url($secretPrefix . '/products') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
+    <form action="{{ url($secretPrefix . '/products') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
-      <div class="p-6 overflow-y-auto space-y-4 flex-1">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
-            <select name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
-              <option value="products">Products Catalog Page (/products)</option>
-              <option value="accessory">Accessory Page (/accessory)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
-            <select name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
-              @foreach($categories as $cat)
-                <option value="{{ $cat }}">{{ $cat }}</option>
-              @endforeach
-            </select>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
-            <input type="text" name="title" required placeholder="e.g. Retatrutide"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
-            <input type="text" name="subtitle" placeholder="e.g. Advanced Weight Management"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Display Price *</label>
-            <input type="text" name="price" required placeholder="RM280.00 - RM980.00"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
-          </div>
-          <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Base Price (RM)</label>
-            <input type="number" step="0.01" name="price_val" placeholder="280.00"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
-          </div>
-          <div class="col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
-            <input type="text" name="dosage_spec" placeholder="10mg - 100mg / 100ml"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
-          </div>
-          <div class="col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
-            <input type="number" name="stock" value="25" min="0" required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700 focus:outline-none focus:border-brand">
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
-              <p class="text-[11px] text-slate-500">Enable if this product has multiple sizes/volumes with different prices (e.g. 100ml vs 200ml, 10mg vs 30mg).</p>
-            </div>
-            <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
-              <input type="checkbox" name="has_variants" value="1" id="create_has_variants" onchange="toggleVariantSection('create')" class="w-4 h-4 rounded text-brand focus:ring-brand">
-              <span class="text-xs font-bold text-slate-700">Enable Options</span>
-            </label>
-          </div>
-
-          <div id="create_variant_section" class="hidden space-y-3 pt-2 border-t border-slate-200/80">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
-              <input type="text" name="variant_title" value="Select Vial Concentration / Volume:" placeholder="e.g. Select Volume (100ml / 200ml) or Dosage:"
-                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
-            </div>
-
-            <div class="space-y-2" id="create_variants_rows"></div>
-
-            <button type="button" onclick="addVariantRow('create_variants_rows')"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs cursor-pointer">
-              <span>+ Add Price / Volume Option (e.g. 100ml, 200ml)</span>
-            </button>
-          </div>
-        </div>
-
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description (Show Page)</label>
-          <textarea name="description" rows="3" placeholder="Enter detailed scientific description or product overview..."
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
+          <select name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
+            <option value="products">Products Catalog Page (/products)</option>
+            <option value="accessory">Accessory Page (/accessory)</option>
+          </select>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
-            <input type="text" name="badge_category" placeholder="e.g. Research grade"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Optional)</label>
-            <input type="text" name="sizes" placeholder="e.g. S, M, L, XL"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Search Keywords</label>
-            <input type="text" name="keywords" placeholder="e.g. retatrutide 10mg"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-          </div>
-        </div>
-
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Visual Assets (Multiple Allowed)</label>
-          <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-            <input type="file" name="images[]" multiple accept="image/*"
-              onchange="previewMultiImages(event, 'createImagesPreviewGrid')"
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-            <div id="createImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
-            <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
-              <span>Click or drag multiple files to create slider</span>
-            </div>
-            <span class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, or WEBP up to 3MB each</span>
-          </div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+          <select name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand">
+            @foreach($categories as $cat)
+              <option value="{{ $cat }}">{{ $cat }}</option>
+            @endforeach
+          </select>
         </div>
       </div>
 
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
+          <input type="text" name="title" required placeholder="e.g. Retatrutide"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
+          <input type="text" name="subtitle" placeholder="e.g. Advanced Weight Management"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+        </div>
+      </div>
+
+      <!-- PRICE (COMBINED), DOSAGE & STOCK -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
+          <input type="text" name="price" id="create_price" required placeholder="e.g. RM280.00" oninput="syncNumericPrice(this, 'create_price_val')"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700 focus:outline-none focus:border-brand">
+          <input type="hidden" name="price_val" id="create_price_val" value="">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
+          <input type="text" name="dosage_spec" placeholder="10mg - 100mg / 100ml"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
+          <input type="number" name="stock" value="25" min="0" required
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700 focus:outline-none focus:border-brand">
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
+            <p class="text-[11px] text-slate-500">Enable if this product has multiple sizes/volumes with different prices (e.g. 100ml vs 200ml, 10mg vs 30mg).</p>
+          </div>
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" name="has_variants" value="1" id="create_has_variants" onchange="toggleVariantSection('create')" class="w-4 h-4 rounded text-brand focus:ring-brand">
+            <span class="text-xs font-bold text-slate-700">Enable Options</span>
+          </label>
+        </div>
+
+        <div id="create_variant_section" class="hidden space-y-3 pt-2 border-t border-slate-200/80">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
+            <input type="text" name="variant_title" value="Select Vial Concentration / Volume:" placeholder="e.g. Select Volume (100ml / 200ml) or Dosage:"
+              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
+          </div>
+
+          <div class="space-y-2" id="create_variants_rows">
+          </div>
+
+          <button type="button" onclick="addVariantRow('create_variants_rows')"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs cursor-pointer">
+            <span>+ Add Price / Volume Option (e.g. 100ml, 200ml)</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description (Show Page)</label>
+        <textarea name="description" rows="3" placeholder="Enter detailed scientific description or product overview..."
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
+      </div>
+
+      <!-- BADGE LABEL & APPAREL SIZES (SEARCH KEYWORDS DIBUANG) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <input type="text" name="badge_category" placeholder="e.g. Research grade"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Optional)</label>
+          <input type="text" name="sizes" placeholder="e.g. S, M, L, XL"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Visual Assets (Multiple Allowed)</label>
+        <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
+          <input type="file" name="images[]" multiple accept="image/*"
+            onchange="previewMultiImages(event, 'createImagesPreviewGrid')"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+          <div id="createImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
+          <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
+            <span>Click or drag multiple files to create slider</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, or WEBP up to 3MB each</span>
+        </div>
+      </div>
+
+      <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
         <button type="button" onclick="closeCreateProductModal()"
-          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">Cancel</button>
         <button type="submit"
           class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-sm cursor-pointer">Publish Formulation</button>
       </div>
@@ -524,8 +499,8 @@
 
 <!-- EDIT PRODUCT MODAL -->
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
-  <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-100 flex flex-col max-h-[92vh] overflow-hidden">
-    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+  <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Edit Formulation / Accessory</h3>
         <p class="text-xs text-slate-400 font-medium">Update stock, multi-price options, description, and page display target.</p>
@@ -533,152 +508,143 @@
       <button type="button" onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
 
-    <form id="editProductForm" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
+    <form id="editProductForm" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
       @method('PUT')
 
-      <div class="p-6 overflow-y-auto space-y-4 flex-1">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
-            <select id="edit_page_type" name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800">
-              <option value="products">Products Catalog Page (/products)</option>
-              <option value="accessory">Accessory Page (/accessory)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
-            <select id="edit_category" name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
-              @foreach($categories as $cat)
-                <option value="{{ $cat }}">{{ $cat }}</option>
-              @endforeach
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
-            <input type="text" id="edit_title" name="title" required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
-            <input type="text" id="edit_subtitle" name="subtitle"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Display Price *</label>
-            <input type="text" id="edit_price" name="price" required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
-          </div>
-          <div class="col-span-2 sm:col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Base Price (RM)</label>
-            <input type="number" step="0.01" id="edit_price_val" name="price_val"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
-          </div>
-          <div class="col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
-            <input type="text" id="edit_dosage_spec" name="dosage_spec"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
-          </div>
-          <div class="col-span-1">
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
-            <input type="number" id="edit_stock" name="stock" min="0" required
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700">
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
-              <p class="text-[11px] text-slate-500">Toggle whether customers can choose between different sizes/volumes with custom prices.</p>
-            </div>
-            <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
-              <input type="checkbox" name="has_variants" value="1" id="edit_has_variants" onchange="toggleVariantSection('edit')" class="w-4 h-4 rounded text-brand focus:ring-brand">
-              <span class="text-xs font-bold text-slate-700">Enable Options</span>
-            </label>
-          </div>
-
-          <div id="edit_variant_section" class="hidden space-y-3 pt-2 border-t border-slate-200/80">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
-              <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Volume:"
-                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
-            </div>
-
-            <div class="space-y-2" id="edit_variants_rows"></div>
-
-            <button type="button" onclick="addVariantRow('edit_variants_rows')"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs cursor-pointer">
-              <span>+ Add Price / Volume Option</span>
-            </button>
-          </div>
-        </div>
-
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description</label>
-          <textarea id="edit_description" name="description" rows="3"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
+          <select id="edit_page_type" name="page_type" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800">
+            <option value="products">Products Catalog Page (/products)</option>
+            <option value="accessory">Accessory Page (/accessory)</option>
+          </select>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
-            <input type="text" id="edit_badge_category" name="badge_category"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (CSV)</label>
-            <input type="text" id="edit_sizes" name="sizes" placeholder="S, M, L, XL"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Search Keywords</label>
-            <input type="text" id="edit_keywords" name="keywords"
-              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
-          </div>
-        </div>
-
-        <div id="existingImagesWrapper" class="space-y-1.5">
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
-          <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80"></div>
-        </div>
-
-        <div class="space-y-1.5">
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Upload Action Mode</label>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
-              <input type="radio" name="image_mode" value="replace" checked class="text-brand focus:ring-brand">
-              <span>Replace Existing</span>
-            </label>
-            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
-              <input type="radio" name="image_mode" value="append" class="text-brand focus:ring-brand">
-              <span>Add to Slider</span>
-            </label>
-          </div>
-        </div>
-
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Choose New Visual Asset(s)</label>
-          <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-            <input type="file" name="images[]" multiple accept="image/*"
-              onchange="previewMultiImages(event, 'editNewImagesPreviewGrid')"
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-            <div id="editNewImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
-            <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
-              <span>Click to upload new visual(s)</span>
-            </div>
-            <span class="text-[11px] text-slate-400 mt-0.5">Leave blank to retain current catalog visual assets</span>
-          </div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+          <select id="edit_category" name="category" class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
+            @foreach($categories as $cat)
+              <option value="{{ $cat }}">{{ $cat }}</option>
+            @endforeach
+          </select>
         </div>
       </div>
 
-      <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
+          <input type="text" id="edit_title" name="title" required
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
+          <input type="text" id="edit_subtitle" name="subtitle"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
+        </div>
+      </div>
+
+      <!-- PRICE (COMBINED), DOSAGE & STOCK -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
+          <input type="text" id="edit_price" name="price" required oninput="syncNumericPrice(this, 'edit_price_val')"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700">
+          <input type="hidden" id="edit_price_val" name="price_val" value="">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
+          <input type="text" id="edit_dosage_spec" name="dosage_spec"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
+          <input type="number" id="edit_stock" name="stock" min="0" required
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700">
+        </div>
+      </div>
+
+      <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 space-y-3">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <label class="text-xs font-extrabold text-slate-800 uppercase tracking-wider block">Multi-Option Pricing &amp; Dosage / Volume Variants</label>
+            <p class="text-[11px] text-slate-500">Toggle whether customers can choose between different sizes/volumes with custom prices.</p>
+          </div>
+          <label class="inline-flex items-center gap-2 cursor-pointer shrink-0">
+            <input type="checkbox" name="has_variants" value="1" id="edit_has_variants" onchange="toggleVariantSection('edit')" class="w-4 h-4 rounded text-brand focus:ring-brand">
+            <span class="text-xs font-bold text-slate-700">Enable Options</span>
+          </label>
+        </div>
+
+        <div id="edit_variant_section" class="hidden space-y-3 pt-2 border-t border-slate-200/80">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Option Section Title (Tajuk Pilihan)</label>
+            <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Volume:"
+              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
+          </div>
+
+          <div class="space-y-2" id="edit_variants_rows"></div>
+
+          <button type="button" onclick="addVariantRow('edit_variants_rows')"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs cursor-pointer">
+            <span>+ Add Price / Volume Option</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description</label>
+        <textarea id="edit_description" name="description" rows="3"
+          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
+      </div>
+
+      <!-- BADGE LABEL & APPAREL SIZES (SEARCH KEYWORDS DIBUANG) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <input type="text" id="edit_badge_category" name="badge_category"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (CSV)</label>
+          <input type="text" id="edit_sizes" name="sizes" placeholder="S, M, L, XL"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
+        </div>
+      </div>
+
+      <div id="existingImagesWrapper" class="space-y-1.5">
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
+        <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80"></div>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Upload Action Mode</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
+            <input type="radio" name="image_mode" value="replace" checked class="text-brand focus:ring-brand">
+            <span>Replace Existing</span>
+          </label>
+          <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
+            <input type="radio" name="image_mode" value="append" class="text-brand focus:ring-brand">
+            <span>Add to Slider</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Choose New Visual Asset(s)</label>
+        <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
+          <input type="file" name="images[]" multiple accept="image/*"
+            onchange="previewMultiImages(event, 'editNewImagesPreviewGrid')"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+          <div id="editNewImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
+          <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
+            <span>Click to upload new visual(s)</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-0.5">Leave blank to retain current catalog visual assets</span>
+        </div>
+      </div>
+
+      <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
         <button type="button" onclick="closeEditProductModal()"
           class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
         <button type="submit"
@@ -692,10 +658,17 @@
   let activeCategoryFilter = 'all';
   let activePageTypeFilter = 'all';
   
-  // Konfigurasi Pagination (6 Produk Per Halaman)
   let currentPage = 1;
   const itemsPerPage = 6;
   let filteredCards = [];
+
+  function syncNumericPrice(inputEl, targetHiddenId) {
+    const hiddenEl = document.getElementById(targetHiddenId);
+    if (!hiddenEl) return;
+    const val = inputEl.value || '';
+    const match = val.match(/([0-9]+(?:\.[0-9]+)?)/);
+    hiddenEl.value = match ? match[1] : '';
+  }
 
   function toggleCategoryDropdown() {
     const menu = document.getElementById('categoryDropdownMenu');
@@ -817,7 +790,6 @@
     const arrowEnabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer`;
     const arrowDisabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 cursor-not-allowed pointer-events-none`;
 
-    // 1. Tombol Previous (<)
     if (currentPage > 1) {
       html += `<button type="button" onclick="goToPage(${currentPage - 1})" class="${arrowEnabled}" aria-label="Previous page">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -832,7 +804,6 @@
       </button>`;
     }
 
-    // 2. Deretan Nombor Halaman & Ellipsis (...)
     const pages = getPaginationPageList(currentPage, totalPages);
     pages.forEach(p => {
       if (p === '...') {
@@ -844,7 +815,6 @@
       }
     });
 
-    // 3. Tombol Next (>)
     if (currentPage < totalPages) {
       html += `<button type="button" onclick="goToPage(${currentPage + 1})" class="${arrowEnabled}" aria-label="Next page">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -959,14 +929,18 @@
       form.action = `{{ url('') }}/${secretPrefix}/products/${product.id}`;
       document.getElementById('edit_title').value = product.title || '';
       document.getElementById('edit_subtitle').value = product.subtitle || '';
-      document.getElementById('edit_price').value = product.price || '';
-      document.getElementById('edit_price_val').value = product.price_val || '';
+      
+      const priceInput = document.getElementById('edit_price');
+      if (priceInput) {
+        priceInput.value = product.price || '';
+        syncNumericPrice(priceInput, 'edit_price_val');
+      }
+
       document.getElementById('edit_dosage_spec').value = product.dosage_spec || '';
       document.getElementById('edit_stock').value = product.stock !== null && product.stock !== undefined ? product.stock : 25;
       document.getElementById('edit_badge_category').value = product.badge_category || '';
       document.getElementById('edit_category').value = product.category || 'Weight Management';
       document.getElementById('edit_page_type').value = product.page_type || (product.category === 'Accessory' ? 'accessory' : 'products');
-      document.getElementById('edit_keywords').value = product.keywords || '';
       document.getElementById('edit_description').value = product.description || '';
 
       let sizesText = '';
