@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Backend\Admin\AdminLoginController;
 use App\Http\Controllers\Backend\Admin\ProductsController;
 
-Route::any('/login', fn () => abort(404));
-Route::any('/admin', fn () => abort(404));
+Route::any('/login', fn() => abort(404));
+Route::any('/admin', fn() => abort(404));
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ Route::prefix('/')->group(function () {
         return view('frontend.home.index', compact('featuredProducts'));
     })->name('home');
 
-    Route::get('/about', fn () => view('frontend.about.index'))->name('about');
+    Route::get('/about', fn() => view('frontend.about.index'))->name('about');
 
     // Catalog: Membawa seluruh katalog produk dari database
     Route::get('/products', function () {
@@ -28,14 +28,23 @@ Route::prefix('/')->group(function () {
         return view('frontend.products.index', compact('catalogProducts'));
     })->name('products.index');
 
-    Route::get('/products/{id}', fn ($id) => view('frontend.products.show', ['id' => $id, 'productId' => $id]))->name('products.show');
-    Route::get('/science', fn () => view('frontend.science.index'))->name('science');
-    Route::get('/resources', fn () => view('frontend.resources.index'))->name('resources');
-    Route::get('/contact', fn () => view('frontend.contact.index'))->name('contact');
-    Route::get('/accessory', fn () => view('frontend.accessory.index'))->name('accessory');
-    Route::get('/accessory/{id}', fn ($id) => view('frontend.products.show', ['id' => $id, 'productId' => $id]))->name('accessory.show');
-    Route::get('/cart', fn () => view('frontend.cart.index'))->name('cart');
+    Route::get('/products/{id}', fn($id) => view('frontend.products.show', ['id' => $id, 'productId' => $id]))->name('products.show');
+    Route::get('/science', fn() => view('frontend.science.index'))->name('science');
+    Route::get('/resources', fn() => view('frontend.resources.index'))->name('resources');
+    Route::get('/contact', fn() => view('frontend.contact.index'))->name('contact');
+    Route::get('/accessory', fn() => view('frontend.accessory.index'))->name('accessory');
+    Route::get('/accessory/{id}', fn($id) => view('frontend.products.show', ['id' => $id, 'productId' => $id]))->name('accessory.show');
+    Route::get('/cart', fn() => view('frontend.cart.index'))->name('cart');
 });
+
+
+    Route::get('/performance', function () {
+        return view('frontend.performance.index');
+    })->name('performance');
+
+    Route::get('/premium', function () {
+        return view('frontend.premium.index');
+    })->name('premium');
 
 /*
 |--------------------------------------------------------------------------
@@ -59,10 +68,11 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
             ->name('login.submit');
     });
 
+
     Route::middleware('auth')->group(function () use ($adminSecret) {
-        Route::get('/dashboard', fn () => view('backend.admin.dashboard.admin', [
+        Route::get('/dashboard', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'dashboard',
-            'secret'  => $adminSecret,
+            'secret' => $adminSecret,
         ]))->name('dashboard');
 
         // Admin Product Management
@@ -71,29 +81,29 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
         Route::put('/products/{id}', [ProductsController::class, 'update'])->name('products.update');
         Route::delete('/products/{id}', [ProductsController::class, 'destroy'])->name('products.destroy');
 
-        Route::get('/audience', fn () => view('backend.admin.dashboard.admin', [
+        Route::get('/audience', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'audience',
-            'secret'  => $adminSecret,
+            'secret' => $adminSecret,
         ]))->name('audience');
 
-        Route::get('/blogs', fn () => view('backend.admin.dashboard.admin', [
+        Route::get('/blogs', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'blogs',
-            'secret'  => $adminSecret,
+            'secret' => $adminSecret,
         ]))->name('blogs');
 
-        Route::get('/audit-logs', fn () => view('backend.admin.dashboard.admin', [
+        Route::get('/audit-logs', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'audit-logs',
-            'secret'  => $adminSecret,
+            'secret' => $adminSecret,
         ]))->name('audit-logs');
 
-        Route::get('/info', fn () => view('backend.admin.dashboard.admin', [
+        Route::get('/info', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'info',
-            'secret'  => $adminSecret,
+            'secret' => $adminSecret,
         ]))->name('info');
 
-        Route::get('/settings', fn () => view('backend.admin.dashboard.admin', [
+        Route::get('/settings', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'settings',
-            'secret'  => $adminSecret,
+            'secret' => $adminSecret,
         ]))->name('settings');
 
         Route::get('/audience/data', function () {
