@@ -665,7 +665,9 @@
         </div>
 
       @elseif($currentSection === 'audience')
-        @if(view()->exists('backend.admin.audience'))
+        @if(view()->exists('backend.admin.audience.audience'))
+          @include('backend.admin.audience.audience')
+        @elseif(view()->exists('backend.admin.audience'))
           @include('backend.admin.audience')
         @else
           <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Audience module loaded.</div>
