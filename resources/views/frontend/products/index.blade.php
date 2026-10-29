@@ -122,12 +122,24 @@
       <button type="button" onclick="setCategoryFilter('Skincare Collection', this)">Skincare Collection</button>
       <button type="button" onclick="setCategoryFilter('Performance', this)">Performance</button>
       <button type="button" onclick="setCategoryFilter('Apparel', this)">Apparel</button>
-      <button type="button" onclick="setCategoryFilter('Accessory', this)">Accessory</button>
     </div>
     
     <div class="g4" id="pg">
       @php
-          $allProducts = $catalogProducts ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC");
+          if (isset($catalogProducts)) {
+              $allProducts = collect($catalogProducts)->filter(function($item) {
+                  $pageType = is_object($item) ? ($item->page_type ?? null) : ($item['page_type'] ?? null);
+                  $category = is_object($item) ? ($item->category ?? null) : ($item['category'] ?? null);
+                  return ($pageType !== 'accessory') && !in_array($category, ['Accessory', 'Injection Kit', 'Syringes']);
+              })->values();
+          } else {
+              $allProducts = \Illuminate\Support\Facades\DB::select(
+                  "SELECT * FROM products 
+                   WHERE (page_type != 'accessory' OR page_type IS NULL OR page_type = '') 
+                     AND (category NOT IN ('Accessory', 'Injection Kit', 'Syringes') OR category IS NULL) 
+                   ORDER BY id DESC"
+              );
+          }
       @endphp
 
       @forelse($allProducts as $item)
@@ -141,9 +153,13 @@
                     $slides = [$item->image];
                 }
             }
+
+            $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
+                ? $item->slug
+                : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
         @endphp
 
-        <div class="card pc" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower($item->keywords ?? ($item->title . ' ' . $item->subtitle)) }}">
+        <div class="card pc" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
           <div class="ph">
             @if(count($slides) > 1)
               <div class="prod-slider">
@@ -184,7 +200,7 @@
               <span>{{ $item->dosage_spec ?? 'Research grade' }}</span>
               <span>{{ $item->badge_category ?? 'Research grade' }}</span>
             </div>
-            <a class="btn-details" href="{{ route('products.show', $item->slug) }}">See Details</a>
+            <a class="btn-details" href="{{ url('/products/' . $itemSlug) }}">See Details</a>
           </div>
         </div>
       @empty
