@@ -1,6 +1,6 @@
 @php
     $rawProducts = $products ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC");
-    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY'));
+    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
     $secretPrefix = 'admin/' . $secretKey;
 
     $categories = [
@@ -87,6 +87,24 @@
   .admin-ps-dot.active {
     width: 16px;
     background: #0f172a;
+  }
+
+  /* Interactive Image Preview Box */
+  .img-sort-item {
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+  .img-sort-item:active {
+    cursor: grabbing;
+  }
+  .img-sort-item.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  .img-sort-item.drag-over {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
   }
 </style>
 
@@ -370,7 +388,7 @@
       <button type="button" onclick="closeCreateProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
 
-    <form action="{{ url($secretPrefix . '/products') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <form id="createProductForm" action="{{ url($secretPrefix . '/products') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
       @csrf
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
@@ -448,7 +466,7 @@
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
           <input type="text" name="badge_category" placeholder="e.g. Research grade"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
@@ -457,7 +475,7 @@
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED) -->
+      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED CLEAN UI) -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -474,23 +492,13 @@
           </label>
         </div>
 
+        <input type="hidden" name="sizes" id="create_sizes" value="">
+
         <div id="create_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
-              <input type="text" name="variant_title" value="" placeholder="e.g. Select Vial Concentration / Size:"
-                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Quick Presets or Custom CSV)</label>
-              <div class="flex items-center gap-1.5">
-                <input type="text" id="create_sizes" name="sizes" placeholder="e.g. S, M, L, XL"
-                  class="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
-                <button type="button" onclick="applyPresetSizes('create_sizes', 'S, M, L, XL')" class="px-2.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-slate-600 hover:text-brand text-[11px] font-bold shadow-2xs cursor-pointer" title="Apply S, M, L, XL">
-                  + S-XL
-                </button>
-              </div>
-            </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+            <input type="text" name="variant_title" value="" placeholder="e.g. Select Vial Concentration / Size:"
+              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
           </div>
 
           <div class="space-y-2">
@@ -503,11 +511,23 @@
             <div class="space-y-2" id="create_variants_rows"></div>
           </div>
 
-          <button type="button" onclick="addVariantRow('create_variants_rows')"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            <span>Add Option</span>
-          </button>
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <button type="button" onclick="addVariantRow('create_variants_rows')"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              <span>Add Option</span>
+            </button>
+
+            <!-- Quick Preset Size Buttons inserted straight into Specification rows -->
+            <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+              <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
+              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
+              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'M')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ M</button>
+              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'L')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ L</button>
+              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'XL')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ XL</button>
+              <button type="button" onclick="addAllPresetSizes('create_variants_rows')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand hover:text-white text-slate-700 transition-colors cursor-pointer">+ S-XL</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -517,18 +537,26 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
       </div>
 
+      <!-- VISUAL ASSETS (WITH DRAG & DROP + DELETE BUTTON) -->
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Visual Assets (Multiple Allowed)</label>
-        <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" name="images[]" multiple accept="image/*"
-            onchange="previewMultiImages(event, 'createImagesPreviewGrid')"
-            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-          <div id="createImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
-          <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
-            <span>Click or drag multiple files to create slider</span>
-          </div>
-          <span class="text-[11px] text-slate-400 mt-0.5">PNG, JPG, or WEBP up to 3MB each</span>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Product Visual Assets (Multiple Allowed)</label>
+          <span class="text-[11px] text-slate-400 font-medium">Drag items to rearrange sequence</span>
         </div>
+        
+        <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
+          <input type="file" id="create_images_input" multiple accept="image/*"
+            onchange="handleNewUploadFiles(event, 'createImagesPreviewGrid', 'create')"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+          
+          <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline pointer-events-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            <span>Click or drag files to upload &amp; build slider</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">PNG, JPG, or WEBP up to 3MB each</span>
+        </div>
+
+        <div id="createImagesPreviewGrid" class="flex flex-wrap gap-2.5 mt-3 empty:hidden p-2 rounded-2xl bg-slate-50 border border-slate-200/80"></div>
       </div>
 
       <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
@@ -631,7 +659,7 @@
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
           <input type="text" id="edit_badge_category" name="badge_category"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
@@ -640,7 +668,7 @@
         </div>
       </div>
 
-      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED) -->
+      <!-- MULTI-OPTION PRICING & SPECIFICATION / APPAREL VARIANTS (COMBINED CLEAN UI) -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -657,23 +685,13 @@
           </label>
         </div>
 
+        <input type="hidden" name="sizes" id="edit_sizes" value="">
+
         <div id="edit_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
-              <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Size:"
-                class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Apparel Sizes (Quick Presets or Custom CSV)</label>
-              <div class="flex items-center gap-1.5">
-                <input type="text" id="edit_sizes" name="sizes" placeholder="e.g. S, M, L, XL"
-                  class="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
-                <button type="button" onclick="applyPresetSizes('edit_sizes', 'S, M, L, XL')" class="px-2.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-slate-600 hover:text-brand text-[11px] font-bold shadow-2xs cursor-pointer" title="Apply S, M, L, XL">
-                  + S-XL
-                </button>
-              </div>
-            </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+            <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Size:"
+              class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
           </div>
 
           <div class="space-y-2">
@@ -686,11 +704,23 @@
             <div class="space-y-2" id="edit_variants_rows"></div>
           </div>
 
-          <button type="button" onclick="addVariantRow('edit_variants_rows')"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            <span>Add Option</span>
-          </button>
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <button type="button" onclick="addVariantRow('edit_variants_rows')"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              <span>Add Option</span>
+            </button>
+
+            <!-- Quick Preset Size Buttons inserted straight into Specification rows -->
+            <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+              <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
+              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
+              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'M')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ M</button>
+              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'L')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ L</button>
+              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'XL')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ XL</button>
+              <button type="button" onclick="addAllPresetSizes('edit_variants_rows')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand hover:text-white text-slate-700 transition-colors cursor-pointer">+ S-XL</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -700,9 +730,15 @@
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
       </div>
 
+      <!-- EXISTING VISUAL ASSETS (REARRANGE + DELETE) -->
       <div id="existingImagesWrapper" class="space-y-1.5">
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
-        <div id="editExistingImagesGrid" class="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-200/80"></div>
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
+          <span class="text-[11px] text-slate-400">Drag or click &larr; &rarr; to reorder</span>
+        </div>
+        <!-- Input terselindung untuk menghantar susunan gambar sedia ada yang dikekalkan -->
+        <div id="existingImagesOrderInputs"></div>
+        <div id="editExistingImagesGrid" class="flex flex-wrap gap-2.5 p-3 bg-slate-50 rounded-2xl border border-slate-200/80 empty:hidden"></div>
       </div>
 
       <div class="space-y-1.5">
@@ -719,18 +755,22 @@
         </div>
       </div>
 
+      <!-- NEW VISUAL ASSETS -->
       <div>
         <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Choose New Visual Asset(s)</label>
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" name="images[]" multiple accept="image/*"
-            onchange="previewMultiImages(event, 'editNewImagesPreviewGrid')"
+          <input type="file" id="edit_images_input" multiple accept="image/*"
+            onchange="handleNewUploadFiles(event, 'editNewImagesPreviewGrid', 'edit')"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-          <div id="editNewImagesPreviewGrid" class="hidden flex-wrap gap-2 mb-2 justify-center"></div>
-          <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline">
+          
+          <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline pointer-events-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             <span>Click to upload new visual(s)</span>
           </div>
-          <span class="text-[11px] text-slate-400 mt-0.5">Leave blank to retain current catalog visual assets</span>
+          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">Leave blank to retain current catalog visual assets</span>
         </div>
+
+        <div id="editNewImagesPreviewGrid" class="flex flex-wrap gap-2.5 mt-3 empty:hidden p-2 rounded-2xl bg-slate-50 border border-slate-200/80"></div>
       </div>
 
       <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
@@ -751,17 +791,19 @@
   const itemsPerPage = 6;
   let filteredCards = [];
 
+  // Memory buffer for new file uploads
+  let createUploadFiles = [];
+  let editUploadFiles = [];
+
+  // Memory buffer for existing images in edit modal
+  let editExistingImages = [];
+
   function syncNumericPrice(inputEl, targetHiddenId) {
     const hiddenEl = document.getElementById(targetHiddenId);
     if (!hiddenEl) return;
     const val = inputEl.value || '';
     const match = val.match(/([0-9]+(?:\.[0-9]+)?)/);
     hiddenEl.value = match ? match[1] : '';
-  }
-
-  function applyPresetSizes(targetInputId, presetVal) {
-    const input = document.getElementById(targetInputId);
-    if (input) input.value = presetVal;
   }
 
   function toggleCustomDropdown(menuId, arrowId) {
@@ -776,7 +818,7 @@
     });
 
     menu.classList.toggle('hidden');
-    if (arrow) arrow.classList.toggle('rotate-180');
+    if (arrow) arrow.classList.remove('rotate-180');
   }
 
   function selectDropdownOption(hiddenInputId, displayTextId, menuId, arrowId, value, text) {
@@ -952,15 +994,12 @@
     if (total <= 7) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
-
     if (current <= 3) {
       return [1, 2, 3, '...', total - 2, total - 1, total];
     }
-
     if (current >= total - 2) {
       return [1, 2, '...', total - 2, total - 1, total];
     }
-
     return [1, '...', current - 1, current, current + 1, '...', total];
   }
 
@@ -1004,6 +1043,7 @@
     row.innerHTML = `
       <div class="col-span-5">
         <input type="text" name="variant_label[]" value="${labelVal}" placeholder="e.g. 100ml / 10mg / Size L"
+          oninput="syncVariantSizesToHidden(this)"
           class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-4 relative">
@@ -1017,7 +1057,7 @@
           class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-2.5 py-2 text-xs font-bold text-center text-slate-700 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-1 flex justify-center">
-        <button type="button" onclick="this.closest('.grid').remove()" 
+        <button type="button" onclick="removeVariantRow(this)" 
           class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Remove option">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -1026,9 +1066,295 @@
       </div>
     `;
     container.appendChild(row);
+    syncVariantSizesToHidden(row);
+  }
+
+  function addQuickSizeVariant(containerId, sizeName) {
+    addVariantRow(containerId, { label: sizeName });
+  }
+
+  function addAllPresetSizes(containerId) {
+    ['S', 'M', 'L', 'XL'].forEach(sz => {
+      addVariantRow(containerId, { label: sz });
+    });
+  }
+
+  function removeVariantRow(btn) {
+    const row = btn.closest('.grid');
+    const container = row.parentElement;
+    row.remove();
+    syncVariantSizesToHidden(container);
+  }
+
+  function syncVariantSizesToHidden(el) {
+    const modal = el.closest('#createProductModal') || el.closest('#editProductModal');
+    if (!modal) return;
+    const sizesHidden = modal.querySelector('input[name="sizes"]');
+    if (!sizesHidden) return;
+
+    const labels = Array.from(modal.querySelectorAll('input[name="variant_label[]"]'))
+      .map(i => i.value.trim())
+      .filter(v => v.length > 0 && /^(xs|s|m|l|xl|xxl|2xl|3xl|4xl|free size|size\s*[a-z0-9]+)$/i.test(v));
+
+    if (labels.length > 0) {
+      sizesHidden.value = labels.join(', ');
+    }
+  }
+
+  /* ========================================================
+     IMAGE PREVIEW, REORDER (DRAG & DROP) & DELETION SYSTEM
+  ======================================================== */
+
+  function handleNewUploadFiles(event, containerId, mode) {
+    const files = Array.from(event.target.files);
+    if (!files || files.length === 0) return;
+
+    if (mode === 'create') {
+      createUploadFiles = createUploadFiles.concat(files);
+      renderUploadPreview(containerId, createUploadFiles, mode);
+    } else {
+      editUploadFiles = editUploadFiles.concat(files);
+      renderUploadPreview(containerId, editUploadFiles, mode);
+    }
+  }
+
+  function syncInputFiles(mode) {
+    const inputId = mode === 'create' ? 'create_images_input' : 'edit_images_input';
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const dt = new DataTransfer();
+    const files = mode === 'create' ? createUploadFiles : editUploadFiles;
+    files.forEach(f => dt.items.add(f));
+    input.files = dt.files;
+  }
+
+  function renderUploadPreview(containerId, filesArray, mode) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    syncInputFiles(mode);
+
+    if (filesArray.length === 0) {
+      container.classList.add('hidden');
+      return;
+    }
+    container.classList.remove('hidden');
+
+    filesArray.forEach((file, index) => {
+      const card = document.createElement('div');
+      card.className = 'img-sort-item relative w-20 h-20 rounded-xl border border-slate-200 bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden';
+      card.setAttribute('draggable', 'true');
+      card.dataset.index = index;
+
+      const img = document.createElement('img');
+      img.className = 'w-full h-full object-contain rounded-lg pointer-events-none';
+      img.src = URL.createObjectURL(file);
+
+      // Delete Button (×)
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shadow-md hover:bg-rose-700 transition-transform active:scale-90 cursor-pointer z-20';
+      delBtn.innerHTML = '&times;';
+      delBtn.title = 'Remove this visual';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        filesArray.splice(index, 1);
+        renderUploadPreview(containerId, filesArray, mode);
+      };
+
+      // Arrow Nav (Left & Right)
+      const navWrap = document.createElement('div');
+      navWrap.className = 'absolute bottom-1 inset-x-1 flex justify-between gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20';
+      
+      const prevBtn = document.createElement('button');
+      prevBtn.type = 'button';
+      prevBtn.className = 'w-4 h-4 rounded bg-slate-900/80 text-white text-[10px] font-bold flex items-center justify-center hover:bg-slate-900 cursor-pointer';
+      prevBtn.innerHTML = '&larr;';
+      prevBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (index > 0) {
+          const temp = filesArray[index - 1];
+          filesArray[index - 1] = filesArray[index];
+          filesArray[index] = temp;
+          renderUploadPreview(containerId, filesArray, mode);
+        }
+      };
+
+      const nextBtn = document.createElement('button');
+      nextBtn.type = 'button';
+      nextBtn.className = 'w-4 h-4 rounded bg-slate-900/80 text-white text-[10px] font-bold flex items-center justify-center hover:bg-slate-900 cursor-pointer';
+      nextBtn.innerHTML = '&rarr;';
+      nextBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (index < filesArray.length - 1) {
+          const temp = filesArray[index + 1];
+          filesArray[index + 1] = filesArray[index];
+          filesArray[index] = temp;
+          renderUploadPreview(containerId, filesArray, mode);
+        }
+      };
+
+      navWrap.appendChild(prevBtn);
+      navWrap.appendChild(nextBtn);
+
+      // Slide Badge Number
+      const badge = document.createElement('span');
+      badge.className = 'absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/70 text-white pointer-events-none group-hover:opacity-0 transition-opacity';
+      badge.innerText = index + 1;
+
+      card.appendChild(img);
+      card.appendChild(delBtn);
+      card.appendChild(badge);
+      card.appendChild(navWrap);
+
+      // Drag & Drop Listeners
+      card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', index);
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        card.classList.add('drag-over');
+      });
+      card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        const toIndex = index;
+        if (fromIndex !== toIndex) {
+          const moved = filesArray.splice(fromIndex, 1)[0];
+          filesArray.splice(toIndex, 0, moved);
+          renderUploadPreview(containerId, filesArray, mode);
+        }
+      });
+
+      container.appendChild(card);
+    });
+  }
+
+  // Render Existing Catalog Images in Edit Modal
+  function renderExistingImages() {
+    const grid = document.getElementById('editExistingImagesGrid');
+    const inputsWrap = document.getElementById('existingImagesOrderInputs');
+    const wrapper = document.getElementById('existingImagesWrapper');
+    if (!grid || !inputsWrap) return;
+
+    grid.innerHTML = '';
+    inputsWrap.innerHTML = '';
+
+    if (editExistingImages.length === 0) {
+      if (wrapper) wrapper.classList.add('hidden');
+      return;
+    }
+    if (wrapper) wrapper.classList.remove('hidden');
+
+    editExistingImages.forEach((imgSrc, index) => {
+      // Hidden Input to submit exact sequence
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = 'retained_images[]';
+      hiddenInput.value = imgSrc;
+      inputsWrap.appendChild(hiddenInput);
+
+      const card = document.createElement('div');
+      card.className = 'img-sort-item relative w-20 h-20 rounded-xl border border-slate-200 bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden';
+      card.setAttribute('draggable', 'true');
+      card.dataset.index = index;
+
+      const img = document.createElement('img');
+      img.className = 'w-full h-full object-contain rounded-lg pointer-events-none';
+      img.src = `{{ asset('') }}${imgSrc}`;
+
+      // Delete Button (×)
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shadow-md hover:bg-rose-700 transition-transform active:scale-90 cursor-pointer z-20';
+      delBtn.innerHTML = '&times;';
+      delBtn.title = 'Remove this visual from catalog';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        editExistingImages.splice(index, 1);
+        renderExistingImages();
+      };
+
+      // Arrow Nav (Left & Right)
+      const navWrap = document.createElement('div');
+      navWrap.className = 'absolute bottom-1 inset-x-1 flex justify-between gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20';
+      
+      const prevBtn = document.createElement('button');
+      prevBtn.type = 'button';
+      prevBtn.className = 'w-4 h-4 rounded bg-slate-900/80 text-white text-[10px] font-bold flex items-center justify-center hover:bg-slate-900 cursor-pointer';
+      prevBtn.innerHTML = '&larr;';
+      prevBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (index > 0) {
+          const temp = editExistingImages[index - 1];
+          editExistingImages[index - 1] = editExistingImages[index];
+          editExistingImages[index] = temp;
+          renderExistingImages();
+        }
+      };
+
+      const nextBtn = document.createElement('button');
+      nextBtn.type = 'button';
+      nextBtn.className = 'w-4 h-4 rounded bg-slate-900/80 text-white text-[10px] font-bold flex items-center justify-center hover:bg-slate-900 cursor-pointer';
+      nextBtn.innerHTML = '&rarr;';
+      nextBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (index < editExistingImages.length - 1) {
+          const temp = editExistingImages[index + 1];
+          editExistingImages[index + 1] = editExistingImages[index];
+          editExistingImages[index] = temp;
+          renderExistingImages();
+        }
+      };
+
+      navWrap.appendChild(prevBtn);
+      navWrap.appendChild(nextBtn);
+
+      const badge = document.createElement('span');
+      badge.className = 'absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/70 text-white pointer-events-none group-hover:opacity-0 transition-opacity';
+      badge.innerText = index + 1;
+
+      card.appendChild(img);
+      card.appendChild(delBtn);
+      card.appendChild(badge);
+      card.appendChild(navWrap);
+
+      // Drag & Drop
+      card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', index);
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        card.classList.add('drag-over');
+      });
+      card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
+        const toIndex = index;
+        if (fromIndex !== toIndex) {
+          const moved = editExistingImages.splice(fromIndex, 1)[0];
+          editExistingImages.splice(toIndex, 0, moved);
+          renderExistingImages();
+        }
+      });
+
+      grid.appendChild(card);
+    });
   }
 
   function openCreateProductModal() {
+    createUploadFiles = [];
+    renderUploadPreview('createImagesPreviewGrid', createUploadFiles, 'create');
     const modal = document.getElementById('createProductModal');
     if (modal) {
       modal.classList.remove('hidden');
@@ -1045,6 +1371,12 @@
   }
 
   function openEditProductModal(product, existingImages = []) {
+    editUploadFiles = [];
+    renderUploadPreview('editNewImagesPreviewGrid', editUploadFiles, 'edit');
+
+    editExistingImages = Array.isArray(existingImages) ? [...existingImages] : [];
+    renderExistingImages();
+
     const modal = document.getElementById('editProductModal');
     const form = document.getElementById('editProductForm');
     const secretPrefix = "{{ $secretPrefix }}";
@@ -1110,25 +1442,6 @@
         varSection.classList.add('hidden');
       }
 
-      const existingGrid = document.getElementById('editExistingImagesGrid');
-      const wrapper = document.getElementById('existingImagesWrapper');
-      existingGrid.innerHTML = '';
-
-      if (existingImages && existingImages.length > 0) {
-        wrapper.classList.remove('hidden');
-        existingImages.forEach(img => {
-          const div = document.createElement('div');
-          div.className = 'w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center';
-          div.innerHTML = `<img src="{{ asset('') }}${img}" class="w-full h-full object-contain rounded-lg">`;
-          existingGrid.appendChild(div);
-        });
-      } else {
-        wrapper.classList.add('hidden');
-      }
-
-      document.getElementById('editNewImagesPreviewGrid').innerHTML = '';
-      document.getElementById('editNewImagesPreviewGrid').classList.add('hidden');
-
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
@@ -1139,32 +1452,6 @@
     if (modal) {
       modal.classList.add('hidden');
       modal.classList.remove('flex');
-    }
-  }
-
-  function previewMultiImages(event, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    container.innerHTML = '';
-    const files = event.target.files;
-
-    if (files && files.length > 0) {
-      container.classList.remove('hidden');
-      container.classList.add('flex');
-
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const div = document.createElement('div');
-          div.className = 'w-16 h-16 rounded-xl border border-slate-200 bg-white p-1 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs';
-          div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded-lg">`;
-          container.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-      });
-    } else {
-      container.classList.add('hidden');
     }
   }
 
