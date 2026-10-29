@@ -209,7 +209,6 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 .cart-trigger-btn svg{width:25px;height:25px;stroke:var(--green);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .cart-badge{position:absolute;top:-2px;right:-5px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;line-height:18px;text-align:center;font-weight:700;padding:0 4px;border:2px solid var(--card-surface)}
 
-/* Hero Section: Typography Putih Bersih */
 .hero{position:relative;height:calc(100vh - var(--off, 110px));height:calc(100svh - var(--off, 110px));min-height:520px;overflow:hidden;color:#fff !important;display:flex;align-items:center}
 .hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.08) brightness(1.05)}
 .hero:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,17,26,.82),rgba(10,17,26,.25) 75%)}
@@ -272,42 +271,46 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
 #lab-reports h2{color:var(--ink)}
 #lab-reports p{color:var(--mut)}
 
-.pc{padding:14px;background:var(--card-surface);border:1px solid var(--line);border-radius:26px;transition:transform .3s,box-shadow .3s,background-color .25s ease,border-color .25s ease;display:flex;flex-direction:column}
-.pc:hover{transform:translateY(-6px);box-shadow:0 24px 44px -24px rgba(47,111,159,.5)}
+/* Desain Kartu Produk Diselaraskan Sama Persis dengan Halaman Aksesori */
+.pc{
+  padding:14px;
+  background:var(--card-surface);
+  border:1px solid var(--line);
+  border-radius:26px;
+  transition:transform .3s,box-shadow .3s,background-color .25s ease,border-color .25s ease;
+  display:flex;
+  flex-direction:column;
+}
+.pc:hover{
+  transform:translateY(-6px);
+  box-shadow:0 24px 44px -24px rgba(47,111,159,.5);
+}
 .pc .ph{
-  aspect-ratio:4/5;
+  aspect-ratio:1 !important;
   border-radius:20px;
   position:relative;
   background:var(--card-surface);
   border:1px solid var(--line);
   overflow:hidden;
-  padding:10px;
+  padding:0;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 .pc .ph img{
-  max-width:100% !important;
-  max-height:100% !important;
   width:auto !important;
   height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
   object-fit:contain !important;
   object-position:center !important;
   padding:0 !important;
   margin:0 !important;
-  border-radius:12px !important;
+  border-radius:14px !important;
   display:block;
   background:transparent;
 }
-.pc .b{text-align:left;align-items:stretch;padding:16px 8px 8px;gap:8px;display:flex;flex-direction:column;flex:1}
-.pc h3{font-size:20px;line-height:1.2;color:var(--ink)}
-.pc .s{font-size:13px;color:var(--mut)}
-.pc .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
-.pc .meta span{font-size:11px;background:var(--bg2);color:var(--ink);padding:4px 10px;border-radius:999px;border:1px solid var(--line)}
-.btn-details{background:var(--green);color:#fff;padding:12px;border-radius:999px;font-size:13px;font-weight:600;text-align:center;margin-top:10px;transition:background .2s}
-.btn-details:hover{background:#266391}
-
-.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:12px;background:var(--card-surface)}
+.prod-slider{position:relative;width:100%;height:100%;overflow:hidden;border-radius:inherit;background:var(--card-surface)}
 .prod-slides{position:relative;width:100%;height:100%;border-radius:inherit;overflow:hidden;background:var(--card-surface)}
 .prod-slide{
   position:absolute;
@@ -316,7 +319,7 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   height:100%;
   opacity:0;
   transition:opacity .65s ease-in-out;
-  padding:0;
+  padding:12px;
   margin:0;
   overflow:hidden;
   border-radius:inherit;
@@ -324,24 +327,94 @@ nav.dnav a.on,nav.dnav a:hover{border-color:var(--gold);color:var(--green)}
   display:flex;
   align-items:center;
   justify-content:center;
+  pointer-events:none;
 }
-.prod-slide.active{opacity:1;pointer-events:auto}
+.prod-slide.active{opacity:1 !important;pointer-events:auto !important}
 .prod-slide img{
-  max-width:100% !important;
-  max-height:100% !important;
   width:auto !important;
   height:auto !important;
+  max-width:100% !important;
+  max-height:100% !important;
   object-fit:contain !important;
   object-position:center !important;
   padding:0 !important;
   margin:0 !important;
-  border-radius:12px !important;
+  border-radius:14px !important;
   display:block;
   background:transparent;
 }
-.ps-dots{position:absolute;bottom:6px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:6px}
-.ps-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75);cursor:pointer;transition:all .3s ease;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.ps-dot.active{background:var(--green);transform:scale(1.25)}
+.ps-dots{
+  position:absolute;
+  bottom:8px;
+  left:0;
+  right:0;
+  z-index:5;
+  display:flex;
+  justify-content:center;
+  gap:6px;
+}
+.ps-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:rgba(47,111,159,.3);
+  cursor:pointer;
+  transition:all .3s ease;
+}
+.ps-dot.active{
+  background:var(--green);
+  transform:scale(1.25);
+}
+
+.pc .b{
+  text-align:left;
+  align-items:stretch;
+  padding:16px 8px 8px;
+  gap:8px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+.pc h3{
+  font-size:20px;
+  line-height:1.2;
+  color:var(--ink);
+  font-family:var(--serif);
+}
+.pc .s{
+  font-size:13px;
+  color:var(--mut);
+  line-height:1.4;
+  min-height:36px;
+}
+.pc .meta{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:auto;
+}
+.pc .meta span{
+  font-size:11px;
+  background:var(--bg2);
+  color:var(--ink);
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+}
+.btn-details{
+  background:var(--green);
+  color:#fff;
+  padding:12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  text-align:center;
+  margin-top:10px;
+  transition:background .2s;
+  display:block;
+  text-decoration:none;
+}
+.btn-details:hover{background:#266391}
 
 .t-single-grid{display:grid;grid-template-columns:1.24fr 1fr;gap:44px;align-items:center}
 .t-slider-wrap{position:relative;width:100%;max-width:540px;margin:0 auto}
@@ -688,14 +761,14 @@ footer li{list-style:none;margin-bottom:6px}
           <div class="t-slider-wrap">
             <div class="t-slider" id="transformSlider">
               <div class="t-slides">
-                @for ($i = 1; $i <= 8; $i++)
+                @for ($i = 2; $i <= 8; $i++)
                   @php
                     $tFilename = 't' . $i . '.webp';
                     $tDiskPath = public_path($tFilename);
                     $tVersion = file_exists($tDiskPath) ? filemtime($tDiskPath) : time();
                     $tFullUrl = asset($tFilename) . '?v=' . $tVersion;
                   @endphp
-                  <a href="{{ $tFullUrl }}" onclick="openLightboxModal('{{ $tFullUrl }}', 'Client Transformation #{{ $i }} - Real Results'); return false;" class="t-slide {{ $i === 1 ? 'active' : '' }}">
+                  <a href="{{ $tFullUrl }}" onclick="openLightboxModal('{{ $tFullUrl }}', 'Client Transformation #{{ $i }} - Real Results'); return false;" class="t-slide {{ $i === 2 ? 'active' : '' }}">
                     <img src="{{ $tFullUrl }}" alt="Client Transformation {{ $i }}" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
                     <div class="t-badge-zoom">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -707,7 +780,7 @@ footer li{list-style:none;margin-bottom:6px}
             </div>
 
             <div class="t-dots">
-              @for ($i = 0; $i < 8; $i++)
+              @for ($i = 0; $i < 7; $i++)
                 <span class="t-dot {{ $i === 0 ? 'active' : '' }}" onclick="setTransformSlide({{ $i }}, event)"></span>
               @endfor
             </div>
@@ -738,7 +811,7 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
     </section>
 
-    <!-- Seksyen Featured Formulations (Dinamik dari Database & Multi-Image Slider) -->
+    <!-- Seksyen Featured Formulations (Diselaraskan Sama Persis dengan Desain Kartu Aksesori) -->
     <section class="sec alt"><div class="wrap">
       <div class="head">
         <div>
@@ -749,7 +822,25 @@ footer li{list-style:none;margin-bottom:6px}
       </div>
       <div class="g4">
         @php
-            $items = $featuredProducts ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC LIMIT 4");
+            $resolveImageUrl = function($path) {
+                if (empty($path)) return asset('reta1.webp');
+                if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
+                if (file_exists(public_path($path))) return asset($path);
+                if (file_exists(public_path('uploads/products/' . basename($path)))) {
+                    return asset('uploads/products/' . basename($path));
+                }
+                if (file_exists(public_path('storage/' . ltrim($path, '/')))) {
+                    return asset('storage/' . ltrim($path, '/'));
+                }
+                return asset($path);
+            };
+
+            $items = $featuredProducts ?? \Illuminate\Support\Facades\DB::select(
+                "SELECT * FROM products 
+                 WHERE (page_type != 'accessory' OR page_type IS NULL OR page_type = '') 
+                   AND (category NOT IN ('Accessory', 'Injection Kit', 'Syringes') OR category IS NULL) 
+                 ORDER BY id DESC LIMIT 4"
+            );
         @endphp
 
         @forelse($items as $item)
@@ -758,59 +849,49 @@ footer li{list-style:none;margin-bottom:6px}
               if (!empty($item->image)) {
                   $decoded = json_decode($item->image, true);
                   if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p) && (file_exists(public_path($p)) || file_exists(public_path('uploads/products/' . basename($p))))));
-                  } elseif (file_exists(public_path($item->image))) {
+                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p)));
+                  } else {
                       $slides = [$item->image];
                   }
               }
+              if (empty($slides)) {
+                  $slides = ['reta1.webp'];
+              }
+
+              $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
+                  ? $item->slug
+                  : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
           @endphp
 
-          <div class="card pc">
+          <div class="card pc" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
             <div class="ph">
-              @if(count($slides) > 1)
-                <!-- Multi-image slider dengan auto slide dan dot selector -->
-                <div class="prod-slider">
-                  <div class="prod-slides">
-                    @foreach($slides as $sIdx => $imgSrc)
-                      <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                        <img src="{{ asset($imgSrc) }}" alt="{{ $item->title }} - Slide {{ $sIdx + 1 }}" loading="lazy">
-                      </div>
-                    @endforeach
-                  </div>
+              <div class="prod-slider">
+                <div class="prod-slides">
+                  @foreach($slides as $sIdx => $imgSrc)
+                    <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
+                      <img src="{{ $resolveImageUrl($imgSrc) }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                    </div>
+                  @endforeach
+                </div>
+                @if(count($slides) > 1)
                   <div class="ps-dots">
                     @foreach($slides as $sIdx => $imgSrc)
                       <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlide(this, {{ $sIdx }})"></span>
                     @endforeach
                   </div>
-                </div>
-              @elseif(count($slides) === 1)
-                <!-- Single image menggunakan slider container standard -->
-                <div class="prod-slider">
-                  <div class="prod-slides">
-                    <div class="prod-slide active">
-                      <img src="{{ asset($slides[0]) }}" alt="{{ $item->title }}" loading="lazy">
-                    </div>
-                  </div>
-                </div>
-              @else
-                <!-- Elegant N placeholder frame jika imej belum dimuat naik -->
-                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:12px;user-select:none;transition:background-color .25s ease;">
-                  N
-                </div>
-              @endif
+                @endif
+              </div>
             </div>
 
             <div class="b">
               <h3>{{ $item->title }}</h3>
-              @if(!empty($item->subtitle))
-                <p class="s">{{ $item->subtitle }}</p>
-              @endif
+              <p class="s">{{ $item->subtitle ?? '' }}</p>
               <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
               <div class="meta">
-                <span style="font-weight:600">{{ $item->dosage_spec ?? 'Laboratory Grade' }}</span>
+                <span style="font-weight:600">{{ $item->dosage_spec ?? 'Standard' }}</span>
                 <span>{{ $item->badge_category ?? 'Research grade' }}</span>
               </div>
-              <a class="btn-details" href="{{ route('products.show', $item->slug) }}">See Details</a>
+              <a class="btn-details" href="{{ url('/products/' . $itemSlug) }}">See Details</a>
             </div>
           </div>
         @empty
@@ -1036,7 +1117,7 @@ function startProdAutoSlide(){
 }
 
 let tSlideIndex = 0;
-const totalTSlides = 8;
+const totalTSlides = 7;
 let tSlideTimer = null;
 
 function setTransformSlide(idx, e){
