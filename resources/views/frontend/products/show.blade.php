@@ -147,7 +147,9 @@ $currProd = $allProducts[$reqKey]
 
 $hasVariants = !empty($currProd['variants']) && count($currProd['variants']) > 0;
 $isApparel   = ($currProd['category'] === 'Apparel') || (!empty($currProd['sizes']) && count($currProd['sizes']) > 0);
-$isAccessory = ($currProd['page_type'] ?? '') === 'accessory' || ($currProd['category'] ?? '') === 'Accessory' || request()->is('accessory*');
+$isAccessory = ($currProd['page_type'] ?? '') === 'accessory' 
+    || in_array($currProd['category'] ?? '', ['Accessory', 'Injection Kit', 'Syringes']) 
+    || request()->is('accessory*');
 @endphp
 
 <style>
@@ -188,9 +190,14 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory' || ($currProd['cat
     gap: 48px !important;
     align-items: start !important;
   }
+  .detail-media-wrap {
+    max-width: 580px !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
   .detail-img-wrap {
     aspect-ratio: 1 !important;
-    max-width: 580px !important;
     width: 100% !important;
     border-radius: 28px !important;
     overflow: hidden !important;
@@ -258,27 +265,31 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory' || ($currProd['cat
     flex-shrink: 0;
   }
 
-  .detail-img-wrap .ps-dots {
-    position: absolute;
-    bottom: 16px;
-    left: 0;
-    right: 0;
-    z-index: 5;
+  .detail-media-wrap .ps-dots {
+    position: relative;
     display: flex;
     justify-content: center;
-    gap: 8px;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    margin-bottom: 2px;
+    z-index: 5;
   }
-  .detail-img-wrap .ps-dot {
-    width: 9px;
-    height: 9px;
+  .detail-media-wrap .ps-dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: rgba(47,111,159,.25);
+    background: var(--line);
     cursor: pointer;
-    transition: all .3s ease;
+    transition: all .25s ease;
   }
-  .detail-img-wrap .ps-dot.active {
+  .detail-media-wrap .ps-dot:hover {
+    background: var(--mut);
+  }
+  .detail-media-wrap .ps-dot.active {
     background: var(--green);
-    transform: scale(1.25);
+    width: 22px;
+    border-radius: 999px;
   }
 
   .detail-info {
@@ -471,7 +482,7 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory' || ($currProd['cat
 
   @media(max-width:900px){
     .detail-grid { grid-template-columns: 1fr !important; }
-    .detail-img-wrap { max-width: 480px !important; margin: 0 auto; width: 100% !important; }
+    .detail-media-wrap { max-width: 480px !important; margin: 0 auto; width: 100% !important; }
     #productDetailSec { padding: 40px 0 60px !important; }
   }
 </style>
@@ -487,16 +498,18 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory' || ($currProd['cat
     </div>
 
     <div class="detail-grid">
-      <div class="detail-img-wrap prod-slider">
-        <div class="prod-slides">
-          @foreach($currProd['imgs'] as $idx => $imgFile)
-            <div class="prod-slide {{ $idx === 0 ? 'active' : '' }} contain-slide">
-              <img src="{{ $resolveImageUrl($imgFile) }}" 
-                   alt="{{ $currProd['name'] }} Slide {{ $idx + 1 }}" 
-                   onload="fitRoundedImg(this)"
-                   onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000'">
-            </div>
-          @endforeach
+      <div class="detail-media-wrap">
+        <div class="detail-img-wrap prod-slider">
+          <div class="prod-slides">
+            @foreach($currProd['imgs'] as $idx => $imgFile)
+              <div class="prod-slide {{ $idx === 0 ? 'active' : '' }} contain-slide">
+                <img src="{{ $resolveImageUrl($imgFile) }}" 
+                     alt="{{ $currProd['name'] }} Slide {{ $idx + 1 }}" 
+                     onload="fitRoundedImg(this)"
+                     onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000'">
+              </div>
+            @endforeach
+          </div>
         </div>
 
         @if(count($currProd['imgs']) > 1)
@@ -626,10 +639,12 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory' || ($currProd['cat
       window.event.preventDefault();
       window.event.stopPropagation();
     }
-    const box = dot.closest('.prod-slider');
+    const wrap = dot.closest('.detail-media-wrap') || document.getElementById('productDetailSec');
+    if(!wrap) return;
+    const box = wrap.querySelector('.prod-slider');
     if(!box) return;
     const slides = box.querySelectorAll('.prod-slide');
-    const dots = box.querySelectorAll('.ps-dot');
+    const dots = wrap.querySelectorAll('.ps-dot');
     slides.forEach((s, idx)=>s.classList.toggle('active', idx === targetIdx));
     dots.forEach((d, idx)=>d.classList.toggle('active', idx === targetIdx));
   }
@@ -731,6 +746,19 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory' || ($currProd['cat
     document.querySelectorAll('.contain-slide img').forEach(el => {
       if(el.complete) fitRoundedImg(el);
     });
+
+    if (@json($isAccessory)) {
+      document.querySelectorAll('nav.dnav a, nav.mnav a').forEach(a => {
+        const href = a.getAttribute('href') || '';
+        const text = a.textContent.trim();
+        if (href.includes('accessory') || text === 'Accessory') {
+          a.classList.add('on');
+        }
+        if (href.includes('products') || text === 'Products') {
+          a.classList.remove('on');
+        }
+      });
+    }
 
     const detailSec = document.getElementById('productDetailSec');
     const footerEl = document.querySelector('footer');
