@@ -11,7 +11,7 @@ class OrganizationController extends Controller
 {
     public function index(Request $request, $secret = null)
     {
-        $secret = $secret ?? (config('admin.secret_key') ?: env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
+        $secret = $secret ?? (config('admin.secret_key') ?: env('ADMIN_SECRET_KEY'));
 
         if (Schema::hasTable('organization_info')) {
             $org = DB::table('organization_info')->first();

@@ -1,5 +1,5 @@
 @php
-  $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
+  $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY'));
   $secretPrefix = 'admin/' . $secretKey;
 
   if (!isset($logs)) {
