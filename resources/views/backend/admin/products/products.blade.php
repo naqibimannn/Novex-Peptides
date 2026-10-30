@@ -22,7 +22,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    border-radius: 14px;
+    border-radius: 16px;
     background: transparent;
   }
   .admin-prod-slides {
@@ -69,7 +69,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 2px 0 6px;
+    padding: 2px 0 4px;
     background: transparent;
     border: none;
   }
@@ -83,7 +83,7 @@
   }
   .admin-ps-dot.active {
     width: 18px;
-    background: #0f172a;
+    background: #0071E3;
   }
 
   .img-sort-item {
@@ -99,71 +99,90 @@
     transform: scale(0.95);
   }
   .img-sort-item.drag-over {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+    border-color: #0071E3 !important;
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.25);
   }
 </style>
 
-<div class="m-0 flex flex-col gap-6">
+<div class="flex flex-col gap-8">
 
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200">
-    <div>
+  <!-- HEADER SECTION -->
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
+    <div class="flex flex-col gap-1">
       <div class="flex items-center gap-2.5">
         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Product &amp; Accessory Vault
+          Product &amp; Inventory Vault
         </h1>
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-tight bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
-          {{ count($rawProducts) }} Total {{ count($rawProducts) === 1 ? 'Item' : 'Items' }}
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-tint text-brand border border-brand-border/60 shadow-2xs">
+          {{ count($rawProducts) }} Items
         </span>
       </div>
-      <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-        CentraDesk Catalog &middot; Manage laboratory formulations, multi-price variants, stock inventory, and page placement.
+      <p class="text-xs sm:text-sm text-slate-500 font-medium">
+        CentraDesk Catalog &middot; Real-time formulation management, multi-price options, and storefront inventory.
       </p>
     </div>
 
-    <div class="flex items-center gap-2.5 shrink-0">
+    <!-- ACTION BUTTONS -->
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
       <button type="button" onclick="openCreateProductModal()"
-        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold text-xs shadow-sm transition-all active:scale-[0.98] cursor-pointer">
+        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         <span>Add New Product</span>
       </button>
+
+      <button type="button" onclick="refreshProductVault()"
+        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer">
+        <svg id="productRefreshSpinner" class="w-4 h-4 text-slate-500 transition-transform duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>Refresh Vault</span>
+      </button>
     </div>
   </div>
 
-  <div class="relative z-30 bg-white border border-slate-200 rounded-xl p-3 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-    <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-      <div class="inline-flex flex-wrap p-1 rounded-xl bg-slate-100 border border-slate-200/80">
-        <button type="button" onclick="switchPageTypeFilter('all', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-2xs transition-all cursor-pointer">
+  <!-- TOOLBAR: PAGE PILL TABS, CATEGORY DROPDOWN & SEARCH -->
+  <div class="relative z-30 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+    
+    <!-- STOREFRONT PAGE PILL TABS -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+      <label class="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">Filter Page:</label>
+      <div class="inline-flex items-center bg-slate-200/60 p-1 rounded-full text-xs font-medium overflow-x-auto max-w-full">
+        <button type="button" onclick="switchPageTypeFilter('all', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs cursor-pointer">
           All Pages
         </button>
-        <button type="button" onclick="switchPageTypeFilter('products', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+        <button type="button" onclick="switchPageTypeFilter('products', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
           Products
         </button>
-        <button type="button" onclick="switchPageTypeFilter('accessory', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+        <button type="button" onclick="switchPageTypeFilter('accessory', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
           Accessory
         </button>
-        <button type="button" onclick="switchPageTypeFilter('premium', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
-          Premium
-        </button>
-        <button type="button" onclick="switchPageTypeFilter('performance', this)" class="page-type-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+        <button type="button" onclick="switchPageTypeFilter('performance', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
           Performance
         </button>
+        <button type="button" onclick="switchPageTypeFilter('premium', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
+          Premium
+        </button>
       </div>
+    </div>
 
-      <div class="relative w-full sm:w-56" id="customCategoryDropdownWrapper">
+    <!-- CATEGORY FILTER DROPDOWN & SEARCH INPUT -->
+    <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+      
+      <!-- CATEGORY DROPDOWN BUTTON & MENU -->
+      <div class="relative w-full sm:w-60" id="customCategoryDropdownWrapper">
         <button type="button" onclick="toggleCategoryDropdown()" id="selectedCategoryBtn"
-          class="w-full bg-slate-100/90 border border-slate-200 hover:border-brand/50 rounded-xl px-4 py-2 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
+          class="w-full bg-slate-100/90 border border-slate-200 hover:border-brand/50 rounded-xl px-4 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
           <span id="selectedCategoryText" class="truncate">All Categories</span>
-          <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="dropdownArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="categoryDropdownArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
         </button>
 
-        <div id="categoryDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 p-1.5 flex flex-col gap-1 max-h-64 overflow-y-auto">
+        <div id="categoryDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 p-1.5 flex flex-col gap-1 max-h-72 overflow-y-auto">
           <button type="button" onclick="switchCategoryFilter('all', 'All Categories')"
-            class="category-option-btn w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
             <span>All Categories</span>
             <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">{{ count($rawProducts) }}</span>
           </button>
@@ -173,32 +192,30 @@
               $catCount = collect($rawProducts)->where('category', $cat)->count();
             @endphp
             <button type="button" onclick="switchCategoryFilter('{{ strtolower($cat) }}', '{{ $cat }}')"
-              class="category-option-btn w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
+              class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
               <span class="truncate pr-2">{{ $cat }}</span>
               <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">{{ $catCount }}</span>
             </button>
           @endforeach
         </div>
       </div>
-    </div>
 
-    <div class="flex items-center gap-3 w-full lg:w-auto">
-      <div class="relative flex-1 sm:w-64">
+      <!-- SEARCH INPUT -->
+      <div class="relative w-full sm:w-64">
         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
         <input type="text" id="productSearchInput" onkeyup="onSearchInput()" placeholder="Search formulation or keyword..."
-          class="w-full bg-slate-50/70 focus:bg-white border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all">
+          class="w-full bg-slate-100/90 focus:bg-white border border-slate-200 hover:border-brand/40 rounded-xl py-2 pl-9 pr-4 text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand shadow-2xs transition-all">
       </div>
 
-      <span class="text-xs font-semibold text-slate-400 whitespace-nowrap shrink-0" id="productCountText">
-        Total {{ count($rawProducts) }} {{ count($rawProducts) === 1 ? 'item' : 'items' }}
-      </span>
     </div>
+
   </div>
 
+  <!-- PRODUCT GRID CONTAINER (BERSIH TANPA TAG/BADGES) -->
   <div id="productGridContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
     @forelse($rawProducts as $product)
       @php
@@ -211,24 +228,21 @@
         }
         $validImages = array_values(array_filter($imgList, fn($p) => !empty($p) && (file_exists(public_path($p)) || file_exists(public_path('uploads/products/' . basename($p))))));
 
-        $decodedVariants = [];
-        if (!empty($product->variants)) {
-            $tmpVar = json_decode($product->variants, true);
-            if (is_array($tmpVar)) $decodedVariants = $tmpVar;
-        }
         $pagePlacement = strtolower($product->page_type ?? (($product->category ?? '') === 'Accessory' ? 'accessory' : 'products'));
         $stockCount = (int) ($product->stock ?? 0);
       @endphp
 
-      <div class="product-vault-card group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xs hover:shadow-md hover:border-brand/40 transition-all duration-200 flex flex-col justify-between"
+      <div class="product-vault-card group bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-brand/40 transition-all duration-200 flex flex-col justify-between"
         data-title="{{ strtolower($product->title) }}"
         data-subtitle="{{ strtolower($product->subtitle ?? '') }}"
         data-category="{{ strtolower($product->category ?? 'weight management') }}"
         data-pagetype="{{ $pagePlacement }}"
+        data-stock="{{ $stockCount }}"
         data-dosage="{{ strtolower($product->dosage_spec ?? '') }}"
         data-keywords="{{ strtolower($product->keywords ?? '') }}">
         
         <div>
+          <!-- VISUAL MEDIA HEADER -->
           <div class="relative w-full h-52 p-3 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
             @if(count($validImages) > 1)
               <div class="admin-prod-slider">
@@ -255,7 +269,8 @@
             @endif
           </div>
 
-          <div class="p-4 sm:p-5 flex flex-col gap-3.5">
+          <!-- CARD BODY -->
+          <div class="p-4 sm:p-5 flex flex-col gap-3">
             @if(count($validImages) > 1)
               <div class="admin-ps-dots">
                 @foreach($validImages as $idx => $img)
@@ -266,8 +281,11 @@
 
             <div>
               <div class="flex items-center justify-between gap-2 mb-1">
-                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider truncate">
+                <span class="text-[11px] font-extrabold text-brand uppercase tracking-wider truncate">
                   {{ $product->category ?? 'Laboratory' }}
+                </span>
+                <span class="text-[11px] font-bold text-slate-400 shrink-0">
+                  Stock: <strong class="text-slate-800 font-bold">{{ $stockCount }}</strong>
                 </span>
               </div>
 
@@ -280,21 +298,19 @@
               </p>
             </div>
 
-            @if(!empty($product->has_variants) && count($decodedVariants) > 0)
-              <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
-                @foreach($decodedVariants as $v)
-                  <span class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
-                    {{ $v['label'] ?? '' }}: <b class="text-emerald-600">{{ $v['price'] ?? '' }}</b> ({{ $v['stock'] ?? 0 }})
-                  </span>
-                @endforeach
-              </div>
-            @endif
+            <!-- PRICE (BERSIH TANPA TAG SPECS/DOSAGE/ADULT FIT) -->
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
+              <span class="text-sm font-extrabold text-slate-900 tracking-tight">
+                {{ $product->price ?? 'RM0.00' }}
+              </span>
+            </div>
           </div>
         </div>
 
+        <!-- CARD FOOTER ACTIONS -->
         <div class="px-4 sm:px-5 py-3.5 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between gap-2">
           <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
-            class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand/40 text-slate-700 hover:text-brand font-bold text-xs shadow-2xs transition-all cursor-pointer">
+            class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 hover:border-brand/40 text-slate-700 hover:text-brand font-bold text-xs shadow-2xs transition-all cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
             </svg>
@@ -305,7 +321,7 @@
             @csrf
             @method('DELETE')
             <button type="submit"
-              class="inline-flex items-center justify-center p-2 rounded-xl bg-white border border-slate-200 hover:border-rose-300 text-slate-400 hover:text-rose-600 hover:bg-rose-50 shadow-2xs transition-all cursor-pointer" title="Delete Product">
+              class="inline-flex items-center justify-center p-2 rounded-xl bg-white border border-slate-200/80 hover:border-rose-300 text-slate-400 hover:text-rose-600 hover:bg-rose-50 shadow-2xs transition-all cursor-pointer" title="Delete Product">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
               </svg>
@@ -314,14 +330,15 @@
         </div>
       </div>
     @empty
-      <div class="col-span-full p-12 text-center bg-white/80 rounded-2xl border border-slate-200 text-slate-400 text-xs font-medium">
-        No formulations currently available in the database. Click "Add New Product" to initialize.
+      <div class="col-span-full p-12 text-center bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 text-slate-400 text-xs font-semibold shadow-xs">
+        No formulations currently available in database. Click "Add New Product" to populate your catalog.
       </div>
     @endforelse
   </div>
 
-  <div id="paginationWrapper" class="mt-4 pt-6 border-t border-slate-200/80 flex flex-col items-center justify-center gap-3">
-    <nav aria-label="Pagination" class="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xs" id="paginationNav">
+  <!-- PAGINATION -->
+  <div id="paginationWrapper" class="pt-4 border-t border-slate-200/60 flex flex-col items-center justify-center gap-3">
+    <nav aria-label="Pagination" class="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xs" id="paginationNav">
     </nav>
     <div class="text-xs font-semibold text-slate-400" id="paginationResultText">
       Showing 0 &ndash; 0 of 0 products
@@ -330,11 +347,12 @@
 
 </div>
 
+<!-- MODAL: ADD PRODUCT -->
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
-        <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Add New Formulation / Accessory</h3>
+        <h3 class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">Add New Formulation / Item</h3>
         <p class="text-xs text-slate-400 font-medium">Configure product details, stock count, multi-price options, and target storefront page.</p>
       </div>
       <button type="button" onclick="closeCreateProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
@@ -399,12 +417,12 @@
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
           <input type="text" name="title" required placeholder="e.g. Retatrutide"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
           <input type="text" name="subtitle" placeholder="e.g. Advanced Weight Management"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
       </div>
 
@@ -412,23 +430,23 @@
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
           <input type="text" name="price" id="create_price" required placeholder="e.g. RM280.00" oninput="syncNumericPrice(this, 'create_price_val')"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700 focus:outline-none focus:border-brand">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand">
           <input type="hidden" name="price_val" id="create_price_val" value="">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
           <input type="text" name="dosage_spec" placeholder="e.g. 10mg - 100mg"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
           <input type="text" name="badge_category" placeholder="e.g. Research grade"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
           <input type="number" name="stock" value="25" min="0" required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700 focus:outline-none focus:border-brand">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand">
         </div>
       </div>
 
@@ -439,7 +457,7 @@
               Multi-Option Pricing &amp; Specification Variants
             </label>
             <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-              Enable if this product offers multiple volumes, dosages, or apparel sizes with individual pricing.
+              Enable if this formulation offers multiple volumes, concentrations, or apparel sizes with individual pricing.
             </p>
           </div>
           <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
@@ -515,19 +533,20 @@
 
       <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
         <button type="button" onclick="closeCreateProductModal()"
-          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100">Cancel</button>
+          class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
         <button type="submit"
-          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-sm cursor-pointer">Publish Formulation</button>
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-xs cursor-pointer">Publish Formulation</button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- MODAL: EDIT PRODUCT -->
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
-        <h3 class="font-extrabold text-base sm:text-lg text-slate-900">Edit Formulation / Accessory</h3>
+        <h3 class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">Edit Formulation / Item</h3>
         <p class="text-xs text-slate-400 font-medium">Update stock, multi-price options, description, and page display target.</p>
       </div>
       <button type="button" onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
@@ -593,12 +612,12 @@
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
           <input type="text" id="edit_title" name="title" required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
           <input type="text" id="edit_subtitle" name="subtitle"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
         </div>
       </div>
 
@@ -606,23 +625,23 @@
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
           <input type="text" id="edit_price" name="price" required oninput="syncNumericPrice(this, 'edit_price_val')"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900">
           <input type="hidden" id="edit_price_val" name="price_val" value="">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
           <input type="text" id="edit_dosage_spec" name="dosage_spec"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
           <input type="text" id="edit_badge_category" name="badge_category"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
           <input type="number" id="edit_stock" name="stock" min="0" required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-700">
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900">
         </div>
       </div>
 
@@ -633,7 +652,7 @@
               Multi-Option Pricing &amp; Specification Variants
             </label>
             <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-              Enable if this product offers multiple volumes, dosages, or apparel sizes with individual pricing.
+              Enable if this formulation offers multiple volumes, dosages, or apparel sizes with individual pricing.
             </p>
           </div>
           <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
@@ -728,9 +747,9 @@
 
       <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
         <button type="button" onclick="closeEditProductModal()"
-          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
+          class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
         <button type="submit"
-          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-sm cursor-pointer">Save Modifications</button>
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-xs cursor-pointer">Save Modifications</button>
       </div>
     </form>
   </div>
@@ -747,6 +766,15 @@
   let createUploadFiles = [];
   let editUploadFiles = [];
   let editExistingImages = [];
+
+  function refreshProductVault() {
+    const spinner = document.getElementById('productRefreshSpinner');
+    if (spinner) spinner.classList.add('rotate-180');
+    setTimeout(() => {
+      if (spinner) spinner.classList.remove('rotate-180');
+      location.reload();
+    }, 400);
+  }
 
   function syncNumericPrice(inputEl, targetHiddenId) {
     const hiddenEl = document.getElementById(targetHiddenId);
@@ -784,17 +812,17 @@
   }
 
   function toggleCategoryDropdown() {
-    toggleCustomDropdown('categoryDropdownMenu', 'dropdownArrow');
+    toggleCustomDropdown('categoryDropdownMenu', 'categoryDropdownArrow');
   }
 
   function switchPageTypeFilter(pageType, btnEl) {
     activePageTypeFilter = pageType;
-    document.querySelectorAll('.page-type-btn').forEach(b => {
-      b.classList.remove('bg-white', 'text-slate-900', 'shadow-2xs');
-      b.classList.add('text-slate-600');
+
+    document.querySelectorAll('.page-type-tab').forEach(b => {
+      b.className = 'page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer';
     });
-    btnEl.classList.add('bg-white', 'text-slate-900', 'shadow-2xs');
-    btnEl.classList.remove('text-slate-600');
+    btnEl.className = 'page-type-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs cursor-pointer';
+
     currentPage = 1;
     filterProducts();
   }
@@ -805,7 +833,7 @@
     if (labelEl) labelEl.innerText = categoryLabel;
 
     const menu = document.getElementById('categoryDropdownMenu');
-    const arrow = document.getElementById('dropdownArrow');
+    const arrow = document.getElementById('categoryDropdownArrow');
     if (menu) menu.classList.add('hidden');
     if (arrow) arrow.classList.remove('rotate-180');
 
@@ -843,11 +871,6 @@
         card.style.display = 'none';
       }
     });
-
-    const countText = document.getElementById('productCountText');
-    if (countText) {
-      countText.innerText = `Total ${filteredCards.length} ${filteredCards.length === 1 ? 'item' : 'items'}`;
-    }
 
     renderPaginationView();
   }
@@ -892,7 +915,7 @@
     let html = '';
 
     const baseItem = "min-w-[36px] h-9 px-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center select-none transition-all duration-150";
-    const activeBtn = `${baseItem} bg-[#18181b] text-white font-bold shadow-2xs pointer-events-none`;
+    const activeBtn = `${baseItem} bg-brand text-white font-bold shadow-xs pointer-events-none`;
     const inactiveBtn = `${baseItem} bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-semibold cursor-pointer`;
     const ellipsisSpan = `min-w-[32px] h-9 px-1 flex items-center justify-center text-slate-400 font-bold text-xs sm:text-sm select-none`;
     const arrowEnabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer`;
@@ -999,7 +1022,7 @@
       <div class="col-span-4 relative">
         <input type="text" name="variant_price[]" value="${priceVal}" placeholder="e.g. RM150.00"
           oninput="this.nextElementSibling.value = (this.value.match(/([0-9]+(?:\\.[0-9]+)?)/) || ['',''])[1]"
-          class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-emerald-700 placeholder:text-slate-400 focus:outline-none focus:border-brand">
+          class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand">
         <input type="hidden" name="variant_val[]" value="${numVal}">
       </div>
       <div class="col-span-2">
@@ -1444,7 +1467,7 @@
   document.addEventListener('click', function(e) {
     const wrapper = document.getElementById('customCategoryDropdownWrapper');
     const menu = document.getElementById('categoryDropdownMenu');
-    const arrow = document.getElementById('dropdownArrow');
+    const arrow = document.getElementById('categoryDropdownArrow');
     if (wrapper && !wrapper.contains(e.target) && menu && !menu.classList.contains('hidden')) {
       menu.classList.add('hidden');
       if (arrow) arrow.classList.remove('rotate-180');

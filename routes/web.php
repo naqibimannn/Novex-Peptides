@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Backend\Admin\AdminLoginController;
 use App\Http\Controllers\Backend\Admin\ProductsController;
 use App\Http\Controllers\Backend\Admin\AuditController;
 use App\Http\Controllers\Backend\Admin\AudienceController;
+use App\Http\Controllers\Backend\Admin\OrganizationController;
 
 Route::any('/login', fn() => abort(404));
 Route::any('/admin', fn() => abort(404));
@@ -18,9 +20,8 @@ Route::any('/admin', fn() => abort(404));
 */
 Route::prefix('/')->group(function () {
 
-    // Homepage
     Route::get('/', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'home',
                 'ip_address' => $request->ip(),
@@ -34,9 +35,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.home.index', compact('featuredProducts'));
     })->name('home');
 
-    // About Page
     Route::get('/about', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'about',
                 'ip_address' => $request->ip(),
@@ -49,9 +49,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.about.index');
     })->name('about');
 
-    // Products Catalog
     Route::get('/products', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'products',
                 'ip_address' => $request->ip(),
@@ -65,9 +64,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.products.index', compact('catalogProducts'));
     })->name('products.index');
 
-    // Products Detail
     Route::get('/products/{id}', function (Request $request, $id) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'products/' . $id,
                 'ip_address' => $request->ip(),
@@ -80,9 +78,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
     })->name('products.show');
 
-    // Accessory Catalog
     Route::get('/accessory', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'accessory',
                 'ip_address' => $request->ip(),
@@ -95,9 +92,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.accessory.index');
     })->name('accessory');
 
-    // Accessory Detail
     Route::get('/accessory/{id}', function (Request $request, $id) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'accessory/' . $id,
                 'ip_address' => $request->ip(),
@@ -110,9 +106,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
     })->name('accessory.show');
 
-    // Performance Page
     Route::get('/performance', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'performance',
                 'ip_address' => $request->ip(),
@@ -125,9 +120,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.performance.index');
     })->name('performance');
 
-    // Premium Supplements Page
     Route::get('/premium', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'premium',
                 'ip_address' => $request->ip(),
@@ -140,9 +134,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.premium.index');
     })->name('premium');
 
-    // Resources Page
     Route::get('/resources', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'resources',
                 'ip_address' => $request->ip(),
@@ -155,9 +148,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.resources.index');
     })->name('resources');
 
-    // Science Page
     Route::get('/science', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'science',
                 'ip_address' => $request->ip(),
@@ -170,9 +162,8 @@ Route::prefix('/')->group(function () {
         return view('frontend.science.index');
     })->name('science');
 
-    // Contact Page (Auto-rekod pelawat)
     Route::get('/contact', function (Request $request) {
-        if (\Illuminate\Support\Facades\Schema::hasTable('page_views')) {
+        if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
                 'page_url'   => 'contact',
                 'ip_address' => $request->ip(),
@@ -231,10 +222,8 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
 
         Route::get('/audit-logs', [AuditController::class, 'index'])->name('audit-logs');
 
-        Route::get('/info', fn() => view('backend.admin.dashboard.admin', [
-            'section' => 'info',
-            'secret' => $adminSecret,
-        ]))->name('info');
+        Route::get('/info', [OrganizationController::class, 'index'])->name('info');
+        Route::post('/info', [OrganizationController::class, 'update'])->name('info.update');
 
         Route::get('/settings', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'settings',

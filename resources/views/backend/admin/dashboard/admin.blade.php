@@ -695,7 +695,9 @@
         @endif
 
       @elseif($currentSection === 'info')
-        @if(view()->exists('backend.admin.info'))
+        @if(view()->exists('backend.admin.organizational.organizational'))
+          @include('backend.admin.organizational.organizational')
+        @elseif(view()->exists('backend.admin.info'))
           @include('backend.admin.info')
         @else
           <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Organization Info module loaded.</div>

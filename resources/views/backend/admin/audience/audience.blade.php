@@ -222,6 +222,8 @@
   let detailChart = null;
   let currentAudiencePage = 'all';
 
+  const displayMonthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
   const audNow = new Date();
   let audPickerMode = 'overview';
   let audCalYear = audNow.getFullYear();
@@ -274,6 +276,7 @@
       }
     });
 
+    updateCardTitles();
     updateAudDisplayVal();
     renderAudCalendar();
     fetchAudienceChartData();
@@ -286,21 +289,48 @@
 
   function changeAudCalYear(dir) {
     audCalYear += dir;
+    updateCardTitles();
+    updateAudDisplayVal();
     renderAudCalendar();
+    fetchAudienceChartData();
   }
 
   function handleAudDateClick(day) {
     audSelectedDay = day;
+    updateCardTitles();
     updateAudDisplayVal();
     renderAudCalendar();
     fetchAudienceChartData();
+
+    if (audPickerMode === 'daily') {
+      const popover = document.getElementById('audienceDatePickerPopover');
+      if (popover) popover.classList.add('hidden');
+    }
   }
 
   function handleAudMonthClick(mIdx) {
     audCalMonth = mIdx;
+    updateCardTitles();
     updateAudDisplayVal();
     renderAudCalendar();
     fetchAudienceChartData();
+
+    const popover = document.getElementById('audienceDatePickerPopover');
+    if (popover) popover.classList.add('hidden');
+  }
+
+  function updateCardTitles() {
+    const cardTitle = document.getElementById('cardTodayTitle');
+    if (!cardTitle) return;
+
+    if (audPickerMode === 'daily') {
+      const mStr = audCalMonth + 1;
+      cardTitle.innerText = `Selected Date Views (${audSelectedDay}/${mStr}/${audCalYear})`;
+    } else if (audPickerMode === 'monthly') {
+      cardTitle.innerText = `${displayMonthNames[audCalMonth]} ${audCalYear} Total Views`;
+    } else {
+      cardTitle.innerText = "7-Day Overview Views";
+    }
   }
 
   function updateAudDisplayVal() {
@@ -308,10 +338,9 @@
     if (!displayElem) return;
 
     const mStr = audCalMonth + 1;
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     if (audPickerMode === 'monthly') {
-      displayElem.innerText = `Month: ${monthNames[audCalMonth]} ${audCalYear}`;
+      displayElem.innerText = `Month: ${displayMonthNames[audCalMonth]} ${audCalYear}`;
     } else if (audPickerMode === 'daily') {
       displayElem.innerText = `${audSelectedDay} / ${mStr} / ${audCalYear}`;
     } else {
@@ -335,7 +364,6 @@
 
     if (!monthYearText || !daysGrid || !monthsGrid) return;
 
-    const displayMonthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     monthYearText.innerText = `${displayMonthNames[audCalMonth]} ${audCalYear}`;
 
     if (audPickerMode === 'monthly') {
@@ -351,8 +379,8 @@
           : 'bg-slate-50 text-slate-700 hover:bg-slate-100 font-semibold';
 
         html += `
-          <button type="button" onclick="handleAudMonthClick(${m})" class="py-2.5 rounded-xl text-xs transition-all ${activeClass}">
-            ${displayMonthNames[m].substring(0, 3)} (${m + 1})
+          <button type="button" onclick="handleAudMonthClick(${m})" class="py-2.5 px-2 rounded-xl text-xs transition-all text-center truncate ${activeClass}">
+            ${displayMonthNames[m]}
           </button>
         `;
       }
@@ -419,13 +447,15 @@
   function setAudienceSelectMode(mode) {
     audPickerMode = mode;
 
-    // Reset automatik ke tarikh semasa/terkini (hari ini) bila tekan mod Overview
-    if (mode === 'overview') {
+    if (mode === 'overview' || mode === 'daily') {
       const realNow = new Date();
       audCalYear = realNow.getFullYear();
       audCalMonth = realNow.getMonth();
       audSelectedDay = realNow.getDate();
 
+      const popover = document.getElementById('audienceDatePickerPopover');
+      if (popover) popover.classList.add('hidden');
+    } else if (mode === 'monthly') {
       const popover = document.getElementById('audienceDatePickerPopover');
       if (popover) popover.classList.add('hidden');
     }
@@ -440,19 +470,7 @@
       }
     });
 
-    const cardTitle = document.getElementById('cardTodayTitle');
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-    if (cardTitle) {
-      if (mode === 'daily') {
-        cardTitle.innerText = "Selected Date Views";
-      } else if (mode === 'monthly') {
-        cardTitle.innerText = `${monthNames[audCalMonth]} Total Views`;
-      } else {
-        cardTitle.innerText = "7-Day Overview Views";
-      }
-    }
-
+    updateCardTitles();
     updateAudDisplayVal();
     renderAudCalendar();
     fetchAudienceChartData();
