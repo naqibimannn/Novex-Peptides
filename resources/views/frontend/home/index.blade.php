@@ -1121,7 +1121,11 @@ footer li{list-style:none;margin-bottom:6px}
       </a>
     </div>
   </div>
-  <div><h4>Contact Desk</h4><p>Direct WhatsApp &amp; Inquiries:<br><b>+60 11-1208 5054</b></p></div>
+  <div>
+    <h4>Contact Desk</h4>
+    <p>Direct WhatsApp &amp; Inquiries:<br><b><a href="https://wa.me/601125490484" target="_blank" rel="noopener">+60 11-2549 0484</a></b></p>
+    <p style="margin-top:8px">Email Support:<br><b><a href="mailto:support@noversupps.com">support@noversupps.com</a></b></p>
+  </div>
  </div>
  <div class="copy"><span>© 2026 Novex Peptides. All rights reserved.</span><span>For laboratory use only. Not for human consumption.</span></div>
 </div></footer>

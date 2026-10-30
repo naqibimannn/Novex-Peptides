@@ -11,6 +11,7 @@ class AudienceController extends Controller
 {
     public function index(Request $request, $secret = null)
     {
+        $secret = $secret ?? (config('admin.secret_key') ?: env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
         $today = Carbon::today()->toDateString();
 
         $totalViews = DB::table('page_views')->count();
@@ -23,17 +24,7 @@ class AudienceController extends Controller
 
         $section = 'audience';
 
-        if (view()->exists('backend.admin.admin')) {
-            return view('backend.admin.admin', compact(
-                'section',
-                'secret',
-                'totalViews',
-                'todayViews',
-                'uniqueVisitors'
-            ));
-        }
-
-        return view('backend.admin.audience.audience', compact(
+        return view('backend.admin.dashboard.admin', compact(
             'section',
             'secret',
             'totalViews',
@@ -56,10 +47,40 @@ class AudienceController extends Controller
             if (!$page || $page === 'all') {
                 return;
             }
-            if ($page === 'blog-all') {
+            if ($page === 'products') {
                 $query->where(function ($q) {
-                    $q->where('page_url', 'LIKE', '%blog%')
-                      ->orWhere('page_url', 'LIKE', '%insight%');
+                    $q->where('page_url', 'products')
+                      ->orWhere('page_url', 'LIKE', 'products/%');
+                });
+            } elseif ($page === 'accessory') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'accessory')
+                      ->orWhere('page_url', 'LIKE', 'accessory/%');
+                });
+            } elseif ($page === 'performance') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'performance')
+                      ->orWhere('page_url', 'LIKE', 'performance/%');
+                });
+            } elseif ($page === 'premium') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'premium')
+                      ->orWhere('page_url', 'LIKE', 'premium/%');
+                });
+            } elseif ($page === 'resources') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'resources')
+                      ->orWhere('page_url', 'LIKE', 'resources/%');
+                });
+            } elseif ($page === 'science') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'science')
+                      ->orWhere('page_url', 'LIKE', 'science/%');
+                });
+            } elseif ($page === 'contact') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'contact')
+                      ->orWhere('page_url', 'LIKE', 'contact/%');
                 });
             } else {
                 $query->where('page_url', 'LIKE', '%' . trim($page, '/') . '%');

@@ -1,6 +1,5 @@
 <div class="flex flex-col gap-8">
   
-  <!-- HEADER SECTION -->
   <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
     <div class="flex flex-col gap-1">
       <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -11,17 +10,16 @@
       </p>
     </div>
 
-    <!-- ACTION BUTTONS -->
     <div class="flex flex-wrap items-center gap-2.5 shrink-0">
       <a href="https://search.google.com/search-console/welcome" target="_blank" rel="noopener noreferrer"
         class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs transition-all active:scale-[0.98]">
-        <img src="{{ asset('gsc.png') }}" alt="Google Search Console" class="w-4 h-4 object-contain shrink-0">
+        <img src="{{ asset('assets/admin/audience/gsc.webp') }}" alt="Google Search Console" class="w-4 h-4 object-contain shrink-0">
         <span>Google Search Console</span>
       </a>
 
       <a href="https://analytics.google.com/analytics/web" target="_blank" rel="noopener noreferrer"
         class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs transition-all active:scale-[0.98]">
-        <img src="{{ asset('ga.png') }}" alt="Google Analytics" class="w-4 h-4 object-contain shrink-0">
+        <img src="{{ asset('assets/admin/audience/ga.webp') }}" alt="Google Analytics" class="w-4 h-4 object-contain shrink-0">
         <span>Google Analytics</span>
       </a>
 
@@ -35,10 +33,8 @@
     </div>
   </div>
 
-  <!-- TOOLBAR: PAGE SELECTOR DROPDOWN & DATE/PERIOD SELECTOR -->
   <div class="relative z-30 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
     
-    <!-- FILTER PAGE DROPDOWN -->
     <div class="flex items-center gap-3 w-full md:w-auto">
       <label class="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">Filter Page:</label>
       
@@ -61,14 +57,52 @@
             class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
             <span>Home Page</span>
           </button>
+
+          <button type="button" onclick="filterAudienceByPage('about', 'About Us Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>About Us Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('products', 'Products Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Products Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('accessory', 'Accessory Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Accessory Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('performance', 'Performance Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Performance Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('premium', 'Premium Supplements Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Premium Supplements Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('resources', 'Resources Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Resources Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('science', 'Science Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Science Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('contact', 'Contact Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Contact Page</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- DATE & PERIOD FILTER SYSTEM -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
       
-      <!-- MODE TABS -->
       <div class="inline-flex items-center bg-slate-200/60 p-1 rounded-full text-xs font-medium">
         <button type="button" onclick="setAudienceSelectMode('overview')" id="audTabWeekly"
           class="aud-period-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs">
@@ -84,7 +118,6 @@
         </button>
       </div>
 
-      <!-- DATE/MONTH PICKER POPOVER -->
       <div class="relative inline-block" id="audienceDatePickerWrapper">
         <div onclick="toggleAudienceDatePicker()"
           class="inline-flex items-center justify-between gap-3 bg-white border border-slate-200/80 rounded-2xl px-4 py-2 text-xs font-semibold text-slate-700 shadow-xs cursor-pointer hover:bg-slate-50/80 transition-all shrink-0">
@@ -117,7 +150,6 @@
             </div>
           </div>
 
-          <!-- TAMPILAN HARI (SUN-SAT) -->
           <div id="audCalendarHeaderDays" class="grid grid-cols-7 text-center mb-2">
             <span class="text-xs font-semibold text-slate-400">Sun</span>
             <span class="text-xs font-semibold text-slate-400">Mon</span>
@@ -128,7 +160,6 @@
             <span class="text-xs font-semibold text-slate-400">Sat</span>
           </div>
 
-          <!-- GRID HARI & MONTH SELECTOR -->
           <div id="audCalendarDaysGrid" class="grid grid-cols-7 gap-y-1"></div>
           <div id="audCalendarMonthsGrid" class="hidden grid grid-cols-3 gap-2"></div>
         </div>
@@ -138,7 +169,6 @@
 
   </div>
 
-  <!-- STATS CARDS -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div class="bg-white/90 backdrop-blur-md rounded-2xl p-5 shadow-xs border border-slate-200/80 flex flex-col justify-between">
       <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Total Views</span>
@@ -171,7 +201,6 @@
     </div>
   </div>
 
-  <!-- AUDIENCE CHART CONTAINER -->
   <div class="bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
     <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
       <div>
@@ -389,6 +418,17 @@
 
   function setAudienceSelectMode(mode) {
     audPickerMode = mode;
+
+    // Reset automatik ke tarikh semasa/terkini (hari ini) bila tekan mod Overview
+    if (mode === 'overview') {
+      const realNow = new Date();
+      audCalYear = realNow.getFullYear();
+      audCalMonth = realNow.getMonth();
+      audSelectedDay = realNow.getDate();
+
+      const popover = document.getElementById('audienceDatePickerPopover');
+      if (popover) popover.classList.add('hidden');
+    }
 
     ['weekly', 'daily', 'monthly'].forEach(m => {
       const tabBtn = document.getElementById('audTab' + m.charAt(0).toUpperCase() + m.slice(1));
