@@ -1,6 +1,28 @@
 @extends('frontend.home.index')
 
 @section('content')
+@php
+$resolveImageUrl = function($path) {
+    if (empty($path)) return asset('assets/website/placeholder.webp');
+    if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
+
+    $clean = ltrim($path, '/');
+    $checkPaths = [
+        $clean,
+        'uploads/products/' . basename($clean),
+        'storage/' . $clean,
+    ];
+
+    foreach ($checkPaths as $p) {
+        $realPath = public_path($p);
+        if (file_exists($realPath)) {
+            return asset($p) . '?v=' . filemtime($realPath);
+        }
+    }
+    return asset($clean) . '?v=' . time();
+};
+@endphp
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -171,6 +193,15 @@
     opacity: 1 !important;
     pointer-events: auto !important;
   }
+  .prod-slide-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    cursor: pointer;
+  }
   .prod-slide img {
     width: auto;
     height: auto;
@@ -283,10 +314,12 @@
     
     <div class="g4" id="pg">
       @php
+          // FILTER KUAT: MENYARING PRODUK ACCESSORY, PREMIUM, DAN PERFORMANCE
           $allProducts = \Illuminate\Support\Facades\DB::select(
               "SELECT * FROM products 
-               WHERE (page_type != 'accessory' OR page_type IS NULL OR page_type = '') 
-                 AND (category NOT IN ('Accessory', 'Injection Kit', 'Syringes') OR category IS NULL) 
+               WHERE (page_type NOT IN ('accessory', 'premium', 'performance') OR page_type IS NULL OR page_type = '') 
+                 AND (category NOT IN ('Accessory', 'Injection Kit', 'Syringes', 'Premium Supplements', 'Supplements', 'Performance Apparel') OR category IS NULL) 
+                 AND (slug NOT IN ('nx-polo-navy', 'polo', 'half-zip-polo') OR slug IS NULL)
                ORDER BY id DESC"
           );
       @endphp
@@ -297,15 +330,20 @@
             if (!empty($item->image)) {
                 $decoded = json_decode($item->image, true);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    $slides = array_values(array_filter($decoded, fn($p) => !empty($p) && (file_exists(public_path($p)) || file_exists(public_path('uploads/products/' . basename($p))))));
-                } elseif (file_exists(public_path($item->image))) {
+                    $slides = array_values(array_filter($decoded, fn($p) => !empty($p)));
+                } elseif (is_string($item->image) && !empty($item->image)) {
                     $slides = [$item->image];
                 }
+            }
+            if (empty($slides)) {
+                $slides = ['assets/website/placeholder.webp'];
             }
 
             $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
                 ? $item->slug
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
+
+            $detailUrl = url('/products/' . $itemSlug);
         @endphp
 
         <div class="card pc" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -314,17 +352,23 @@
               <div class="prod-slider">
                 <div class="prod-slides">
                   @foreach($slides as $sIdx => $imgSrc)
+                    @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
                     <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                      <img src="{{ asset($imgSrc) }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy">
+                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy">
+                      </a>
                     </div>
                   @endforeach
                 </div>
               </div>
             @elseif(count($slides) === 1)
+              @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
               <div class="prod-slider">
                 <div class="prod-slides">
                   <div class="prod-slide active">
-                    <img src="{{ asset($slides[0]) }}" alt="{{ $item->title }}" loading="lazy">
+                    <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
+                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" loading="lazy">
+                    </a>
                   </div>
                 </div>
               </div>
@@ -353,7 +397,7 @@
               <span>{{ $item->dosage_spec ?? 'Research grade' }}</span>
               <span>{{ $item->badge_category ?? 'Research grade' }}</span>
             </div>
-            <a class="btn-details" href="{{ url('/products/' . $itemSlug) }}">See Details</a>
+            <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
           </div>
         </div>
       @empty

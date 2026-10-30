@@ -5,14 +5,21 @@
 $resolveImageUrl = function($path) {
     if (empty($path)) return asset('reta1.webp');
     if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
-    if (file_exists(public_path($path))) return asset($path);
-    if (file_exists(public_path('uploads/products/' . basename($path)))) {
-        return asset('uploads/products/' . basename($path));
+    
+    $clean = ltrim($path, '/');
+    $checkPaths = [
+        $clean,
+        'uploads/products/' . basename($clean),
+        'storage/' . $clean,
+    ];
+
+    foreach ($checkPaths as $p) {
+        $realPath = public_path($p);
+        if (file_exists($realPath)) {
+            return asset($p) . '?v=' . filemtime($realPath);
+        }
     }
-    if (file_exists(public_path('storage/' . ltrim($path, '/')))) {
-        return asset('storage/' . ltrim($path, '/'));
-    }
-    return asset($path);
+    return asset($clean) . '?v=' . time();
 };
 
 $allProducts = [
@@ -147,7 +154,18 @@ $currProd = $allProducts[$reqKey]
 
 $hasVariants = !empty($currProd['variants']) && count($currProd['variants']) > 0;
 $isApparel   = ($currProd['category'] === 'Apparel') || (!empty($currProd['sizes']) && count($currProd['sizes']) > 0);
-$isAccessory = ($currProd['page_type'] ?? '') === 'accessory' 
+
+$from = request('from');
+$isPremium = ($from === 'premium') 
+    || (($currProd['page_type'] ?? '') === 'premium') 
+    || in_array($currProd['category'] ?? '', ['Premium Supplements', 'Supplements']);
+
+$isPerformance = ($from === 'performance')
+    || (($currProd['page_type'] ?? '') === 'performance')
+    || (($currProd['category'] ?? '') === 'Performance');
+
+$isAccessory = ($from === 'accessory')
+    || (($currProd['page_type'] ?? '') === 'accessory') 
     || in_array($currProd['category'] ?? '', ['Accessory', 'Injection Kit', 'Syringes']) 
     || request()->is('accessory*');
 @endphp
@@ -480,6 +498,16 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory'
     font-weight: 600;
   }
 
+  /* Animasi Imej Terbang (Flying Animation Effect) */
+  .flying-img {
+    position: fixed;
+    z-index: 99999;
+    pointer-events: none;
+    object-fit: cover;
+    box-shadow: 0 14px 32px rgba(47,111,159,.4);
+    will-change: transform, top, left, width, height, opacity;
+  }
+
   @media(max-width:900px){
     .detail-grid { grid-template-columns: 1fr !important; }
     .detail-media-wrap { max-width: 480px !important; margin: 0 auto; width: 100% !important; }
@@ -490,7 +518,11 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory'
 <section class="sec" id="productDetailSec">
   <div class="wrap">
     <div style="margin-bottom:24px">
-      @if($isAccessory)
+      @if($isPremium)
+        <a href="{{ url('/premium') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Premium Supplements</a>
+      @elseif($isPerformance)
+        <a href="{{ url('/performance') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Performance Division</a>
+      @elseif($isAccessory)
         <a href="{{ route('accessory') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Accessories</a>
       @else
         <a href="{{ route('products.index') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Catalog</a>
@@ -702,44 +734,114 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory'
     if(m) m.classList.remove('open');
   }
 
+  /* Animasi Terbang ke Troli (Sama seperti index.html) */
+  function triggerFlyAnimation(sourceImgEl){
+    const cartBtn = document.getElementById('headerCartBtn') || document.querySelector('.cart-trigger-btn');
+    if(!sourceImgEl || !cartBtn) return;
+
+    const srcRect = sourceImgEl.getBoundingClientRect();
+    const destRect = cartBtn.getBoundingClientRect();
+
+    const imgSrc = sourceImgEl.currentSrc || sourceImgEl.src;
+    const flyer = document.createElement('img');
+    flyer.src = imgSrc;
+    flyer.className = 'flying-img';
+
+    flyer.style.position = 'fixed';
+    flyer.style.top = srcRect.top + 'px';
+    flyer.style.left = srcRect.left + 'px';
+    flyer.style.width = srcRect.width + 'px';
+    flyer.style.height = srcRect.height + 'px';
+    flyer.style.borderRadius = '24px';
+    flyer.style.opacity = '1';
+    flyer.style.transition = 'all 0.75s cubic-bezier(0.2, 0.9, 0.3, 1)';
+    flyer.style.zIndex = '99999';
+    flyer.style.pointerEvents = 'none';
+    flyer.style.objectFit = 'contain';
+
+    document.body.appendChild(flyer);
+    flyer.getBoundingClientRect();
+
+    const destX = destRect.left + (destRect.width / 2) - 15;
+    const destY = destRect.top + (destRect.height / 2) - 15;
+
+    requestAnimationFrame(()=>{
+      flyer.style.top = destY + 'px';
+      flyer.style.left = destX + 'px';
+      flyer.style.width = '30px';
+      flyer.style.height = '30px';
+      flyer.style.borderRadius = '50%';
+      flyer.style.opacity = '0.3';
+      flyer.style.transform = 'scale(0.4)';
+    });
+
+    setTimeout(()=>{
+      flyer.remove();
+      cartBtn.classList.add('cart-bump');
+      setTimeout(()=>cartBtn.classList.remove('cart-bump'), 350);
+    }, 760);
+  }
+
+  /* Masukkan ke dalam Troli Tanpa Popup Alert */
   function triggerAddToCart(){
-    if (typeof addToCartFromDetail === 'function') {
-      addToCartFromDetail(currentDetailProduct.id);
-      return;
+    let cart = [];
+    try {
+      cart = JSON.parse(localStorage.getItem('nvx_cart') || '[]');
+    } catch(e) {
+      cart = [];
     }
 
-    let cart = JSON.parse(localStorage.getItem('nvx_cart') || '[]');
-    let itemSpec = currentDetailProduct.spec;
-    let itemVal = currentDetailProduct.val;
-    let itemLabel = currentDetailProduct.name;
+    let itemSpec = currentDetailProduct.spec || '';
+    let itemVal = parseFloat(currentDetailProduct.val) || 0;
+    let itemLabel = currentDetailProduct.name || '';
 
     if(currentSelectedVariant){
       itemSpec = currentSelectedVariant.label;
-      itemVal = currentSelectedVariant.val;
+      itemVal = parseFloat(currentSelectedVariant.val) || itemVal;
     } else if(currentDetailProduct.sizes && currentDetailProduct.sizes.length > 0){
       itemSpec = 'Size: ' + currentDetailSize;
     }
 
-    const existing = cart.find(x => x.id === currentDetailProduct.id && x.s === itemSpec);
+    const firstImg = (currentDetailProduct.imgs && currentDetailProduct.imgs.length > 0) ? currentDetailProduct.imgs[0] : 'reta1.webp';
+    const existing = cart.find(x => x.id === currentDetailProduct.id && (x.s === itemSpec || x.size === itemSpec));
+
     if(existing){
       existing.qty += currentDetailQty;
     } else {
       cart.push({
         id: currentDetailProduct.id,
         n: itemLabel,
+        name: itemLabel,
         s: itemSpec,
+        size: itemSpec,
         val: itemVal,
-        i: currentDetailProduct.imgs[0],
+        price: itemVal,
+        i: firstImg,
+        img: firstImg,
         qty: currentDetailQty
       });
     }
 
     localStorage.setItem('nvx_cart', JSON.stringify(cart));
-    const badge = document.getElementById('cartCount');
-    if(badge){
-      badge.innerText = cart.reduce((acc, item) => acc + item.qty, 0);
+
+    // Kemaskini nombor badge di navbar header
+    if (typeof updateCartBadge === 'function') {
+      updateCartBadge();
+    } else {
+      const badge = document.getElementById('cartCount');
+      if(badge){
+        badge.innerText = cart.reduce((acc, item) => acc + (parseInt(item.qty, 10) || 1), 0);
+      }
     }
-    alert('✓ Added to cart: ' + itemLabel + ' (' + itemSpec + ')');
+
+    // Gerakkan animasi gambar terbang terus ke troli header
+    const mainImgEl = document.querySelector('.detail-img-wrap .prod-slide.active img') || document.querySelector('.detail-img-wrap img');
+    triggerFlyAnimation(mainImgEl);
+
+    // Tunjuk toast ringkas jika fungsi wujud (tanpa popup alert browser)
+    if (typeof showToast === 'function') {
+      showToast('✓ Added to cart');
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function(){
@@ -747,7 +849,31 @@ $isAccessory = ($currProd['page_type'] ?? '') === 'accessory'
       if(el.complete) fitRoundedImg(el);
     });
 
-    if (@json($isAccessory)) {
+    if (@json($isPremium)) {
+      const catalogBtn = document.querySelector('#ddCatalog .dd-trigger');
+      if (catalogBtn) catalogBtn.classList.remove('on');
+
+      const storeBtn = document.querySelector('#ddStore .dd-trigger');
+      if (storeBtn) storeBtn.classList.add('on');
+
+      document.querySelectorAll('nav.mnav a').forEach(a => {
+        const href = a.getAttribute('href') || '';
+        if (href.includes('premium')) a.classList.add('on');
+        if (href.includes('products')) a.classList.remove('on');
+      });
+    } else if (@json($isPerformance)) {
+      const catalogBtn = document.querySelector('#ddCatalog .dd-trigger');
+      if (catalogBtn) catalogBtn.classList.remove('on');
+
+      const storeBtn = document.querySelector('#ddStore .dd-trigger');
+      if (storeBtn) storeBtn.classList.add('on');
+
+      document.querySelectorAll('nav.mnav a').forEach(a => {
+        const href = a.getAttribute('href') || '';
+        if (href.includes('performance')) a.classList.add('on');
+        if (href.includes('products')) a.classList.remove('on');
+      });
+    } else if (@json($isAccessory)) {
       document.querySelectorAll('nav.dnav a, nav.mnav a').forEach(a => {
         const href = a.getAttribute('href') || '';
         const text = a.textContent.trim();

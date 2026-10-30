@@ -5,62 +5,32 @@
 $resolveImageUrl = function($path) {
     if (empty($path)) return asset('assets/website/performance/front-view.webp');
     if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
-    if (file_exists(public_path($path))) return asset($path);
-    if (file_exists(public_path('uploads/products/' . basename($path)))) {
-        return asset('uploads/products/' . basename($path));
+
+    $clean = ltrim($path, '/');
+    $checkPaths = [
+        $clean,
+        'uploads/products/' . basename($clean),
+        'storage/' . $clean,
+        'assets/website/performance/' . basename($clean),
+    ];
+
+    foreach ($checkPaths as $p) {
+        $realPath = public_path($p);
+        if (file_exists($realPath)) {
+            return asset($p) . '?v=' . filemtime($realPath);
+        }
     }
-    if (file_exists(public_path('storage/' . ltrim($path, '/')))) {
-        return asset('storage/' . ltrim($path, '/'));
-    }
-    return asset($path);
+    return asset($clean) . '?v=' . time();
 };
 
-$poloProduct = null;
-$dbItem = \Illuminate\Support\Facades\DB::select(
+// HANYA MENGAMBIL PRODUK PERFORMANCE SAHAJA (MENEPIS PRODUK LAIN DARI KATALOG)
+$performanceProducts = \Illuminate\Support\Facades\DB::select(
     "SELECT * FROM products 
      WHERE page_type = 'performance' 
         OR category = 'Performance Apparel' 
         OR slug IN ('nx-polo-navy', 'polo', 'half-zip-polo') 
-     ORDER BY id DESC LIMIT 1"
+     ORDER BY id DESC"
 );
-
-if (!empty($dbItem)) {
-    $row = $dbItem[0];
-    $imgs = [];
-    if (!empty($row->image)) {
-        $decodedImg = json_decode($row->image, true);
-        $imgs = (json_last_error() === JSON_ERROR_NONE && is_array($decodedImg) && count($decodedImg) > 0)
-            ? $decodedImg
-            : [$row->image];
-    }
-    $sizes = [];
-    if (!empty($row->sizes)) {
-        $decodedSizes = is_string($row->sizes) ? json_decode($row->sizes, true) : $row->sizes;
-        if (is_array($decodedSizes)) {
-            $sizes = array_values(array_filter(array_map('trim', $decodedSizes)));
-        } elseif (is_string($row->sizes)) {
-            $sizes = array_values(array_filter(array_map('trim', explode(',', $row->sizes))));
-        }
-    }
-    $val = (float)($row->price_val ?? 0);
-    if ($val <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $row->price ?? '', $m)) {
-        $val = (float)$m[1];
-    }
-    $poloProduct = [
-        'id'             => $row->slug ?? ('product-' . $row->id),
-        'name'           => $row->title,
-        'title'          => $row->subtitle ?? '',
-        'spec'           => $row->dosage_spec ?? 'Adult Fit',
-        'val'            => $val,
-        'price'          => $row->price,
-        'category'       => $row->category ?? 'Performance Apparel',
-        'badge_category' => $row->badge_category ?? 'Novex Performance Division',
-        'stock'          => (int)($row->stock ?? 0),
-        'imgs'           => count($imgs) > 0 ? $imgs : ['assets/website/performance/front-view.webp'],
-        'sizes'          => count($sizes) > 0 ? $sizes : ['S', 'M', 'L', 'XL'],
-        'desc'           => $row->description ?? '',
-    ];
-}
 @endphp
 
 <style>
@@ -81,283 +51,219 @@ if (!empty($dbItem)) {
     display: block !important;
   }
 
-  .detail-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 48px !important;
-    align-items: center !important;
+  /* LATAR BELAKANG ASAL SEKSYEN PRODUK (VAR --BG2) */
+  #perf-signature {
+    padding: 70px 0 80px !important;
+    background: var(--bg2) !important;
+    scroll-margin-top: 80px;
   }
-
-  .detail-media-box {
-    width: 100%;
-    max-width: 560px;
+  #perf-signature .wrap {
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 24px;
+  }
+  #perf-signature .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  #perf-signature .head h2 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--ink);
+  }
+  #perf-signature .head p {
+    font-size: 15px;
+    color: var(--mut);
+    line-height: 1.6;
+    margin-top: 6px;
   }
 
+  /* GRID 4 LAJUR SEPADAN DENGAN FORMAT PRODUK CATALOG */
+  .g4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 1024px) {
+    .g4 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .g4 { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  }
+  @media (max-width: 520px) {
+    .g4 { grid-template-columns: 1fr; }
+  }
+
+  .pc {
+    padding: 14px;
+    background: var(--card-surface);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    transition: transform .3s, box-shadow .3s, background-color .25s ease, border-color .25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .pc:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 44px -24px rgba(47,111,159,.5);
+  }
+
+  /* WARNA LATAR BELAKANG ASAL BAGI KOTAK GAMBAR PRODUK */
   #perf-signature .ph {
-    aspect-ratio: 1 / 1 !important;
-    border-radius: 28px !important;
+    aspect-ratio: 1 !important;
+    border-radius: 20px !important;
     border: 1px solid var(--line) !important;
     background: #FAFAFC !important;
     overflow: hidden !important;
+    padding: 12px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 24px !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,.02) !important;
+    position: relative !important;
   }
   [data-theme="dark"] #perf-signature .ph {
     background: #0E1824 !important;
   }
-  #perf-signature .ph img {
-    width: 100% !important;
-    height: 100% !important;
+
+  #perf-signature .prod-slider,
+  #perf-signature .prod-slides,
+  #perf-signature .prod-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    background: transparent !important;
+  }
+  .prod-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity .65s ease-in-out;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .prod-slide.active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .prod-slide-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .prod-slide img {
+    width: auto !important;
+    height: auto !important;
     max-width: 100% !important;
     max-height: 100% !important;
     object-fit: contain !important;
-    transition: transform .4s ease !important;
-    display: block !important;
-  }
-  #perf-signature .ph:hover img {
-    transform: scale(1.02) !important;
+    object-position: center !important;
+    border-radius: 14px !important;
+    display: block;
+    background: transparent;
   }
 
-  .nx-views {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 16px;
-    width: 100%;
-  }
-  .nx-view-btn {
-    font-size: 12px;
-    font-weight: 600;
-    background: var(--card-surface);
-    color: var(--ink);
-    padding: 9px 6px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    cursor: pointer;
-    transition: all .2s ease;
-    text-align: center;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
+  .pc .ps-dots {
+    position: relative;
+    display: flex;
     justify-content: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,.02);
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    margin-bottom: 2px;
+    z-index: 5;
   }
-  .nx-view-btn:hover {
-    border-color: var(--gold);
-    color: var(--green);
-    background: var(--bg2);
+  .pc .ps-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--line);
+    cursor: pointer;
+    transition: all .25s ease;
   }
-  .nx-view-btn.active {
+  .pc .ps-dot:hover {
+    background: var(--mut);
+  }
+  .pc .ps-dot.active {
     background: var(--green);
-    color: #FFFFFF !important;
-    border-color: var(--green);
-    box-shadow: 0 2px 10px rgba(47,111,159,.25);
+    width: 18px;
+    border-radius: 999px;
+    transform: none;
   }
 
-  .detail-info {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-    text-align: left !important;
+  .pc .b {
+    text-align: left;
+    align-items: stretch;
+    padding: 14px 8px 8px;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
-  .detail-badge {
-    display: inline-block;
-    background: var(--bg2);
-    color: var(--green);
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    align-self: flex-start;
-  }
-  .detail-price {
-    font-size: clamp(26px,3vw,34px);
-    font-weight: 700;
-    color: var(--green);
+  .pc h3 {
+    font-size: 20px;
+    line-height: 1.2;
+    color: var(--ink);
     font-family: var(--serif);
   }
-  .stock-badge {
-    display: inline-flex;
-    align-items: center;
+  .pc .s {
     font-size: 13px;
-    font-weight: 600;
-    color: #1ebe5a;
-    background: rgba(37,211,102,.12);
-    padding: 5px 14px;
-    border-radius: 999px;
-    align-self: flex-start;
-  }
-  .detail-desc {
-    font-size: 14px;
-    line-height: 1.7;
-    color: #3A4D5E;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 20px 0;
-  }
-  .qty-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 8px;
-    flex-wrap: wrap;
-  }
-  .qty-box {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--card);
-    overflow: hidden;
-  }
-  .qty-box button {
-    width: 40px;
-    height: 40px;
-    background: none;
-    font-size: 17px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-    color: var(--ink);
-  }
-  .qty-box button:hover {
-    background: var(--bg2);
-  }
-  .qty-box input {
-    width: 46px;
-    text-align: center;
-    border: 0;
-    background: none;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-  }
-  .btn-add-cart {
-    background: var(--green);
-    color: #fff;
-    padding: 14px 28px;
-    font-weight: 600;
-    font-size: 14px;
-    border-radius: 999px;
-    flex: 1;
-    min-width: 160px;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    transition: background .2s,transform .1s;
-  }
-  .btn-add-cart:active { transform: scale(0.98); }
-  .btn-add-cart:hover { background: #245a82; }
-
-  .size-picker {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin: 8px 0;
-  }
-  .size-btn {
-    border: 1px solid var(--line);
-    background: #fff;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all .2s;
-    color: var(--ink);
-  }
-  .size-btn:hover { border-color: var(--green); }
-  .size-btn.active {
-    background: var(--green);
-    color: #fff;
-    border-color: var(--green);
-  }
-  .chart-link {
-    font-size: 12px;
-    color: var(--gold);
-    text-decoration: underline;
-    cursor: pointer;
-    font-weight: 500;
-    display: inline-block;
-  }
-
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.6);
-    z-index: 999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-content {
-    background: #fff;
-    border-radius: 20px;
-    max-width: 540px;
-    width: 100%;
-    padding: 28px;
-    position: relative;
-    box-shadow: 0 20px 40px rgba(0,0,0,.2);
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: none;
-    border: none;
-    font-size: 22px;
     color: var(--mut);
-    cursor: pointer;
+    line-height: 1.4;
+    min-height: 36px;
   }
-  .table-scroll {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin: 16px 0;
+  .pc .meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: auto;
   }
-  .size-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    text-align: center;
-    min-width: 440px;
-  }
-  .size-table th, .size-table td {
+  .pc .meta span {
+    font-size: 11px;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 999px;
     border: 1px solid var(--line);
-    padding: 10px 8px;
-  }
-  .size-table th {
-    background: var(--bg2);
-    color: var(--green);
-    font-weight: 600;
   }
 
-  @media(max-width:900px){
-    .detail-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-    .detail-media-box { max-width: 480px !important; }
+  .btn-details {
+    background: var(--green);
+    color: #fff;
+    padding: 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 10px;
+    transition: background .2s;
+    text-decoration: none;
+    display: block;
   }
-  @media(max-width:540px){
-    .nx-views {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .btn-details:hover {
+    background: #245a82;
   }
 </style>
 
 <div id="view-performance-division">
+  <!-- HERO BANNER -->
   <section class="hero">
     <picture>
       <source media="(orientation: portrait)" srcset="{{ asset('assets/website/performance/hero-phone.webp') }}">
@@ -368,16 +274,17 @@ if (!empty($dbItem)) {
       <p>Sport. Discipline. Performance. Lifestyle. Designed for movement, built for a higher standard.</p>
       <div style="display:flex;align-items:center;flex-wrap:wrap">
         <a class="btn" href="#perf-signature" onclick="document.getElementById('perf-signature').scrollIntoView({behavior:'smooth'});return false;">Explore Collection</a>
-        <a class="btn line" href="#" onclick="document.getElementById('perf-signature').scrollIntoView({behavior:'smooth'});return false;">Signature Collection</a>
       </div>
     </div></div>
   </section>
 
+  <!-- MARQUEE BAR -->
   <div class="mq"><div>
     <span>Sport</span><span>Discipline</span><span>Performance</span><span>Lifestyle</span><span>Padel</span><span>Train</span><span>Move</span><span>Explore</span>
     <span>Sport</span><span>Discipline</span><span>Performance</span><span>Lifestyle</span><span>Padel</span><span>Train</span><span>Move</span><span>Explore</span>
   </div></div>
 
+  <!-- SIGNATURE SHOWCASE DETAILS -->
   <section class="sec"><div class="wrap">
     <div class="nxg">
       <div class="nxg-head">
@@ -390,7 +297,7 @@ if (!empty($dbItem)) {
       <div class="nxg-grid c4">
         @php
             $viewCaps = ['Front view', 'Back view', 'Left side view', 'Right side view'];
-            $displayImgs = ($poloProduct && !empty($poloProduct['imgs'])) ? $poloProduct['imgs'] : [
+            $displayImgs = [
                 'assets/website/performance/front-view.webp',
                 'assets/website/performance/back-view.webp',
                 'assets/website/performance/left-side-view.webp',
@@ -430,76 +337,104 @@ if (!empty($dbItem)) {
     </div>
   </div></section>
 
+  <!-- KOLEKSI PRODUK KHUSUS PERFORMANCE DIVISION -->
   <section class="sec alt" id="perf-signature">
     <div class="wrap">
-      @if($poloProduct)
-        <div class="detail-grid">
-          <div class="detail-media-box">
+      <div class="head">
+        <div>
+          <h2>Performance Collection</h2>
+          <p>Engineered for high-intensity movement, athletic discipline, and daily comfort.</p>
+        </div>
+      </div>
+
+      <div class="g4" id="pg">
+        @forelse($performanceProducts as $item)
+          @php
+              $slides = [];
+              if (!empty($item->image)) {
+                  $decoded = json_decode($item->image, true);
+                  if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p)));
+                  } else {
+                      $slides = [$item->image];
+                  }
+              }
+              if (empty($slides)) {
+                  $slides = ['assets/website/performance/front-view.webp'];
+              }
+
+              $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
+                  ? $item->slug
+                  : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
+
+              // Pautan kekal membawa parameter ?from=performance
+              $detailUrl = url('/products/' . $itemSlug) . '?from=performance';
+          @endphp
+
+          <div class="card pc" data-category="{{ $item->category ?? 'Performance' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
             <div class="ph">
-              <img id="perfPoloImg" 
-                   src="{{ $resolveImageUrl($poloProduct['imgs'][0] ?? 'assets/website/performance/front-view.webp') }}" 
-                   alt="{{ $poloProduct['name'] }}" 
-                   loading="lazy" 
-                   onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1000'">
+              @if(count($slides) > 1)
+                <div class="prod-slider">
+                  <div class="prod-slides">
+                    @foreach($slides as $sIdx => $imgSrc)
+                      @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
+                      <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
+                        <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
+                          <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+                        </a>
+                      </div>
+                    @endforeach
+                  </div>
+                </div>
+              @elseif(count($slides) === 1)
+                @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
+                <div class="prod-slider">
+                  <div class="prod-slides">
+                    <div class="prod-slide active">
+                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              @else
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:12px;user-select:none;">
+                  N
+                </div>
+              @endif
             </div>
-            @if(count($poloProduct['imgs']) > 1)
-              <div class="nx-views">
-                @foreach($poloProduct['imgs'] as $vIdx => $vImg)
-                  <button type="button" class="nx-view-btn {{ $vIdx === 0 ? 'active' : '' }}" onclick="setPoloView('{{ $resolveImageUrl($vImg) }}', this)">
-                    {{ $viewCaps[$vIdx] ?? ('View ' . ($vIdx + 1)) }}
-                  </button>
+
+            @if(count($slides) > 1)
+              <div class="ps-dots">
+                @foreach($slides as $sIdx => $imgSrc)
+                  <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlideCatalog(this, {{ $sIdx }})"></span>
                 @endforeach
               </div>
             @endif
-          </div>
 
-          <div class="detail-info">
-            <span class="detail-badge">{{ $poloProduct['badge_category'] }}</span>
-            <h1 style="font-size:clamp(28px, 4vw, 44px);margin:0">{{ $poloProduct['name'] }}</h1>
-            <p id="detailSubDisplay" style="color:var(--mut);font-size:16px;margin:0">
-              {{ $poloProduct['title'] }} ({{ $poloProduct['spec'] }})
-            </p>
-            <div id="detailPriceDisplay" class="detail-price">{{ $poloProduct['price'] }}</div>
-            
-            <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $poloProduct['stock'] }} units available)</div>
-
-            <div style="margin-top:10px">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <label style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--mut)">Select Size:</label>
-                <a class="chart-link" onclick="openSizeModal()">View Size Chart</a>
+            <div class="b">
+              <h3>{{ $item->title }}</h3>
+              @if(!empty($item->subtitle))
+                <p class="s">{{ $item->subtitle }}</p>
+              @endif
+              <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
+              <div class="meta">
+                <span>{{ $item->dosage_spec ?? 'Adult Fit' }}</span>
+                <span>{{ $item->badge_category ?? $item->category ?? 'Performance' }}</span>
               </div>
-              <div class="size-picker" id="sizePickerGroup">
-                @foreach($poloProduct['sizes'] as $sIdx => $sz)
-                  <button type="button" class="size-btn {{ $sIdx === 0 ? 'active' : '' }}" onclick="selectProductSize('{{ $sz }}', this)">
-                    {{ $sz }}
-                  </button>
-                @endforeach
-              </div>
-            </div>
-
-            <div class="detail-desc">
-              <h4 style="font-family:var(--serif);font-size:20px;margin-bottom:8px">Product Overview</h4>
-              <p>{{ $poloProduct['desc'] }}</p>
-            </div>
-
-            <div class="qty-row">
-              <div class="qty-box">
-                <button type="button" onclick="changeDetailQty(-1, {{ (int)$poloProduct['stock'] }})">-</button>
-                <input type="text" id="detailQtyInput" readonly value="1">
-                <button type="button" onclick="changeDetailQty(1, {{ (int)$poloProduct['stock'] }})">+</button>
-              </div>
-              <button class="btn-add-cart" onclick="triggerAddToCart()">Add to Cart</button>
+              <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
             </div>
           </div>
-        </div>
-      @else
-        <div style="text-align:center;padding:60px 0;color:var(--mut)">
-          No performance signature products currently available.
-        </div>
-      @endif
+        @empty
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--mut);">
+            No performance products currently available.
+          </div>
+        @endforelse
+      </div>
     </div>
   </section>
 
+  <!-- CTA BANNER SECTION -->
   <section class="nx-cta">
     <div class="nx-cta-img">
       <img src="{{ asset('assets/website/performance/cta.webp') }}" alt="More than sport" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1800&q=80'">
@@ -512,120 +447,20 @@ if (!empty($dbItem)) {
   </section>
 </div>
 
-<div class="modal-overlay" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeSizeModal()">&times;</button>
-    <h3 style="font-size:24px;margin-bottom:6px;font-family:var(--serif);color:var(--ink)">Size Chart (Adult)</h3>
-    <p style="font-size:13px;color:var(--mut);margin-bottom:12px">Novex Performance Division — Unisex Half Zip Polo (All measurements in inches).</p>
-    <div class="table-scroll">
-      <table class="size-table">
-        <thead>
-          <tr><th>Size</th><th>Length (A)</th><th>Chest (B)</th><th>Shoulder</th><th>Short Sleeve</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><b>S</b></td><td>26</td><td>38</td><td>16</td><td>8.5</td></tr>
-          <tr><td><b>M</b></td><td>27</td><td>40</td><td>17</td><td>9</td></tr>
-          <tr><td><b>L</b></td><td>28</td><td>42</td><td>18</td><td>9.5</td></tr>
-          <tr><td><b>XL</b></td><td>29</td><td>44</td><td>19</td><td>10</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="font-size:12px;color:var(--mut);line-height:1.6;background:var(--bg2);padding:14px;border-radius:12px">
-      <b>How to Measure:</b><br>
-      • <b>Length (A):</b> Measure from the highest point of the shoulder to the bottom of the shirt.<br>
-      • <b>Chest (B):</b> Measure around the fullest part of the chest, keeping the tape horizontal.
-    </div>
-  </div>
-</div>
-
 <script>
-  let currentDetailProduct = @json($poloProduct);
-  let currentDetailQty = 1;
-  let currentDetailSize = (currentDetailProduct && currentDetailProduct.sizes && currentDetailProduct.sizes.length > 0) ? currentDetailProduct.sizes[0] : 'S';
-
-  function setPoloView(src, el) {
-    const img = document.getElementById('perfPoloImg');
-    if (img) img.src = src;
-    document.querySelectorAll('.nx-view-btn').forEach(b => b.classList.remove('active'));
-    if (el) el.classList.add('active');
+function setCardSlideCatalog(dot, idx){
+  if(window.event){
+    window.event.preventDefault();
+    window.event.stopPropagation();
   }
-
-  function changeDetailQty(delta, maxStock){
-    currentDetailQty = Math.max(1, Math.min(maxStock > 0 ? maxStock : 99, currentDetailQty + delta));
-    const el = document.getElementById('detailQtyInput');
-    if(el) el.value = currentDetailQty;
-  }
-
-  function selectProductSize(size, btnEl){
-    currentDetailSize = size;
-    const group = document.getElementById('sizePickerGroup');
-    if(group) {
-      group.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-    }
-    if(btnEl) btnEl.classList.add('active');
-  }
-
-  function openSizeModal(){
-    const m = document.getElementById('sizeModal');
-    if(m) m.classList.add('open');
-  }
-  function closeSizeModal(){
-    const m = document.getElementById('sizeModal');
-    if(m) m.classList.remove('open');
-  }
-
-  function triggerAddToCart(){
-    if(!currentDetailProduct) return;
-    let cart = [];
-    try {
-      cart = JSON.parse(localStorage.getItem('nvx_cart')) || [];
-    } catch(e) {
-      cart = [];
-    }
-
-    let itemSpec = 'Size: ' + currentDetailSize;
-    let itemVal = parseFloat(currentDetailProduct.val) || 79.00;
-    let itemLabel = currentDetailProduct.name;
-    let itemImg = currentDetailProduct.imgs && currentDetailProduct.imgs.length > 0 ? currentDetailProduct.imgs[0] : '';
-
-    const existing = cart.find(x => x.id === currentDetailProduct.id && (x.size === itemSpec || x.s === itemSpec));
-    if(existing){
-      existing.qty += currentDetailQty;
-    } else {
-      cart.push({
-        id: currentDetailProduct.id,
-        name: itemLabel,
-        n: itemLabel,
-        s: itemSpec,
-        size: itemSpec,
-        price: itemVal,
-        val: itemVal,
-        img: itemImg,
-        i: itemImg,
-        qty: currentDetailQty
-      });
-    }
-
-    try {
-      localStorage.setItem('nvx_cart', JSON.stringify(cart));
-    } catch(e) {}
-
-    const totalCount = cart.reduce((acc, item) => acc + (item.qty || 0), 0);
-    const badge = document.getElementById('cartCount');
-    if(badge){
-      badge.textContent = totalCount;
-      badge.classList.add('cart-bump');
-      setTimeout(() => badge.classList.remove('cart-bump'), 350);
-    }
-
-    const toast = document.getElementById('nxToast');
-    if (toast) {
-      toast.textContent = 'Added to cart (' + currentDetailSize + ') \u2713';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2200);
-    } else {
-      alert('✓ Added to cart: ' + itemLabel + ' (' + itemSpec + ')');
-    }
-  }
+  const card = dot.closest('.card') || dot.closest('.pc');
+  if(!card) return;
+  const slider = card.querySelector('.prod-slider');
+  if(!slider) return;
+  const slides = slider.querySelectorAll('.prod-slide');
+  const dots = card.querySelectorAll('.ps-dot');
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+}
 </script>
 @endsection

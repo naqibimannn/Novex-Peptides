@@ -5,14 +5,22 @@
 $resolveImageUrl = function($path) {
     if (empty($path)) return asset('assets/website/premium/product1.webp');
     if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
-    if (file_exists(public_path($path))) return asset($path);
-    if (file_exists(public_path('uploads/products/' . basename($path)))) {
-        return asset('uploads/products/' . basename($path));
+
+    $clean = ltrim($path, '/');
+    $checkPaths = [
+        $clean,
+        'uploads/products/' . basename($clean),
+        'storage/' . $clean,
+        'assets/website/premium/' . basename($clean),
+    ];
+
+    foreach ($checkPaths as $p) {
+        $realPath = public_path($p);
+        if (file_exists($realPath)) {
+            return asset($p) . '?v=' . filemtime($realPath);
+        }
     }
-    if (file_exists(public_path('storage/' . ltrim($path, '/')))) {
-        return asset('storage/' . ltrim($path, '/'));
-    }
-    return asset($path);
+    return asset($clean) . '?v=' . time();
 };
 
 $premiumProducts = \Illuminate\Support\Facades\DB::select(
@@ -44,6 +52,7 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
   #sup-formulas {
     padding: 70px 0 80px !important;
     background: var(--bg);
+    scroll-margin-top: 80px;
   }
   #sup-formulas .wrap {
     max-width: 1200px;
@@ -70,16 +79,19 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     margin-top: 6px;
   }
 
-  .g3 {
+  .g4 {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 24px;
   }
-  @media (max-width: 960px) {
-    .g3 { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  @media (max-width: 1024px) {
+    .g4 { grid-template-columns: repeat(3, 1fr); }
   }
-  @media (max-width: 600px) {
-    .g3 { grid-template-columns: 1fr; }
+  @media (max-width: 768px) {
+    .g4 { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  }
+  @media (max-width: 520px) {
+    .g4 { grid-template-columns: 1fr; }
   }
 
   .pc {
@@ -131,7 +143,7 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     height: 100%;
     opacity: 0;
     transition: opacity .65s ease-in-out;
-    padding: 14px;
+    padding: 12px;
     margin: 0;
     overflow: hidden;
     border-radius: inherit;
@@ -144,6 +156,15 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
   .prod-slide.active {
     opacity: 1 !important;
     pointer-events: auto !important;
+  }
+  .prod-slide-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    cursor: pointer;
   }
   .prod-slide img {
     width: auto !important;
@@ -221,72 +242,21 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     border: 1px solid var(--line);
   }
 
-  .buy-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 14px;
-  }
-  .qty-box {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--card-surface);
-    overflow: hidden;
-    height: 44px;
-    flex-shrink: 0;
-  }
-  .qty-box button {
-    width: 38px;
-    height: 44px;
-    background: none;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--ink);
-    cursor: pointer;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background .2s ease;
-  }
-  .qty-box button:hover {
-    background: var(--bg2);
-    color: var(--green);
-  }
-  .qty-box input {
-    width: 38px;
-    height: 44px;
-    text-align: center;
-    border: none;
-    background: transparent;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-  }
-  .btn-add-cart-card {
-    flex: 1;
-    height: 44px;
+  .btn-details {
     background: var(--green);
     color: #fff;
-    border: none;
+    padding: 12px;
     border-radius: 999px;
     font-size: 13px;
-    font-weight: 700;
-    letter-spacing: .02em;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all .2s ease;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 10px;
+    transition: background .2s;
+    text-decoration: none;
+    display: block;
   }
-  .btn-add-cart-card:hover {
+  .btn-details:hover {
     background: #245a82;
-  }
-  .btn-add-cart-card.done {
-    background: #1f8a5b;
   }
 </style>
 
@@ -300,8 +270,7 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
       <h1>Novex Premium<br>Supplements</h1>
       <p>Science-driven nutrition for a healthier, stronger and better you.</p>
       <div style="display:flex;align-items:center;flex-wrap:wrap">
-        <a class="btn" href="{{ route('products.index') }}">Shop Now</a>
-        <a class="btn line" href="#" onclick="document.getElementById('sup-formulas').scrollIntoView({behavior:'smooth'});return false;">Our Formulas</a>
+        <a class="btn" href="#sup-formulas" onclick="document.getElementById('sup-formulas').scrollIntoView({behavior:'smooth'});return false;">Shop Now</a>
       </div>
     </div></div>
   </section>
@@ -316,12 +285,11 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
       <div class="head">
         <div>
           <h2>Our Formulas</h2>
-          <p>Premium formulas and a value bundle for metabolic support, antioxidant care and everyday wellness.</p>
+          <p>Premium formulas and specialized nutritional bundles for metabolic support, antioxidant care, and everyday wellness.</p>
         </div>
-        <a class="btn line" href="{{ route('products.index') }}">View all</a>
       </div>
 
-      <div class="g3" id="pg">
+      <div class="g4" id="pg">
         @forelse($premiumProducts as $item)
           @php
               $slides = [];
@@ -337,15 +305,12 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
                   $slides = ['assets/website/premium/product1.webp'];
               }
 
-              $rawPrice = $item->price ?? 'RM0.00';
-              $numericPrice = (float)($item->price_val ?? 0);
-              if ($numericPrice <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $rawPrice, $m)) {
-                  $numericPrice = (float)$m[1];
-              }
-
               $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
                   ? $item->slug
                   : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
+
+              // Parameter ?from=premium dibawa ke paparan produk
+              $detailUrl = url('/products/' . $itemSlug) . '?from=premium';
           @endphp
 
           <div class="card pc" data-category="{{ $item->category ?? 'Supplements' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -354,17 +319,23 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
                 <div class="prod-slider">
                   <div class="prod-slides">
                     @foreach($slides as $sIdx => $imgSrc)
+                      @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
                       <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                        <img src="{{ $resolveImageUrl($imgSrc) }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                        <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
+                          <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                        </a>
                       </div>
                     @endforeach
                   </div>
                 </div>
               @elseif(count($slides) === 1)
+                @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
                 <div class="prod-slider">
                   <div class="prod-slides">
                     <div class="prod-slide active">
-                      <img src="{{ $resolveImageUrl($slides[0]) }}" alt="{{ $item->title }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -393,22 +364,7 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
                 <span>{{ $item->dosage_spec ?? '30 Capsules' }}</span>
                 <span>{{ $item->badge_category ?? 'Dietary Supplement' }}</span>
               </div>
-              <div class="buy-row">
-                <div class="qty-box">
-                  <button type="button" onclick="changeQty(this, -1)" aria-label="Decrease quantity">&minus;</button>
-                  <input type="number" value="1" min="1" max="99" inputmode="numeric" readonly>
-                  <button type="button" onclick="changeQty(this, 1)" aria-label="Increase quantity">+</button>
-                </div>
-                <button type="button" class="btn-add-cart-card" 
-                        data-id="{{ $itemSlug }}" 
-                        data-name="{{ $item->title }}" 
-                        data-price="{{ $numericPrice }}" 
-                        data-img="{{ $resolveImageUrl($slides[0] ?? '') }}"
-                        data-spec="{{ $item->dosage_spec ?? '30 Capsules' }}"
-                        onclick="addToCartPremium(this)">
-                  Add to Cart
-                </button>
-              </div>
+              <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
             </div>
           </div>
         @empty
@@ -464,80 +420,6 @@ function setCardSlideCatalog(dot, idx){
   const dots = card.querySelectorAll('.ps-dot');
   slides.forEach((s, i) => s.classList.toggle('active', i === idx));
   dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-}
-
-function changeQty(btn, delta) {
-  const input = btn.parentElement.querySelector('input');
-  if (!input) return;
-  let val = parseInt(input.value, 10) || 1;
-  val = Math.max(1, Math.min(99, val + delta));
-  input.value = val;
-}
-
-function addToCartPremium(btn) {
-  const row = btn.closest('.buy-row');
-  const input = row ? row.querySelector('input') : null;
-  const qty = parseInt(input ? input.value : 1, 10) || 1;
-  
-  const id = btn.getAttribute('data-id') || 'product';
-  const name = btn.getAttribute('data-name') || '';
-  const price = parseFloat(btn.getAttribute('data-price')) || 0;
-  const img = btn.getAttribute('data-img') || '';
-  const spec = btn.getAttribute('data-spec') || '';
-  
-  let cart = [];
-  try {
-    cart = JSON.parse(localStorage.getItem('nvx_cart')) || [];
-  } catch (e) {
-    cart = [];
-  }
-  
-  const found = cart.find(item => item.id === id);
-  if (found) {
-    found.qty = (found.qty || 1) + qty;
-  } else {
-    cart.push({
-      id: id,
-      name: name,
-      n: name,
-      price: price,
-      val: price,
-      img: img,
-      i: img,
-      s: spec,
-      spec: spec,
-      qty: qty
-    });
-  }
-  
-  try {
-    localStorage.setItem('nvx_cart', JSON.stringify(cart));
-  } catch (e) {}
-  
-  const totalCount = cart.reduce((acc, item) => acc + (item.qty || 0), 0);
-  const badge = document.getElementById('cartCount');
-  if (badge) {
-    badge.textContent = totalCount;
-    badge.classList.add('cart-bump');
-    setTimeout(() => badge.classList.remove('cart-bump'), 350);
-  }
-  
-  const toast = document.getElementById('nxToast');
-  if (toast) {
-    toast.textContent = 'Added to cart \u2713';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2200);
-  } else {
-    alert('✓ Added to cart: ' + name);
-  }
-  
-  const originalText = btn.textContent;
-  btn.textContent = 'Added \u2713';
-  btn.classList.add('done');
-  setTimeout(() => {
-    btn.textContent = originalText;
-    btn.classList.remove('done');
-  }, 1400);
 }
 </script>
 @endsection

@@ -681,7 +681,9 @@
         @endif
 
       @elseif($currentSection === 'blogs')
-        @if(view()->exists('backend.admin.blogs'))
+        @if(view()->exists('backend.admin.resources.resources'))
+          @include('backend.admin.resources.resources')
+        @elseif(view()->exists('backend.admin.blogs'))
           @include('backend.admin.blogs')
         @else
           <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Articles module loaded.</div>

@@ -95,34 +95,42 @@
     cursor: grabbing;
   }
   .img-sort-item.dragging {
-    opacity: 0.4;
-    transform: scale(0.95);
+    opacity: 0.35;
+    transform: scale(0.92);
   }
   .img-sort-item.drag-over {
     border-color: #0071E3 !important;
-    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.25);
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.35);
+  }
+
+  @keyframes subtleWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-1.5deg); }
+    40% { transform: rotate(1.5deg); }
+    60% { transform: rotate(-1deg); }
+    80% { transform: rotate(1deg); }
+  }
+  .new-asset-wiggling {
+    animation: subtleWiggle 3.2s infinite ease-in-out;
+    border: 1.5px dashed #0071E3 !important;
+    background-color: #F0F6FE !important;
   }
 </style>
 
 <div class="flex flex-col gap-8">
 
-  <!-- HEADER SECTION -->
+  <!-- HEADER SECTION (LENCANA TOTAL DI SEBELAH TAJUK TELAH DIBUANG) -->
   <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
     <div class="flex flex-col gap-1">
-      <div class="flex items-center gap-2.5">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Product &amp; Inventory Vault
-        </h1>
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-tint text-brand border border-brand-border/60 shadow-2xs">
-          {{ count($rawProducts) }} Items
-        </span>
-      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        Product &amp; Inventory Vault
+      </h1>
       <p class="text-xs sm:text-sm text-slate-500 font-medium">
         CentraDesk Catalog &middot; Real-time formulation management, multi-price options, and storefront inventory.
       </p>
     </div>
 
-    <!-- ACTION BUTTONS -->
+    <!-- ACTION BUTTONS & TOTAL PRODUCTS BADGE (LAYOUT REFRESH VAULT TANPA SVG) -->
     <div class="flex flex-wrap items-center gap-2.5 shrink-0">
       <button type="button" onclick="openCreateProductModal()"
         class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer">
@@ -132,20 +140,15 @@
         <span>Add New Product</span>
       </button>
 
-      <button type="button" onclick="refreshProductVault()"
-        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer">
-        <svg id="productRefreshSpinner" class="w-4 h-4 text-slate-500 transition-transform duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        <span>Refresh Vault</span>
-      </button>
+      <div class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white border border-slate-200/80 text-slate-700 font-bold text-xs shadow-xs select-none">
+        <span>Total Products: <strong class="text-slate-900 font-extrabold" id="headerTotalProductsCount">{{ count($rawProducts) }}</strong></span>
+      </div>
     </div>
   </div>
 
   <!-- TOOLBAR: PAGE PILL TABS, CATEGORY DROPDOWN & SEARCH -->
   <div class="relative z-30 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
     
-    <!-- STOREFRONT PAGE PILL TABS -->
     <div class="flex flex-col sm:flex-row sm:items-center gap-3">
       <label class="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">Filter Page:</label>
       <div class="inline-flex items-center bg-slate-200/60 p-1 rounded-full text-xs font-medium overflow-x-auto max-w-full">
@@ -167,10 +170,7 @@
       </div>
     </div>
 
-    <!-- CATEGORY FILTER DROPDOWN & SEARCH INPUT -->
     <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-      
-      <!-- CATEGORY DROPDOWN BUTTON & MENU -->
       <div class="relative w-full sm:w-60" id="customCategoryDropdownWrapper">
         <button type="button" onclick="toggleCategoryDropdown()" id="selectedCategoryBtn"
           class="w-full bg-slate-100/90 border border-slate-200 hover:border-brand/50 rounded-xl px-4 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
@@ -200,7 +200,6 @@
         </div>
       </div>
 
-      <!-- SEARCH INPUT -->
       <div class="relative w-full sm:w-64">
         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -210,12 +209,11 @@
         <input type="text" id="productSearchInput" onkeyup="onSearchInput()" placeholder="Search formulation or keyword..."
           class="w-full bg-slate-100/90 focus:bg-white border border-slate-200 hover:border-brand/40 rounded-xl py-2 pl-9 pr-4 text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand shadow-2xs transition-all">
       </div>
-
     </div>
 
   </div>
 
-  <!-- PRODUCT GRID CONTAINER (BERSIH TANPA TAG/BADGES) -->
+  <!-- PRODUCT GRID CONTAINER -->
   <div id="productGridContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
     @forelse($rawProducts as $product)
       @php
@@ -242,7 +240,6 @@
         data-keywords="{{ strtolower($product->keywords ?? '') }}">
         
         <div>
-          <!-- VISUAL MEDIA HEADER -->
           <div class="relative w-full h-52 p-3 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
             @if(count($validImages) > 1)
               <div class="admin-prod-slider">
@@ -269,7 +266,6 @@
             @endif
           </div>
 
-          <!-- CARD BODY -->
           <div class="p-4 sm:p-5 flex flex-col gap-3">
             @if(count($validImages) > 1)
               <div class="admin-ps-dots">
@@ -298,7 +294,6 @@
               </p>
             </div>
 
-            <!-- PRICE (BERSIH TANPA TAG SPECS/DOSAGE/ADULT FIT) -->
             <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
               <span class="text-sm font-extrabold text-slate-900 tracking-tight">
                 {{ $product->price ?? 'RM0.00' }}
@@ -307,7 +302,6 @@
           </div>
         </div>
 
-        <!-- CARD FOOTER ACTIONS -->
         <div class="px-4 sm:px-5 py-3.5 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between gap-2">
           <button type="button" onclick='openEditProductModal(@json($product), @json($validImages))'
             class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 hover:border-brand/40 text-slate-700 hover:text-brand font-bold text-xs shadow-2xs transition-all cursor-pointer">
@@ -363,7 +357,7 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
         <div class="relative" id="createPageTypeWrapper">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Target Display Page *</label>
           <input type="hidden" name="page_type" id="create_page_type" value="products">
           <button type="button" onclick="toggleCustomDropdown('createPageTypeMenu', 'createPageTypeArrow')"
             class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
@@ -393,9 +387,9 @@
         </div>
 
         <div class="relative" id="createCategoryWrapper">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Catalog Category *</label>
           <input type="hidden" name="category" id="create_category" value="Weight Management">
-          <button type="button" onclick="toggleCategoryDropdown()"
+          <button type="button" onclick="toggleCustomDropdown('createCategoryMenu', 'createCategoryArrow')"
             class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer">
             <span id="createCategoryText" class="truncate">Weight Management</span>
             <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="createCategoryArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -415,12 +409,12 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Product Title *</label>
           <input type="text" name="title" required placeholder="e.g. Retatrutide"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Subtitle / Tagline</label>
           <input type="text" name="subtitle" placeholder="e.g. Advanced Weight Management"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
@@ -428,37 +422,37 @@
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
-          <input type="text" name="price" id="create_price" required placeholder="e.g. RM280.00" oninput="syncNumericPrice(this, 'create_price_val')"
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Price (RM) *</label>
+          <input type="text" name="price" id="create_price" required placeholder="RM0.00"
+            oninput="handlePriceOnlyInput(this, 'create_price_val')"
+            onkeypress="return isNumberOrPeriod(event)"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand">
           <input type="hidden" name="price_val" id="create_price_val" value="">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Dosage / Spec</label>
           <input type="text" name="dosage_spec" placeholder="e.g. 10mg - 100mg"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Badge Label</label>
           <input type="text" name="badge_category" placeholder="e.g. Research grade"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
-          <input type="number" name="stock" value="25" min="0" required
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Total Stock *</label>
+          <input type="number" name="stock" id="create_stock" value="25" min="0" required
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand">
         </div>
       </div>
 
+      <!-- MULTI OPTION PRICING & VARIANTS CONTAINER -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
             <label class="text-xs font-extrabold text-slate-900 tracking-tight block">
               Multi-Option Pricing &amp; Specification Variants
             </label>
-            <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-              Enable if this formulation offers multiple volumes, concentrations, or apparel sizes with individual pricing.
-            </p>
           </div>
           <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
             <input type="checkbox" name="has_variants" value="1" id="create_has_variants" onchange="toggleVariantSection('create')" class="w-4 h-4 rounded text-brand focus:ring-brand/30 cursor-pointer">
@@ -470,13 +464,13 @@
 
         <div id="create_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
           <div>
-            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Variant Selection Heading</label>
             <input type="text" name="variant_title" value="" placeholder="e.g. Select Vial Concentration / Size:"
               class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
           </div>
 
           <div class="space-y-2">
-            <div class="grid grid-cols-12 gap-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <div class="grid grid-cols-12 gap-2 px-3 text-[11px] font-bold text-slate-500">
               <span class="col-span-5">Specification / Dosage / Size</span>
               <span class="col-span-4">Price</span>
               <span class="col-span-2 text-center">Stock</span>
@@ -485,35 +479,26 @@
             <div class="space-y-2" id="create_variants_rows"></div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-            <button type="button" onclick="addVariantRow('create_variants_rows')"
+          <div class="flex items-center gap-2 pt-1">
+            <button type="button" onclick="addVariantRow('create_variants_rows', {}, 'create')"
               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
               <span>Add Option</span>
             </button>
-
-            <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
-              <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
-              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
-              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'M')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ M</button>
-              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'L')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ L</button>
-              <button type="button" onclick="addQuickSizeVariant('create_variants_rows', 'XL')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ XL</button>
-              <button type="button" onclick="addAllPresetSizes('create_variants_rows')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand hover:text-white text-slate-700 transition-colors cursor-pointer">+ S-XL</button>
-            </div>
           </div>
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description (Show Page)</label>
+        <label class="block text-xs font-bold text-slate-700 mb-1.5">Product Overview Description (Show Page)</label>
         <textarea name="description" rows="3" placeholder="Enter detailed scientific description or product overview..."
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand"></textarea>
       </div>
 
       <div>
         <div class="flex items-center justify-between mb-1.5">
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Product Visual Assets (Multiple Allowed)</label>
-          <span class="text-[11px] text-slate-400 font-medium">Drag items to rearrange sequence</span>
+          <label class="block text-xs font-bold text-slate-700">Product Visual Assets (Multiple Allowed)</label>
+          <span class="text-[11px] text-slate-400 font-medium">Drag items or click &larr; &rarr; to reorder sequence</span>
         </div>
         
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
@@ -547,7 +532,7 @@
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">Edit Formulation / Item</h3>
-        <p class="text-xs text-slate-400 font-medium">Update stock, multi-price options, description, and page display target.</p>
+        <p class="text-xs text-slate-400 font-medium">Update stock, multi-price options, description, and catalog visual assets.</p>
       </div>
       <button type="button" onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
     </div>
@@ -558,7 +543,7 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
         <div class="relative" id="editPageTypeWrapper">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Target Display Page *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Target Display Page *</label>
           <input type="hidden" name="page_type" id="edit_page_type" value="products">
           <button type="button" onclick="toggleCustomDropdown('editPageTypeMenu', 'editPageTypeArrow')"
             class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
@@ -588,7 +573,7 @@
         </div>
 
         <div class="relative" id="editCategoryWrapper">
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Catalog Category *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Catalog Category *</label>
           <input type="hidden" name="category" id="edit_category" value="Weight Management">
           <button type="button" onclick="toggleCustomDropdown('editCategoryMenu', 'editCategoryArrow')"
             class="w-full bg-white border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-medium text-slate-800 shadow-2xs transition-all cursor-pointer">
@@ -610,12 +595,12 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Title *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Product Title *</label>
           <input type="text" id="edit_title" name="title" required
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Subtitle / Tagline</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Subtitle / Tagline</label>
           <input type="text" id="edit_subtitle" name="subtitle"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
         </div>
@@ -623,37 +608,37 @@
 
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Price (RM) *</label>
-          <input type="text" id="edit_price" name="price" required oninput="syncNumericPrice(this, 'edit_price_val')"
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Price (RM) *</label>
+          <input type="text" id="edit_price" name="price" required placeholder="RM0.00"
+            oninput="handlePriceOnlyInput(this, 'edit_price_val')"
+            onkeypress="return isNumberOrPeriod(event)"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900">
           <input type="hidden" id="edit_price_val" name="price_val" value="">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Dosage / Spec</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Dosage / Spec</label>
           <input type="text" id="edit_dosage_spec" name="dosage_spec"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Badge Label</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Badge Label</label>
           <input type="text" id="edit_badge_category" name="badge_category"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Total Stock *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Total Stock *</label>
           <input type="number" id="edit_stock" name="stock" min="0" required
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900">
         </div>
       </div>
 
+      <!-- MULTI OPTION PRICING & VARIANTS CONTAINER -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
             <label class="text-xs font-extrabold text-slate-900 tracking-tight block">
               Multi-Option Pricing &amp; Specification Variants
             </label>
-            <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-              Enable if this formulation offers multiple volumes, dosages, or apparel sizes with individual pricing.
-            </p>
           </div>
           <label class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs hover:border-brand/40 transition-all cursor-pointer shrink-0 select-none">
             <input type="checkbox" name="has_variants" value="1" id="edit_has_variants" onchange="toggleVariantSection('edit')" class="w-4 h-4 rounded text-brand focus:ring-brand/30 cursor-pointer">
@@ -665,13 +650,13 @@
 
         <div id="edit_variant_section" class="hidden space-y-3.5 pt-3.5 border-t border-slate-200/80">
           <div>
-            <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">Variant Selection Heading</label>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Variant Selection Heading</label>
             <input type="text" id="edit_variant_title" name="variant_title" placeholder="e.g. Select Vial Concentration / Size:"
               class="w-full bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand shadow-2xs">
           </div>
 
           <div class="space-y-2">
-            <div class="grid grid-cols-12 gap-2 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <div class="grid grid-cols-12 gap-2 px-3 text-[11px] font-bold text-slate-500">
               <span class="col-span-5">Specification / Dosage / Size</span>
               <span class="col-span-4">Price</span>
               <span class="col-span-2 text-center">Stock</span>
@@ -680,69 +665,45 @@
             <div class="space-y-2" id="edit_variants_rows"></div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
-            <button type="button" onclick="addVariantRow('edit_variants_rows')"
+          <div class="flex items-center gap-2 pt-1">
+            <button type="button" onclick="addVariantRow('edit_variants_rows', {}, 'edit')"
               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand text-brand font-bold text-xs shadow-2xs transition-colors cursor-pointer">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
               <span>Add Option</span>
             </button>
-
-            <div class="inline-flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
-              <span class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Quick Sizes:</span>
-              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'S')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ S</button>
-              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'M')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ M</button>
-              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'L')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ L</button>
-              <button type="button" onclick="addQuickSizeVariant('edit_variants_rows', 'XL')" class="px-2 py-1 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">+ XL</button>
-              <button type="button" onclick="addAllPresetSizes('edit_variants_rows')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-brand hover:text-white text-slate-700 transition-colors cursor-pointer">+ S-XL</button>
-            </div>
           </div>
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Product Overview Description</label>
+        <label class="block text-xs font-bold text-slate-700 mb-1.5">Product Overview Description</label>
         <textarea id="edit_description" name="description" rows="3"
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800"></textarea>
       </div>
 
-      <div id="existingImagesWrapper" class="space-y-1.5">
+      <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Current Slides in Catalog</label>
-          <span class="text-[11px] text-slate-400">Drag or click &larr; &rarr; to reorder</span>
+          <label class="block text-xs font-bold text-slate-700">Current &amp; New Visual Assets</label>
+          <span class="text-[11px] text-slate-400 font-medium">New uploads appear wiggling &bull; drag or click &larr; &rarr; to reorder</span>
         </div>
+        
         <div id="existingImagesOrderInputs"></div>
-        <div id="editExistingImagesGrid" class="flex flex-wrap gap-2.5 p-3 bg-slate-50 rounded-2xl border border-slate-200/80 empty:hidden"></div>
-      </div>
-
-      <div class="space-y-1.5">
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Upload Action Mode</label>
-        <div class="grid grid-cols-2 gap-2">
-          <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
-            <input type="radio" name="image_mode" value="replace" checked class="text-brand focus:ring-brand">
-            <span>Replace Existing</span>
-          </label>
-          <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer text-xs font-semibold text-slate-700">
-            <input type="radio" name="image_mode" value="append" class="text-brand focus:ring-brand">
-            <span>Add to Slider</span>
-          </label>
-        </div>
+        <div id="editCombinedImagesGrid" class="flex flex-wrap gap-2.5 p-3 bg-slate-50 rounded-2xl border border-slate-200/80 empty:hidden min-h-[96px] items-center"></div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Choose New Visual Asset(s)</label>
+        <label class="block text-xs font-bold text-slate-700 mb-1.5">Add More Visual Asset(s)</label>
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
           <input type="file" id="edit_images_input" name="images[]" multiple accept="image/*"
-            onchange="handleNewUploadFiles(event, 'editNewImagesPreviewGrid', 'edit')"
+            onchange="handleEditAdditionalUpload(event)"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           
           <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline pointer-events-none">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-            <span>Click to upload new visual(s)</span>
+            <span>Click or drag files to add to catalog slider</span>
           </div>
-          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">Leave blank to retain current catalog visual assets</span>
+          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">Newly added pictures appear right next to existing ones</span>
         </div>
-
-        <div id="editNewImagesPreviewGrid" class="flex flex-wrap gap-2.5 mt-3 empty:hidden p-2 rounded-2xl bg-slate-50 border border-slate-200/80"></div>
       </div>
 
       <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
@@ -764,8 +725,7 @@
   let filteredCards = [];
 
   let createUploadFiles = [];
-  let editUploadFiles = [];
-  let editExistingImages = [];
+  let editCombinedItems = [];
 
   function refreshProductVault() {
     const spinner = document.getElementById('productRefreshSpinner');
@@ -776,12 +736,95 @@
     }, 400);
   }
 
+  function formatRmString(rawVal) {
+    if (!rawVal) return '';
+    let clean = String(rawVal).replace(/RM\s*/ig, '').trim();
+    if (!clean) return '';
+    return 'RM' + clean;
+  }
+
+  function isNumberOrPeriod(event) {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode === 46 || (charCode >= 48 && charCode <= 57)) {
+      return true;
+    }
+    event.preventDefault();
+    return false;
+  }
+
+  function handlePriceOnlyInput(inputEl, hiddenId, prefix) {
+    let raw = inputEl.value;
+    
+    if (raw.includes('-')) {
+      let cleaned = raw.replace(/[^0-9.\-\sRMrm]/g, '');
+      inputEl.value = cleaned;
+      if (hiddenId) syncNumericPrice(inputEl, hiddenId);
+      return;
+    }
+
+    let digits = raw.replace(/[^0-9.]/g, '');
+    let parts = digits.split('.');
+    if (parts.length > 2) {
+      digits = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    inputEl.value = digits.length > 0 ? 'RM' + digits : '';
+    
+    if (hiddenId) {
+      syncNumericPrice(inputEl, hiddenId);
+    }
+    if (prefix) {
+      syncMultiOptionPricingAndStock(prefix);
+    }
+  }
+
   function syncNumericPrice(inputEl, targetHiddenId) {
     const hiddenEl = document.getElementById(targetHiddenId);
     if (!hiddenEl) return;
     const val = inputEl.value || '';
     const match = val.match(/([0-9]+(?:\.[0-9]+)?)/);
     hiddenEl.value = match ? match[1] : '';
+  }
+
+  function syncMultiOptionPricingAndStock(prefix) {
+    const chk = document.getElementById(`${prefix}_has_variants`);
+    if (!chk || !chk.checked) return;
+
+    const modal = document.getElementById(`${prefix}ProductModal`);
+    if (!modal) return;
+
+    const priceInputs = Array.from(modal.querySelectorAll('input[name="variant_price[]"]'));
+    const stockInputs = Array.from(modal.querySelectorAll('input[name="variant_stock[]"]'));
+
+    const mainPriceInput = document.getElementById(`${prefix}_price`);
+    const mainPriceValHidden = document.getElementById(`${prefix}_price_val`);
+    const mainStockInput = document.getElementById(`${prefix}_stock`);
+
+    const validPrices = priceInputs.map(p => p.value.trim()).filter(v => v.length > 0 && v !== 'RM');
+    if (validPrices.length >= 2) {
+      const pFirst = formatRmString(validPrices[0]);
+      const pLast = formatRmString(validPrices[validPrices.length - 1]);
+      if (mainPriceInput) mainPriceInput.value = `${pFirst} - ${pLast}`;
+      if (mainPriceValHidden) syncNumericPrice({ value: pFirst }, `${prefix}_price_val`);
+    } else if (validPrices.length === 1) {
+      const p1 = formatRmString(validPrices[0]);
+      if (mainPriceInput) mainPriceInput.value = p1;
+      if (mainPriceValHidden) syncNumericPrice({ value: p1 }, `${prefix}_price_val`);
+    }
+
+    let totalStock = 0;
+    let hasStockEntries = false;
+    stockInputs.forEach(s => {
+      const v = parseInt(s.value, 10);
+      if (!isNaN(v)) {
+        totalStock += v;
+        hasStockEntries = true;
+      }
+    });
+
+    if (hasStockEntries && mainStockInput) {
+      mainStockInput.value = totalStock;
+    }
   }
 
   function toggleCustomDropdown(menuId, arrowId) {
@@ -995,19 +1038,20 @@
     if (chk.checked) {
       sec.classList.remove('hidden');
       if (rowsContainer && rowsContainer.children.length === 0) {
-        addVariantRow(`${prefix}_variants_rows`);
+        addVariantRow(`${prefix}_variants_rows`, {}, prefix);
       }
+      syncMultiOptionPricingAndStock(prefix);
     } else {
       sec.classList.add('hidden');
     }
   }
 
-  function addVariantRow(containerId, data = {}) {
+  function addVariantRow(containerId, data = {}, prefix = 'create') {
     const container = document.getElementById(containerId);
     if (!container) return;
 
     const labelVal = data.label || '';
-    const priceVal = data.price || '';
+    let priceVal = data.price ? formatRmString(data.price) : '';
     const numVal = (data.val !== undefined && data.val !== '') ? data.val : (priceVal.match(/([0-9]+(?:\.[0-9]+)?)/) || ['',''])[1];
     const stockVal = data.stock !== undefined ? data.stock : '';
 
@@ -1016,21 +1060,23 @@
     row.innerHTML = `
       <div class="col-span-5">
         <input type="text" name="variant_label[]" value="${labelVal}" placeholder="e.g. 100ml / 10mg / Size L"
-          oninput="syncVariantSizesToHidden(this)"
+          oninput="syncVariantSizesToHidden(this); syncMultiOptionPricingAndStock('${prefix}')"
           class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-4 relative">
-        <input type="text" name="variant_price[]" value="${priceVal}" placeholder="e.g. RM150.00"
-          oninput="this.nextElementSibling.value = (this.value.match(/([0-9]+(?:\\.[0-9]+)?)/) || ['',''])[1]"
+        <input type="text" name="variant_price[]" value="${priceVal}" placeholder="RM0.00"
+          oninput="handlePriceOnlyInput(this, '', '${prefix}'); this.nextElementSibling.value = (this.value.match(/([0-9]+(?:\\.[0-9]+)?)/) || ['',''])[1];"
+          onkeypress="return isNumberOrPeriod(event)"
           class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand">
         <input type="hidden" name="variant_val[]" value="${numVal}">
       </div>
       <div class="col-span-2">
         <input type="number" name="variant_stock[]" value="${stockVal}" placeholder="Qty" min="0"
+          oninput="syncMultiOptionPricingAndStock('${prefix}')"
           class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-2.5 py-2 text-xs font-bold text-center text-slate-700 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-1 flex justify-center">
-        <button type="button" onclick="removeVariantRow(this)" 
+        <button type="button" onclick="removeVariantRow(this, '${prefix}')" 
           class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer" title="Remove option">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -1040,23 +1086,15 @@
     `;
     container.appendChild(row);
     syncVariantSizesToHidden(row);
+    syncMultiOptionPricingAndStock(prefix);
   }
 
-  function addQuickSizeVariant(containerId, sizeName) {
-    addVariantRow(containerId, { label: sizeName });
-  }
-
-  function addAllPresetSizes(containerId) {
-    ['S', 'M', 'L', 'XL'].forEach(sz => {
-      addVariantRow(containerId, { label: sz });
-    });
-  }
-
-  function removeVariantRow(btn) {
+  function removeVariantRow(btn, prefix) {
     const row = btn.closest('.grid');
     const container = row.parentElement;
     row.remove();
     syncVariantSizesToHidden(container);
+    syncMultiOptionPricingAndStock(prefix);
   }
 
   function syncVariantSizesToHidden(el) {
@@ -1078,40 +1116,32 @@
     const files = Array.from(event.target.files);
     if (!files || files.length === 0) return;
 
-    if (mode === 'create') {
-      createUploadFiles = createUploadFiles.concat(files);
-      renderUploadPreview(containerId, createUploadFiles, mode);
-    } else {
-      editUploadFiles = editUploadFiles.concat(files);
-      renderUploadPreview(containerId, editUploadFiles, mode);
-    }
+    createUploadFiles = createUploadFiles.concat(files);
+    renderCreateUploadPreview();
   }
 
-  function syncInputFiles(mode) {
-    const inputId = mode === 'create' ? 'create_images_input' : 'edit_images_input';
-    const input = document.getElementById(inputId);
+  function syncCreateInputFiles() {
+    const input = document.getElementById('create_images_input');
     if (!input) return;
-
     const dt = new DataTransfer();
-    const files = mode === 'create' ? createUploadFiles : editUploadFiles;
-    files.forEach(f => dt.items.add(f));
+    createUploadFiles.forEach(f => dt.items.add(f));
     input.files = dt.files;
   }
 
-  function renderUploadPreview(containerId, filesArray, mode) {
-    const container = document.getElementById(containerId);
+  function renderCreateUploadPreview() {
+    const container = document.getElementById('createImagesPreviewGrid');
     if (!container) return;
     container.innerHTML = '';
 
-    syncInputFiles(mode);
+    syncCreateInputFiles();
 
-    if (filesArray.length === 0) {
+    if (createUploadFiles.length === 0) {
       container.classList.add('hidden');
       return;
     }
     container.classList.remove('hidden');
 
-    filesArray.forEach((file, index) => {
+    createUploadFiles.forEach((file, index) => {
       const card = document.createElement('div');
       card.className = 'img-sort-item relative w-20 h-20 rounded-xl border border-slate-200 bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden';
       card.setAttribute('draggable', 'true');
@@ -1128,8 +1158,8 @@
       delBtn.title = 'Remove this visual';
       delBtn.onclick = (e) => {
         e.stopPropagation();
-        filesArray.splice(index, 1);
-        renderUploadPreview(containerId, filesArray, mode);
+        createUploadFiles.splice(index, 1);
+        renderCreateUploadPreview();
       };
 
       const navWrap = document.createElement('div');
@@ -1142,10 +1172,10 @@
       prevBtn.onclick = (e) => {
         e.stopPropagation();
         if (index > 0) {
-          const temp = filesArray[index - 1];
-          filesArray[index - 1] = filesArray[index];
-          filesArray[index] = temp;
-          renderUploadPreview(containerId, filesArray, mode);
+          const temp = createUploadFiles[index - 1];
+          createUploadFiles[index - 1] = createUploadFiles[index];
+          createUploadFiles[index] = temp;
+          renderCreateUploadPreview();
         }
       };
 
@@ -1155,11 +1185,11 @@
       nextBtn.innerHTML = '&rarr;';
       nextBtn.onclick = (e) => {
         e.stopPropagation();
-        if (index < filesArray.length - 1) {
-          const temp = filesArray[index + 1];
-          filesArray[index + 1] = filesArray[index];
-          filesArray[index] = temp;
-          renderUploadPreview(containerId, filesArray, mode);
+        if (index < createUploadFiles.length - 1) {
+          const temp = createUploadFiles[index + 1];
+          createUploadFiles[index + 1] = createUploadFiles[index];
+          createUploadFiles[index] = temp;
+          renderCreateUploadPreview();
         }
       };
 
@@ -1191,9 +1221,9 @@
         const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
         const toIndex = index;
         if (fromIndex !== toIndex) {
-          const moved = filesArray.splice(fromIndex, 1)[0];
-          filesArray.splice(toIndex, 0, moved);
-          renderUploadPreview(containerId, filesArray, mode);
+          const moved = createUploadFiles.splice(fromIndex, 1)[0];
+          createUploadFiles.splice(toIndex, 0, moved);
+          renderCreateUploadPreview();
         }
       });
 
@@ -1201,46 +1231,78 @@
     });
   }
 
-  function renderExistingImages() {
-    const grid = document.getElementById('editExistingImagesGrid');
+  function handleEditAdditionalUpload(event) {
+    const files = Array.from(event.target.files);
+    if (!files || files.length === 0) return;
+
+    files.forEach(f => {
+      editCombinedItems.push({
+        type: 'new',
+        file: f,
+        previewUrl: URL.createObjectURL(f)
+      });
+    });
+
+    renderEditCombinedGallery();
+  }
+
+  function syncEditInputFiles() {
+    const input = document.getElementById('edit_images_input');
     const inputsWrap = document.getElementById('existingImagesOrderInputs');
-    const wrapper = document.getElementById('existingImagesWrapper');
-    if (!grid || !inputsWrap) return;
+    if (!input || !inputsWrap) return;
 
-    grid.innerHTML = '';
     inputsWrap.innerHTML = '';
+    const dt = new DataTransfer();
 
-    if (editExistingImages.length === 0) {
-      if (wrapper) wrapper.classList.add('hidden');
+    editCombinedItems.forEach(item => {
+      if (item.type === 'existing') {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'retained_images[]';
+        hiddenInput.value = item.src;
+        inputsWrap.appendChild(hiddenInput);
+      } else if (item.type === 'new' && item.file) {
+        dt.items.add(item.file);
+      }
+    });
+
+    input.files = dt.files;
+  }
+
+  function renderEditCombinedGallery() {
+    const grid = document.getElementById('editCombinedImagesGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    syncEditInputFiles();
+
+    if (editCombinedItems.length === 0) {
+      grid.classList.add('hidden');
       return;
     }
-    if (wrapper) wrapper.classList.remove('hidden');
+    grid.classList.remove('hidden');
 
-    editExistingImages.forEach((imgSrc, index) => {
-      const hiddenInput = document.createElement('input');
-      hiddenInput.type = 'hidden';
-      hiddenInput.name = 'retained_images[]';
-      hiddenInput.value = imgSrc;
-      inputsWrap.appendChild(hiddenInput);
-
+    editCombinedItems.forEach((item, index) => {
+      const isNew = item.type === 'new';
       const card = document.createElement('div');
-      card.className = 'img-sort-item relative w-20 h-20 rounded-xl border border-slate-200 bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden';
+      
+      card.className = `img-sort-item relative w-20 h-20 rounded-xl border bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden ${isNew ? 'new-asset-wiggling' : 'border-slate-200'}`;
       card.setAttribute('draggable', 'true');
       card.dataset.index = index;
 
       const img = document.createElement('img');
       img.className = 'w-full h-full object-contain rounded-lg pointer-events-none';
-      img.src = `{{ asset('') }}${imgSrc}`;
+      img.src = isNew ? item.previewUrl : `{{ asset('') }}${item.src}`;
 
       const delBtn = document.createElement('button');
       delBtn.type = 'button';
       delBtn.className = 'absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs font-bold shadow-md hover:bg-rose-700 transition-transform active:scale-90 cursor-pointer z-20';
       delBtn.innerHTML = '&times;';
-      delBtn.title = 'Remove this visual from catalog';
+      delBtn.title = isNew ? 'Remove this new visual' : 'Remove visual from catalog';
       delBtn.onclick = (e) => {
         e.stopPropagation();
-        editExistingImages.splice(index, 1);
-        renderExistingImages();
+        editCombinedItems.splice(index, 1);
+        renderEditCombinedGallery();
       };
 
       const navWrap = document.createElement('div');
@@ -1253,10 +1315,10 @@
       prevBtn.onclick = (e) => {
         e.stopPropagation();
         if (index > 0) {
-          const temp = editExistingImages[index - 1];
-          editExistingImages[index - 1] = editExistingImages[index];
-          editExistingImages[index] = temp;
-          renderExistingImages();
+          const temp = editCombinedItems[index - 1];
+          editCombinedItems[index - 1] = editCombinedItems[index];
+          editCombinedItems[index] = temp;
+          renderEditCombinedGallery();
         }
       };
 
@@ -1266,11 +1328,11 @@
       nextBtn.innerHTML = '&rarr;';
       nextBtn.onclick = (e) => {
         e.stopPropagation();
-        if (index < editExistingImages.length - 1) {
-          const temp = editExistingImages[index + 1];
-          editExistingImages[index + 1] = editExistingImages[index];
-          editExistingImages[index] = temp;
-          renderExistingImages();
+        if (index < editCombinedItems.length - 1) {
+          const temp = editCombinedItems[index + 1];
+          editCombinedItems[index + 1] = editCombinedItems[index];
+          editCombinedItems[index] = temp;
+          renderEditCombinedGallery();
         }
       };
 
@@ -1278,8 +1340,8 @@
       navWrap.appendChild(nextBtn);
 
       const badge = document.createElement('span');
-      badge.className = 'absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-900/70 text-white pointer-events-none group-hover:opacity-0 transition-opacity';
-      badge.innerText = index + 1;
+      badge.className = `absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold text-white pointer-events-none group-hover:opacity-0 transition-opacity ${isNew ? 'bg-brand' : 'bg-slate-900/70'}`;
+      badge.innerText = isNew ? `NEW ${index + 1}` : index + 1;
 
       card.appendChild(img);
       card.appendChild(delBtn);
@@ -1302,9 +1364,9 @@
         const fromIndex = parseInt(e.dataTransfer.getData('text/plain'), 10);
         const toIndex = index;
         if (fromIndex !== toIndex) {
-          const moved = editExistingImages.splice(fromIndex, 1)[0];
-          editExistingImages.splice(toIndex, 0, moved);
-          renderExistingImages();
+          const moved = editCombinedItems.splice(fromIndex, 1)[0];
+          editCombinedItems.splice(toIndex, 0, moved);
+          renderEditCombinedGallery();
         }
       });
 
@@ -1314,7 +1376,7 @@
 
   function openCreateProductModal() {
     createUploadFiles = [];
-    renderUploadPreview('createImagesPreviewGrid', createUploadFiles, 'create');
+    renderCreateUploadPreview();
     const modal = document.getElementById('createProductModal');
     if (modal) {
       modal.classList.remove('hidden');
@@ -1331,11 +1393,11 @@
   }
 
   function openEditProductModal(product, existingImages = []) {
-    editUploadFiles = [];
-    renderUploadPreview('editNewImagesPreviewGrid', editUploadFiles, 'edit');
-
-    editExistingImages = Array.isArray(existingImages) ? [...existingImages] : [];
-    renderExistingImages();
+    editCombinedItems = (Array.isArray(existingImages) ? existingImages : []).map(img => ({
+      type: 'existing',
+      src: img
+    }));
+    renderEditCombinedGallery();
 
     const modal = document.getElementById('editProductModal');
     const form = document.getElementById('editProductForm');
@@ -1348,7 +1410,7 @@
       
       const priceInput = document.getElementById('edit_price');
       if (priceInput) {
-        priceInput.value = product.price || '';
+        priceInput.value = formatRmString(product.price || '');
         syncNumericPrice(priceInput, 'edit_price_val');
       }
 
@@ -1403,7 +1465,7 @@
       if (Number(product.has_variants) === 1 && Array.isArray(parsedVariants) && parsedVariants.length > 0) {
         hasVarChk.checked = true;
         varSection.classList.remove('hidden');
-        parsedVariants.forEach(v => addVariantRow('edit_variants_rows', v));
+        parsedVariants.forEach(v => addVariantRow('edit_variants_rows', v, 'edit'));
       } else {
         hasVarChk.checked = false;
         varSection.classList.add('hidden');

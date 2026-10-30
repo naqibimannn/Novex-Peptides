@@ -9,6 +9,7 @@ use App\Http\Controllers\Backend\Admin\ProductsController;
 use App\Http\Controllers\Backend\Admin\AuditController;
 use App\Http\Controllers\Backend\Admin\AudienceController;
 use App\Http\Controllers\Backend\Admin\OrganizationController;
+use App\Http\Controllers\Backend\Admin\ResourcesController;
 
 Route::any('/login', fn() => abort(404));
 Route::any('/admin', fn() => abort(404));
@@ -148,6 +149,24 @@ Route::prefix('/')->group(function () {
         return view('frontend.resources.index');
     })->name('resources');
 
+    Route::get('/resources/{slug}', function (Request $request, $slug) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'resources/' . $slug,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $resource = DB::table('resources')->where('slug', $slug)->first();
+        if (!$resource) {
+            abort(404);
+        }
+        return view('frontend.resources.show', compact('resource'));
+    })->name('resources.show');
+
     Route::get('/science', function (Request $request) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
@@ -184,7 +203,7 @@ Route::prefix('/')->group(function () {
 | Admin Portal Routes
 |--------------------------------------------------------------------------
 */
-$adminSecret = config('admin.secret_key') ?: env('ADMIN_SECRET_KEY');
+$adminSecret = config('admin.secret_key') ?: env('ADMIN_SECRET_KEY') ?: 'portal-admin-hyut746dhy74-novev-malaysia';
 
 Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($adminSecret) {
 
@@ -204,30 +223,37 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
     Route::middleware('auth')->group(function () use ($adminSecret) {
         Route::get('/dashboard', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'dashboard',
-            'secret' => $adminSecret,
+            'secret'  => $adminSecret,
         ]))->name('dashboard');
 
+        // Products Catalog Management
         Route::get('/products', [ProductsController::class, 'index'])->name('products');
         Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
         Route::put('/products/{id}', [ProductsController::class, 'update'])->name('products.update');
         Route::delete('/products/{id}', [ProductsController::class, 'destroy'])->name('products.destroy');
 
+        // Audience Views
         Route::get('/audience', [AudienceController::class, 'index'])->name('audience');
         Route::get('/audience/data', [AudienceController::class, 'data'])->name('audience.data');
 
-        Route::get('/blogs', fn() => view('backend.admin.dashboard.admin', [
-            'section' => 'blogs',
-            'secret' => $adminSecret,
-        ]))->name('blogs');
+        // Articles & Educational Resources Management
+        Route::get('/blogs', [ResourcesController::class, 'index'])->name('blogs');
+        Route::get('/resources', [ResourcesController::class, 'index'])->name('resources');
+        Route::post('/resources', [ResourcesController::class, 'store'])->name('resources.store');
+        Route::put('/resources/{id}', [ResourcesController::class, 'update'])->name('resources.update');
+        Route::delete('/resources/{id}', [ResourcesController::class, 'destroy'])->name('resources.destroy');
 
+        // Audit Logs
         Route::get('/audit-logs', [AuditController::class, 'index'])->name('audit-logs');
 
+        // Organization Info
         Route::get('/info', [OrganizationController::class, 'index'])->name('info');
         Route::post('/info', [OrganizationController::class, 'update'])->name('info.update');
 
+        // Settings
         Route::get('/settings', fn() => view('backend.admin.dashboard.admin', [
             'section' => 'settings',
-            'secret' => $adminSecret,
+            'secret'  => $adminSecret,
         ]))->name('settings');
 
         Route::match(['get', 'post'], '/logout', [AdminLoginController::class, 'logout'])->name('logout');
