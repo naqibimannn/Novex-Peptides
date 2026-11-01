@@ -1,40 +1,6 @@
 @extends('frontend.home.index')
 
 @section('content')
-@php
-$resolveImageUrl = function($path) {
-    if (!is_string($path) || empty($path)) {
-        return asset('assets/website/premium/product1.webp');
-    }
-    if (filter_var($path, FILTER_VALIDATE_URL)) {
-        return $path;
-    }
-
-    $clean = ltrim($path, '/');
-    $checkPaths = [
-        $clean,
-        'uploads/products/' . basename($clean),
-        'storage/' . $clean,
-        'assets/website/premium/' . basename($clean),
-    ];
-
-    foreach ($checkPaths as $p) {
-        $realPath = public_path($p);
-        if (file_exists($realPath)) {
-            return asset($p) . '?v=' . filemtime($realPath);
-        }
-    }
-    return asset($clean) . '?v=' . time();
-};
-
-$premiumProducts = \Illuminate\Support\Facades\DB::select(
-    "SELECT * FROM products 
-     WHERE page_type = 'premium' 
-        OR category IN ('Premium Supplements', 'Supplements') 
-     ORDER BY id DESC"
-);
-@endphp
-
 <div id="view-premium-supplements" class="block w-full">
   <section class="hero relative min-h-[520px] h-[calc(100vh-var(--off,110px))] overflow-hidden text-white flex items-center before:content-[''] before:absolute before:inset-0 before:z-[1] before:bg-gradient-to-r before:from-[#0A111A]/[0.82] before:to-[#0A111A]/[0.25]">
     <picture>
@@ -69,98 +35,22 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     </div>
   </div>
 
-  <section class="sec pt-[70px] pb-20 bg-white dark:bg-[#0A111A] scroll-mt-20 transition-colors duration-200" id="sup-formulas">
+  <section class="sec py-[54px] min-[901px]:py-20 bg-white dark:bg-[#0A111A] scroll-mt-20 transition-colors duration-200" id="sup-formulas">
     <div class="wrap max-w-[1200px] mx-auto px-4 sm:px-6">
-      <div class="head flex justify-between items-end mb-8 gap-5 flex-wrap">
-        <div>
+      <div class="grid grid-cols-1 min-[901px]:grid-cols-2 gap-10 items-center">
+        <div class="flex flex-col gap-4">
+          <span class="font-sans font-semibold text-[11px] tracking-[0.28em] uppercase text-[#3F84B5] dark:text-[#5CA5DA] block">Science-Driven Nutrition</span>
           <h2 class="font-serif text-[clamp(28px,4vw,42px)] text-[#1E2D3B] dark:text-[#F0F6FC] leading-[1.15] font-medium">Our Formulas</h2>
-          <p class="text-[15px] text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.6] mt-1.5">Premium formulas and specialized nutritional bundles for metabolic support, antioxidant care, and everyday wellness.</p>
+          <p class="text-[#5A6F82] dark:text-[#8EA4B8] text-[15px] leading-[1.6]">Premium formulas and specialized nutritional bundles for metabolic support, antioxidant care, and everyday wellness.</p>
+          <div class="pt-2">
+            <a href="{{ url('/premium/show') }}" class="btn inline-flex items-center justify-center bg-[#2F6F9F] dark:bg-[#327BB3] hover:bg-[#245a82] dark:hover:bg-[#286391] text-white rounded-full py-3.5 px-8 text-[13px] font-semibold tracking-[0.04em] text-center transition-all duration-200 no-underline shadow-sm">
+              Shop Now
+            </a>
+          </div>
         </div>
-      </div>
-
-      <div class="g4 grid grid-cols-1 min-[521px]:grid-cols-2 min-[769px]:grid-cols-3 min-[1025px]:grid-cols-4 gap-4 min-[769px]:gap-6" id="pg">
-        @forelse($premiumProducts as $item)
-          @php
-              $slides = [];
-              if (!empty($item->image)) {
-                  $decoded = json_decode($item->image, true);
-                  if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                      $slides = array_values(array_filter($decoded, fn($p) => is_string($p) && !empty($p)));
-                  } elseif (is_string($item->image) && !empty($item->image)) {
-                      $slides = [$item->image];
-                  }
-              }
-              if (empty($slides)) {
-                  $slides = ['assets/website/premium/product1.webp'];
-              }
-
-              $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
-                  ? $item->slug
-                  : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
-
-              $detailUrl = url('/premium/' . $itemSlug);
-              $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
-          @endphp
-
-          <div class="card pc p-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[26px] transition-all duration-300 flex flex-col hover:-translate-y-1.5 hover:shadow-[0_24px_44px_-24px_rgba(47,111,159,0.5)]" data-category="{{ $item->category ?? 'Supplements' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
-            <div class="ph aspect-square rounded-[20px] relative bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] overflow-hidden flex items-center justify-center p-0">
-              @if(count($slides) > 1)
-                <div class="prod-slider relative w-full h-full overflow-hidden rounded-[inherit] bg-transparent">
-                  <div class="prod-slides relative w-full h-full rounded-[inherit] overflow-hidden bg-transparent">
-                    @foreach($slides as $sIdx => $imgSrc)
-                      @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
-                      <div class="prod-slide absolute inset-0 w-full h-full opacity-0 invisible transition-all duration-500 ease-in-out p-3 m-0 overflow-hidden rounded-[inherit] bg-white dark:bg-[#132232] flex items-center justify-center pointer-events-none z-[1] {{ $sIdx === 0 ? 'active !opacity-100 !visible !pointer-events-auto !z-[2]' : '' }}">
-                        <a href="{{ $detailUrl }}" class="prod-slide-link flex items-center justify-center w-full h-full no-underline cursor-pointer" title="{{ $item->title ?? 'Product' }}">
-                          <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'" class="w-auto h-auto max-w-full max-h-full object-contain object-center rounded-[14px] block bg-transparent">
-                        </a>
-                      </div>
-                    @endforeach
-                  </div>
-                </div>
-              @elseif(count($slides) === 1)
-                @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
-                <div class="prod-slider relative w-full h-full overflow-hidden rounded-[inherit] bg-transparent">
-                  <div class="prod-slides relative w-full h-full rounded-[inherit] overflow-hidden bg-transparent">
-                    <div class="prod-slide active absolute inset-0 w-full h-full !opacity-100 !visible !pointer-events-auto !z-[2] p-3 m-0 overflow-hidden rounded-[inherit] bg-white dark:bg-[#132232] flex items-center justify-center">
-                      <a href="{{ $detailUrl }}" class="prod-slide-link flex items-center justify-center w-full h-full no-underline cursor-pointer" title="{{ $item->title ?? 'Product' }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'" class="w-auto h-auto max-w-full max-h-full object-contain object-center rounded-[14px] block bg-transparent">
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              @else
-                <div class="w-full h-full flex items-center justify-center bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-serif text-[68px] font-semibold rounded-[12px] select-none">
-                  N
-                </div>
-              @endif
-            </div>
-
-            @if(count($slides) > 1)
-              <div class="ps-dots relative flex justify-center items-center gap-1.5 mt-2.5 mb-0.5 z-[5]">
-                @foreach($slides as $sIdx => $imgSrc)
-                  <span class="ps-dot w-[7px] h-[7px] rounded-full bg-[#D2E2EF] dark:bg-[#1C2D3E] cursor-pointer transition-all duration-250 hover:bg-[#5A6F82] {{ $sIdx === 0 ? 'active !bg-[#2F6F9F] dark:!bg-[#327BB3] !w-[18px]' : '' }}" onclick="setCardSlideCatalog(this, {{ $sIdx }})"></span>
-                @endforeach
-              </div>
-            @endif
-
-            <div class="b text-left items-stretch pt-3.5 px-2 pb-2 gap-2 flex flex-col flex-1">
-              <h3 class="font-serif text-[20px] leading-[1.2] text-[#1E2D3B] dark:text-[#F0F6FC]">{{ $item->title ?? 'Untitled Formula' }}</h3>
-              @if(!empty($item->subtitle))
-                <p class="s text-[13px] text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.4] min-h-[36px]">{{ $item->subtitle }}</p>
-              @endif
-              <div class="text-[17px] font-bold text-[#2F6F9F] dark:text-[#327BB3] mt-1">{{ $displayPrice }}</div>
-              <div class="meta flex gap-1.5 flex-wrap mt-auto">
-                <span class="text-[11px] bg-[#E9F2FA] dark:bg-[#101B27] text-[#1E2D3B] dark:text-[#F0F6FC] py-1 px-2.5 rounded-full border border-[#D2E2EF] dark:border-[#1C2D3E]">{{ $item->dosage_spec ?? '30 Capsules' }}</span>
-                <span class="text-[11px] bg-[#E9F2FA] dark:bg-[#101B27] text-[#1E2D3B] dark:text-[#F0F6FC] py-1 px-2.5 rounded-full border border-[#D2E2EF] dark:border-[#1C2D3E]">{{ $item->badge_category ?? 'Dietary Supplement' }}</span>
-              </div>
-              <a class="btn-details block w-full bg-[#2F6F9F] dark:bg-[#327BB3] hover:bg-[#245a82] dark:hover:bg-[#286391] text-white py-3 rounded-full text-[13px] font-semibold text-center mt-2.5 transition-colors duration-200 no-underline" href="{{ $detailUrl }}">See Details</a>
-            </div>
-          </div>
-        @empty
-          <div class="col-span-full text-center py-12 text-[#5A6F82] dark:text-[#8EA4B8]">
-            No formulas currently available.
-          </div>
-        @endforelse
+        <div class="relative w-full rounded-2xl overflow-hidden border border-[#D2E2EF] dark:border-[#1C2D3E] bg-[#FAFAFC] dark:bg-[#132232] flex items-center justify-center p-0 shadow-sm">
+          <img src="{{ asset('assets/website/premium/info1.webp') }}" href="{{ asset('assets/website/premium/info1.webp') }}" alt="Novex Premium Formulas" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80'" class="w-full h-auto object-contain block">
+        </div>
       </div>
     </div>
   </section>
@@ -179,10 +69,10 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
             <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:before:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
               <b class="text-[13px] tracking-[0.05em] uppercase text-[#1E2D3B] dark:text-[#F0F6FC]">High Purity Ingredients</b>
             </div>
-            <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:before:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
+            <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
               <b class="text-[13px] tracking-[0.05em] uppercase text-[#1E2D3B] dark:text-[#F0F6FC]">Quality Assured</b>
             </div>
-            <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:before:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
+            <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
               <b class="text-[13px] tracking-[0.05em] uppercase text-[#1E2D3B] dark:text-[#F0F6FC]">Manufactured With Care</b>
             </div>
           </div>
@@ -202,26 +92,4 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     </div>
   </section>
 </div>
-
-<script>
-function setCardSlideCatalog(dot, idx){
-  if(window.event){
-    window.event.preventDefault();
-    window.event.stopPropagation();
-  }
-  const card = dot.closest('.card') || dot.closest('.pc');
-  if(!card) return;
-  const slider = card.querySelector('.prod-slider');
-  if(!slider) return;
-  const slides = slider.querySelectorAll('.prod-slide');
-  const dots = card.querySelectorAll('.ps-dot');
-  
-  slides.forEach((s, i) => {
-    s.classList.toggle('active', i === idx);
-  });
-  dots.forEach((d, i) => {
-    d.classList.toggle('active', i === idx);
-  });
-}
-</script>
 @endsection
