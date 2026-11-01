@@ -44,8 +44,6 @@
   color:#fff;
   margin-bottom:6px;
 }
-
-/* KOTAK KAD NOMBOR TELEFON TANPA DOT */
 .c-phone-card{
   background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.12);
@@ -76,7 +74,6 @@
   font-size:12px;
   color:#8EA4B8;
 }
-
 .c-wa-desc{
   font-size:14px;
   color:#C8DCEF;
@@ -102,7 +99,6 @@
   background:#20ba59;
   transform:translateY(-1px);
 }
-
 .c-form-wrap{
   background:var(--card-surface);
   border:1px solid var(--line);
@@ -167,7 +163,7 @@
 </style>
 
 <section class="hero">
-  <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D" alt="Contact Desk" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
+  <img id="heroImage" src="{{ asset('assets/website/contact/hero.webp') }}" href="{{ asset('assets/website/contact/hero.webp') }}" alt="Contact Desk" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
   <div class="wrap">
     <div class="in">
       <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px;display:block">Contact Desk</span>
@@ -192,7 +188,6 @@
             <h3>WhatsApp Direct Line</h3>
           </div>
 
-          <!-- KOTAK KAD TELEFON (DOT HIJAU DIBUANG) -->
           <div class="c-phone-card">
             <div class="c-phone-meta">
               <span>Available Online &bull; Direct Desk</span>
@@ -249,5 +244,32 @@ function handleEnquirySubmit(formEl){
     </div>
   `;
 }
+
+function updateHeroBanner(){
+  const heroImg = document.getElementById('heroImage');
+  if (!heroImg) return;
+
+  const isPortraitOrSmall = window.matchMedia('(orientation: portrait), (max-width: 768px)').matches;
+  const targetUrl = isPortraitOrSmall
+    ? "{{ asset('assets/website/contact/hero-phone.webp') }}"
+    : "{{ asset('assets/website/contact/hero.webp') }}";
+
+  if (heroImg.getAttribute('src') !== targetUrl) {
+    heroImg.setAttribute('src', targetUrl);
+  }
+  if (heroImg.getAttribute('href') !== targetUrl) {
+    heroImg.setAttribute('href', targetUrl);
+  }
+}
+
+const heroMediaQuery = window.matchMedia('(orientation: portrait), (max-width: 768px)');
+if (heroMediaQuery.addEventListener) {
+  heroMediaQuery.addEventListener('change', updateHeroBanner);
+} else if (heroMediaQuery.addListener) {
+  heroMediaQuery.addListener(updateHeroBanner);
+}
+window.addEventListener('resize', updateHeroBanner);
+document.addEventListener('DOMContentLoaded', updateHeroBanner);
+updateHeroBanner();
 </script>
 @endsection

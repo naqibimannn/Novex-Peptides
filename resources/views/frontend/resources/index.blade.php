@@ -60,7 +60,7 @@
 </style>
 
 <section class="hero">
-  <img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1800&q=85" alt="Educational Resources" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
+  <img id="heroImage" src="{{ asset('assets/website/resources/hero.webp') }}" href="{{ asset('assets/website/resources/hero.webp') }}" alt="Educational Resources" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
   <div class="wrap">
     <div class="in">
       <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px;display:block">Resources &amp; Literature</span>
@@ -105,4 +105,33 @@
     </div>
   </div>
 </section>
+
+<script>
+function updateHeroBanner(){
+  const heroImg = document.getElementById('heroImage');
+  if (!heroImg) return;
+
+  const isPortraitOrSmall = window.matchMedia('(orientation: portrait), (max-width: 768px)').matches;
+  const targetUrl = isPortraitOrSmall
+    ? "{{ asset('assets/website/resources/hero-phone.webp') }}"
+    : "{{ asset('assets/website/resources/hero.webp') }}";
+
+  if (heroImg.getAttribute('src') !== targetUrl) {
+    heroImg.setAttribute('src', targetUrl);
+  }
+  if (heroImg.getAttribute('href') !== targetUrl) {
+    heroImg.setAttribute('href', targetUrl);
+  }
+}
+
+const heroMediaQuery = window.matchMedia('(orientation: portrait), (max-width: 768px)');
+if (heroMediaQuery.addEventListener) {
+  heroMediaQuery.addEventListener('change', updateHeroBanner);
+} else if (heroMediaQuery.addListener) {
+  heroMediaQuery.addListener(updateHeroBanner);
+}
+window.addEventListener('resize', updateHeroBanner);
+document.addEventListener('DOMContentLoaded', updateHeroBanner);
+updateHeroBanner();
+</script>
 @endsection

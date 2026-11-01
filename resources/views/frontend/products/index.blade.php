@@ -23,298 +23,28 @@ $resolveImageUrl = function($path) {
 };
 @endphp
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
-
-  :root {
-    --bg:#FFFFFF;--bg2:#E9F2FA;--ink:#1E2D3B;--mut:#5A6F82;--green:#2F6F9F;
-    --line:#D2E2EF;--card:#F6FAFD;--gold:#3F84B5;--red:#e11d48;
-    --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
-  }
-
-  .hero, .hero.sl, .mq, #lab-reports, #testimonies, .camp, .steps, .art, .g6, .div2,
-  section.sec:not(#cat) {
-    display: none !important;
-  }
-
-  #cat {
-    display: block !important;
-    padding: 60px 0 80px !important;
-    background: var(--bg) !important;
-    min-height: 80vh;
-  }
-  #cat .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  #cat h1 {
-    font-family: var(--serif);
-    font-weight: 500;
-    line-height: 1.15;
-    font-size: clamp(36px, 5vw, 60px);
-    color: var(--ink);
-  }
-  #cat .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 28px;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  #cat .head>div {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-width: 720px;
-  }
-  #cat .head p {
-    font-size: 15px;
-    color: var(--mut);
-    line-height: 1.6;
-  }
-
-  .sq {
-    display: block;
-    width: 100%;
-    max-width: 360px;
-    padding: 11px 16px;
-    border: 1px solid var(--line);
-    background: var(--card);
-    border-radius: 999px;
-    margin-bottom: 20px;
-    font: inherit;
-    font-size: 13px;
-    color: var(--ink);
-    outline: none;
-    transition: border-color .2s ease;
-  }
-  .sq::placeholder { color: var(--mut); }
-  .sq:focus { border-color: var(--green); }
-
-  .filter {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
-    font-size: 13px;
-  }
-  .filter button {
-    background: none;
-    border: 1px solid var(--line);
-    padding: 7px 18px;
-    color: var(--ink);
-    border-radius: 999px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all .2s;
-  }
-  .filter button:hover {
-    background: var(--bg2);
-    border-color: var(--gold);
-  }
-  .filter button.on {
-    background: var(--green);
-    color: #fff;
-    border-color: var(--green);
-  }
-
-  .g4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
-  @media (max-width: 1024px) {
-    .g4 { grid-template-columns: repeat(3, 1fr); }
-  }
-  @media (max-width: 768px) {
-    .g4 { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  }
-  @media (max-width: 520px) {
-    .g4 { grid-template-columns: 1fr; }
-  }
-
-  .pc {
-    padding: 14px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 26px;
-    transition: transform .3s, box-shadow .3s;
-    display: flex;
-    flex-direction: column;
-  }
-  .pc:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 24px 44px -24px rgba(47,111,159,.5);
-  }
-  .pc .ph {
-    aspect-ratio: 1;
-    border-radius: 20px;
-    position: relative;
-    background: #ffffff;
-    border: 1px solid rgba(210,226,239,.5);
-    overflow: hidden;
-  }
-
-  .prod-slider {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: inherit;
-    background: #fff;
-  }
-  .prod-slides {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    overflow: hidden;
-    background: #fff;
-  }
-  .prod-slide {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity .65s ease-in-out;
-    pointer-events: none;
-    border-radius: inherit;
-    overflow: hidden;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-  }
-  .prod-slide.active {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-  .prod-slide-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .prod-slide img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 14px;
-    display: block;
-    background: #fff;
-  }
-
-  .pc .ps-dots {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin-top: 10px;
-    margin-bottom: 2px;
-    z-index: 5;
-  }
-  .pc .ps-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--line);
-    cursor: pointer;
-    transition: all .25s ease;
-  }
-  .pc .ps-dot:hover {
-    background: var(--mut);
-  }
-  .pc .ps-dot.active {
-    background: var(--green);
-    width: 18px;
-    border-radius: 999px;
-  }
-
-  .pc .b {
-    text-align: left;
-    align-items: stretch;
-    padding: 14px 8px 8px;
-    gap: 8px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  .pc h3 {
-    font-size: 20px;
-    line-height: 1.2;
-    color: var(--ink);
-    font-family: var(--serif);
-  }
-  .pc .s {
-    font-size: 13px;
-    color: var(--mut);
-    line-height: 1.4;
-    min-height: 36px;
-  }
-  .pc .meta {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: auto;
-  }
-  .pc .meta span {
-    font-size: 11px;
-    background: var(--bg2);
-    color: var(--ink);
-    padding: 4px 10px;
-    border-radius: 999px;
-  }
-  .btn-details {
-    background: var(--green);
-    color: #fff;
-    padding: 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 10px;
-    transition: background .2s;
-    text-decoration: none;
-    display: block;
-  }
-  .btn-details:hover {
-    background: #245a82;
-  }
-</style>
-
-<section class="sec" id="cat">
-  <div class="wrap">
-    <div class="head">
-      <div>
-        <h1>Shop Catalog</h1>
-        <p>Select any product to view its batch specifications, dosage options, stock availability, and full profile.</p>
+<section class="sec block pt-[60px] pb-20 bg-white dark:bg-[#0A111A] min-h-[80vh] transition-colors duration-200" id="cat">
+  <div class="wrap max-w-[1200px] mx-auto px-4 sm:px-6">
+    <div class="head flex justify-between items-end mb-7 gap-5 flex-wrap">
+      <div class="flex flex-col gap-2 max-w-[720px]">
+        <h1 class="font-serif font-medium leading-[1.15] text-[clamp(36px,5vw,60px)] text-[#1E2D3B] dark:text-[#F0F6FC]">Shop Catalog</h1>
+        <p class="text-[15px] text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.6]">Select any product to view its batch specifications, dosage options, stock availability, and full profile.</p>
       </div>
     </div>
 
-    <input id="q" class="sq" type="search" placeholder="Search products, serums or apparel..." oninput="filterProducts()">
+    <input id="q" class="sq block w-full max-w-[360px] py-[11px] px-4 border border-[#D2E2EF] dark:border-[#1C2D3E] bg-[#F6FAFD] dark:bg-[#0E1824] rounded-full mb-5 text-[13px] text-[#1E2D3B] dark:text-[#F0F6FC] placeholder-[#5A6F82] dark:placeholder-[#8EA4B8] outline-none focus:border-[#2F6F9F] dark:focus:border-[#327BB3] transition-colors duration-200" type="search" placeholder="Search products, serums or apparel..." oninput="filterProducts()">
 
-    <div class="filter" id="flt">
-      <button type="button" class="on" onclick="setCategoryFilter('All', this)">All</button>
-      <button type="button" onclick="setCategoryFilter('Weight Management', this)">Weight Management</button>
-      <button type="button" onclick="setCategoryFilter('Skincare Peptides', this)">Skincare Peptides</button>
-      <button type="button" onclick="setCategoryFilter('Skincare Collection', this)">Skincare Collection</button>
-      <button type="button" onclick="setCategoryFilter('Performance', this)">Performance</button>
-      <button type="button" onclick="setCategoryFilter('Apparel', this)">Apparel</button>
+    <div class="filter flex gap-2 flex-wrap mb-8 text-[13px]" id="flt">
+      <button type="button" class="on bg-transparent border border-[#D2E2EF] dark:border-[#1C2D3E] py-[7px] px-[18px] text-[#1E2D3B] dark:text-[#F0F6FC] rounded-full cursor-pointer font-medium transition-all duration-200 hover:bg-[#E9F2FA] dark:hover:bg-[#101B27] hover:border-[#3F84B5] dark:hover:border-[#5CA5DA] [&.on]:!bg-[#2F6F9F] dark:[&.on]:!bg-[#327BB3] [&.on]:!text-white [&.on]:!border-[#2F6F9F] dark:[&.on]:!border-[#327BB3]" onclick="setCategoryFilter('All', this)">All</button>
+      <button type="button" class="bg-transparent border border-[#D2E2EF] dark:border-[#1C2D3E] py-[7px] px-[18px] text-[#1E2D3B] dark:text-[#F0F6FC] rounded-full cursor-pointer font-medium transition-all duration-200 hover:bg-[#E9F2FA] dark:hover:bg-[#101B27] hover:border-[#3F84B5] dark:hover:border-[#5CA5DA] [&.on]:!bg-[#2F6F9F] dark:[&.on]:!bg-[#327BB3] [&.on]:!text-white [&.on]:!border-[#2F6F9F] dark:[&.on]:!border-[#327BB3]" onclick="setCategoryFilter('Weight Management', this)">Weight Management</button>
+      <button type="button" class="bg-transparent border border-[#D2E2EF] dark:border-[#1C2D3E] py-[7px] px-[18px] text-[#1E2D3B] dark:text-[#F0F6FC] rounded-full cursor-pointer font-medium transition-all duration-200 hover:bg-[#E9F2FA] dark:hover:bg-[#101B27] hover:border-[#3F84B5] dark:hover:border-[#5CA5DA] [&.on]:!bg-[#2F6F9F] dark:[&.on]:!bg-[#327BB3] [&.on]:!text-white [&.on]:!border-[#2F6F9F] dark:[&.on]:!border-[#327BB3]" onclick="setCategoryFilter('Skincare Peptides', this)">Skincare Peptides</button>
+      <button type="button" class="bg-transparent border border-[#D2E2EF] dark:border-[#1C2D3E] py-[7px] px-[18px] text-[#1E2D3B] dark:text-[#F0F6FC] rounded-full cursor-pointer font-medium transition-all duration-200 hover:bg-[#E9F2FA] dark:hover:bg-[#101B27] hover:border-[#3F84B5] dark:hover:border-[#5CA5DA] [&.on]:!bg-[#2F6F9F] dark:[&.on]:!bg-[#327BB3] [&.on]:!text-white [&.on]:!border-[#2F6F9F] dark:[&.on]:!border-[#327BB3]" onclick="setCategoryFilter('Skincare Collection', this)">Skincare Collection</button>
+      <button type="button" class="bg-transparent border border-[#D2E2EF] dark:border-[#1C2D3E] py-[7px] px-[18px] text-[#1E2D3B] dark:text-[#F0F6FC] rounded-full cursor-pointer font-medium transition-all duration-200 hover:bg-[#E9F2FA] dark:hover:bg-[#101B27] hover:border-[#3F84B5] dark:hover:border-[#5CA5DA] [&.on]:!bg-[#2F6F9F] dark:[&.on]:!bg-[#327BB3] [&.on]:!text-white [&.on]:!border-[#2F6F9F] dark:[&.on]:!border-[#327BB3]" onclick="setCategoryFilter('Performance', this)">Performance</button>
+      <button type="button" class="bg-transparent border border-[#D2E2EF] dark:border-[#1C2D3E] py-[7px] px-[18px] text-[#1E2D3B] dark:text-[#F0F6FC] rounded-full cursor-pointer font-medium transition-all duration-200 hover:bg-[#E9F2FA] dark:hover:bg-[#101B27] hover:border-[#3F84B5] dark:hover:border-[#5CA5DA] [&.on]:!bg-[#2F6F9F] dark:[&.on]:!bg-[#327BB3] [&.on]:!text-white [&.on]:!border-[#2F6F9F] dark:[&.on]:!border-[#327BB3]" onclick="setCategoryFilter('Apparel', this)">Apparel</button>
     </div>
     
-    <div class="g4" id="pg">
+    <div class="g4 grid grid-cols-1 min-[521px]:grid-cols-2 min-[769px]:grid-cols-3 min-[1025px]:grid-cols-4 gap-4 min-[769px]:gap-6" id="pg">
       @php
-          // FILTER KUAT: MENYARING PRODUK ACCESSORY, PREMIUM, DAN PERFORMANCE
           $allProducts = \Illuminate\Support\Facades\DB::select(
               "SELECT * FROM products 
                WHERE (page_type NOT IN ('accessory', 'premium', 'performance') OR page_type IS NULL OR page_type = '') 
@@ -346,16 +76,16 @@ $resolveImageUrl = function($path) {
             $detailUrl = url('/products/' . $itemSlug);
         @endphp
 
-        <div class="card pc" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
-          <div class="ph">
+        <div class="card pc p-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[26px] transition-all duration-300 flex flex-col hover:-translate-y-1.5 hover:shadow-[0_24px_44px_-24px_rgba(47,111,159,0.5)]" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
+          <div class="ph aspect-square rounded-[20px] relative bg-white dark:bg-[#132232] border border-[#D2E2EF]/50 dark:border-[#1C2D3E] overflow-hidden">
             @if(count($slides) > 1)
-              <div class="prod-slider">
-                <div class="prod-slides">
+              <div class="prod-slider relative w-full h-full overflow-hidden rounded-[inherit] bg-white dark:bg-[#132232]">
+                <div class="prod-slides relative w-full h-full rounded-[inherit] overflow-hidden bg-white dark:bg-[#132232]">
                   @foreach($slides as $sIdx => $imgSrc)
                     @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
-                    <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy">
+                    <div class="prod-slide absolute inset-0 w-full h-full opacity-0 transition-opacity duration-700 ease-in-out pointer-events-none rounded-[inherit] overflow-hidden bg-white dark:bg-[#132232] flex items-center justify-center p-3 {{ $sIdx === 0 ? 'active !opacity-100 !pointer-events-auto' : '' }}">
+                      <a href="{{ $detailUrl }}" class="prod-slide-link flex items-center justify-center w-full h-full no-underline cursor-pointer" title="{{ $item->title }}">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" class="w-auto h-auto max-w-full max-h-full object-contain rounded-[14px] block bg-white dark:bg-[#132232]">
                       </a>
                     </div>
                   @endforeach
@@ -363,55 +93,55 @@ $resolveImageUrl = function($path) {
               </div>
             @elseif(count($slides) === 1)
               @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
-              <div class="prod-slider">
-                <div class="prod-slides">
-                  <div class="prod-slide active">
-                    <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" loading="lazy">
+              <div class="prod-slider relative w-full h-full overflow-hidden rounded-[inherit] bg-white dark:bg-[#132232]">
+                <div class="prod-slides relative w-full h-full rounded-[inherit] overflow-hidden bg-white dark:bg-[#132232]">
+                  <div class="prod-slide active absolute inset-0 w-full h-full !opacity-100 !pointer-events-auto rounded-[inherit] overflow-hidden bg-white dark:bg-[#132232] flex items-center justify-center p-3">
+                    <a href="{{ $detailUrl }}" class="prod-slide-link flex items-center justify-center w-full h-full no-underline cursor-pointer" title="{{ $item->title }}">
+                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" loading="lazy" class="w-auto h-auto max-w-full max-h-full object-contain rounded-[14px] block bg-white dark:bg-[#132232]">
                     </a>
                   </div>
                 </div>
               </div>
             @else
-              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:12px;user-select:none;">
+              <div class="w-full h-full flex items-center justify-center bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-serif text-[68px] font-semibold rounded-[12px] select-none">
                 N
               </div>
             @endif
           </div>
 
           @if(count($slides) > 1)
-            <div class="ps-dots">
+            <div class="ps-dots relative flex justify-center items-center gap-1.5 mt-2.5 mb-0.5 z-[5]">
               @foreach($slides as $sIdx => $imgSrc)
-                <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlideCatalog(this, {{ $sIdx }})"></span>
+                <span class="ps-dot w-[7px] h-[7px] rounded-full bg-[#D2E2EF] dark:bg-[#1C2D3E] cursor-pointer transition-all duration-250 hover:bg-[#5A6F82] {{ $sIdx === 0 ? 'active !bg-[#2F6F9F] dark:!bg-[#327BB3] !w-[18px]' : '' }}" onclick="setCardSlideCatalog(this, {{ $sIdx }})"></span>
               @endforeach
             </div>
           @endif
 
-          <div class="b">
-            <h3>{{ $item->title }}</h3>
+          <div class="b text-left items-stretch pt-3.5 px-2 pb-2 gap-2 flex flex-col flex-1">
+            <h3 class="font-serif text-[20px] leading-[1.2] text-[#1E2D3B] dark:text-[#F0F6FC]">{{ $item->title }}</h3>
             @if(!empty($item->subtitle))
-              <p class="s">{{ $item->subtitle }}</p>
+              <p class="s text-[13px] text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.4] min-h-[36px]">{{ $item->subtitle }}</p>
             @endif
-            <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
-            <div class="meta">
-              <span>{{ $item->dosage_spec ?? 'Research grade' }}</span>
-              <span>{{ $item->badge_category ?? 'Research grade' }}</span>
+            <div class="text-[17px] font-bold text-[#2F6F9F] dark:text-[#327BB3] mt-1">{{ $item->price }}</div>
+            <div class="meta flex gap-1.5 flex-wrap mt-auto">
+              <span class="text-[11px] bg-[#E9F2FA] dark:bg-[#101B27] text-[#1E2D3B] dark:text-[#F0F6FC] py-1 px-2.5 rounded-full border border-[#D2E2EF] dark:border-[#1C2D3E]">{{ $item->dosage_spec ?? 'Research grade' }}</span>
+              <span class="text-[11px] bg-[#E9F2FA] dark:bg-[#101B27] text-[#1E2D3B] dark:text-[#F0F6FC] py-1 px-2.5 rounded-full border border-[#D2E2EF] dark:border-[#1C2D3E]">{{ $item->badge_category ?? 'Research grade' }}</span>
             </div>
-            <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
+            <a class="btn-details block w-full bg-[#2F6F9F] dark:bg-[#327BB3] hover:bg-[#245a82] dark:hover:bg-[#286391] text-white py-3 rounded-full text-[13px] font-semibold text-center mt-2.5 transition-colors duration-200 no-underline" href="{{ $detailUrl }}">See Details</a>
           </div>
         </div>
       @empty
-        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--mut);">
+        <div class="col-span-full text-center py-12 text-[#5A6F82] dark:text-[#8EA4B8]">
           No products currently available in catalog.
         </div>
       @endforelse
     </div>
 
-    <div id="noMatchMsg" style="display:none;text-align:center;padding:48px 0;color:var(--mut)">
-      <p style="font-size:16px">No products match your search or filter.</p>
+    <div id="noMatchMsg" class="hidden text-center py-12 text-[#5A6F82] dark:text-[#8EA4B8]">
+      <p class="text-base">No products match your search or filter.</p>
     </div>
 
-    <p style="font-size:12px;color:var(--mut);border-top:1px solid var(--line);margin-top:36px;padding-top:16px">
+    <p class="text-xs text-[#5A6F82] dark:text-[#8EA4B8] border-t border-[#D2E2EF] dark:border-[#1C2D3E] mt-9 pt-4">
       Research chemicals are sold for in-vitro and laboratory research use only. Topical serums, creams, and merchandise items are formulated for daily cosmetic and athletic use.
     </p>
   </div>

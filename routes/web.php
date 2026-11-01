@@ -107,6 +107,7 @@ Route::prefix('/')->group(function () {
         return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
     })->name('accessory.show');
 
+    // Performance Division Routes
     Route::get('/performance', function (Request $request) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
@@ -121,6 +122,21 @@ Route::prefix('/')->group(function () {
         return view('frontend.performance.index');
     })->name('performance');
 
+    Route::get('/performance/{id}', function (Request $request, $id) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'performance/' . $id,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
+    })->name('performance.show');
+
+    // Premium Supplements Routes
     Route::get('/premium', function (Request $request) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
@@ -135,6 +151,21 @@ Route::prefix('/')->group(function () {
         return view('frontend.premium.index');
     })->name('premium');
 
+    Route::get('/premium/{id}', function (Request $request, $id) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'premium/' . $id,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
+    })->name('premium.show');
+
+    // Educational Resources Routes
     Route::get('/resources', function (Request $request) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([

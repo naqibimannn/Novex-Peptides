@@ -9,6 +9,10 @@
 @endphp
 
 <style>
+#heroImage{
+  object-fit:cover !important;
+  object-position:top center !important;
+}
 .lab-meta-tag{
   display:inline-block;
   font-size:10px;
@@ -150,7 +154,7 @@
 </style>
 
 <section class="hero">
-  <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1800&q=85" alt="Science and Research" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
+  <img id="heroImage" src="{{ asset('assets/website/science/hero.webp') }}" href="{{ asset('assets/website/science/hero.webp') }}" alt="Science and Research" style="object-fit:cover;object-position:top center;" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
   <div class="wrap">
     <div class="in">
       <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px;display:block">The lab notebook</span>
@@ -267,4 +271,33 @@
     </div>
   </div>
 </section>
+
+<script>
+function updateHeroBanner(){
+  const heroImg = document.getElementById('heroImage');
+  if (!heroImg) return;
+
+  const isPortraitOrSmall = window.matchMedia('(orientation: portrait), (max-width: 768px)').matches;
+  const targetUrl = isPortraitOrSmall
+    ? "{{ asset('assets/website/science/hero-phone.webp') }}"
+    : "{{ asset('assets/website/science/hero.webp') }}";
+
+  if (heroImg.getAttribute('src') !== targetUrl) {
+    heroImg.setAttribute('src', targetUrl);
+  }
+  if (heroImg.getAttribute('href') !== targetUrl) {
+    heroImg.setAttribute('href', targetUrl);
+  }
+}
+
+const heroMediaQuery = window.matchMedia('(orientation: portrait), (max-width: 768px)');
+if (heroMediaQuery.addEventListener) {
+  heroMediaQuery.addEventListener('change', updateHeroBanner);
+} else if (heroMediaQuery.addListener) {
+  heroMediaQuery.addListener(updateHeroBanner);
+}
+window.addEventListener('resize', updateHeroBanner);
+document.addEventListener('DOMContentLoaded', updateHeroBanner);
+updateHeroBanner();
+</script>
 @endsection

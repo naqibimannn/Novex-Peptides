@@ -3,8 +3,12 @@
 @section('content')
 @php
 $resolveImageUrl = function($path) {
-    if (empty($path)) return asset('assets/website/premium/product1.webp');
-    if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
+    if (!is_string($path) || empty($path)) {
+        return asset('assets/website/premium/product1.webp');
+    }
+    if (filter_var($path, FILTER_VALIDATE_URL)) {
+        return $path;
+    }
 
     $clean = ltrim($path, '/');
     $checkPaths = [
@@ -47,6 +51,108 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
 
   #view-premium-supplements {
     display: block !important;
+    width: 100%;
+  }
+
+  #view-premium-supplements .hero {
+    position: relative;
+    height: calc(100vh - var(--off, 110px));
+    height: calc(100svh - var(--off, 110px));
+    min-height: 520px;
+    overflow: hidden;
+    color: #fff !important;
+    display: flex;
+    align-items: center;
+  }
+  #view-premium-supplements .hero picture,
+  #view-premium-supplements .hero picture img,
+  #view-premium-supplements .hero>img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    filter: saturate(1.08) brightness(1.05);
+    display: block;
+  }
+  #view-premium-supplements .hero:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(10,17,26,.82), rgba(10,17,26,.25) 75%);
+  }
+  #view-premium-supplements .hero .wrap {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  #view-premium-supplements .hero .in {
+    max-width: 580px;
+  }
+  #view-premium-supplements .hero h1 {
+    font-size: clamp(34px, 5.5vw, 72px);
+    color: #FFFFFF !important;
+    font-family: var(--serif);
+    font-weight: 500;
+    line-height: 1.15;
+  }
+  #view-premium-supplements .hero p {
+    max-width: 480px;
+    margin: 18px 0 28px;
+    font-size: 16px;
+    line-height: 1.6;
+    opacity: .95;
+    color: #FFFFFF !important;
+  }
+  #view-premium-supplements .hero .btn {
+    background: #FFFFFF !important;
+    color: var(--green) !important;
+    border-radius: 999px;
+    padding: 12px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    display: inline-block;
+    text-align: center;
+    transition: all .2s ease;
+    text-decoration: none;
+  }
+  #view-premium-supplements .hero .btn:hover {
+    background: #E9F2FA !important;
+    color: #245a82 !important;
+  }
+
+  #view-premium-supplements .mq {
+    overflow: hidden;
+    border-block: 1px solid var(--line);
+    border-top: none;
+    background: var(--card);
+    white-space: nowrap;
+    margin: 0;
+    transition: background-color .25s ease, border-color .25s ease;
+  }
+  #view-premium-supplements .mq div {
+    display: inline-flex;
+    gap: 46px;
+    padding: 17px 0;
+    animation: supMq 34s linear infinite;
+    font: italic 500 22px var(--serif);
+    color: var(--ink);
+  }
+  #view-premium-supplements .mq span:after {
+    content: "✦";
+    font-style: normal;
+    font-size: 11px;
+    color: var(--gold);
+    margin-left: 46px;
+  }
+  @keyframes supMq {
+    to { transform: translateX(-50%); }
   }
 
   #sup-formulas {
@@ -71,6 +177,7 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     font-family: var(--serif);
     font-size: clamp(28px, 4vw, 42px);
     color: var(--ink);
+    line-height: 1.15;
   }
   #sup-formulas .head p {
     font-size: 15px;
@@ -108,7 +215,7 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     box-shadow: 0 24px 44px -24px rgba(47,111,159,.5);
   }
   .pc .ph {
-    aspect-ratio: 1;
+    aspect-ratio: 1 !important;
     border-radius: 20px;
     position: relative;
     background: var(--card-surface);
@@ -120,51 +227,48 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     justify-content: center;
   }
 
-  .prod-slider {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: inherit;
-    background: var(--card-surface);
-  }
+  .prod-slider,
   .prod-slides {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    overflow: hidden;
-    background: var(--card-surface);
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    border-radius: inherit !important;
+    background: transparent !important;
   }
   .prod-slide {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity .65s ease-in-out;
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .45s ease-in-out, visibility .45s ease-in-out !important;
     padding: 12px;
     margin: 0;
     overflow: hidden;
     border-radius: inherit;
     background: var(--card-surface);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
   }
   .prod-slide.active {
     opacity: 1 !important;
+    visibility: visible !important;
     pointer-events: auto !important;
+    z-index: 2 !important;
   }
   .prod-slide-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
   }
   .prod-slide img {
     width: auto !important;
@@ -258,13 +362,196 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
   .btn-details:hover {
     background: #245a82;
   }
+
+  .g2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .g2 { grid-template-columns: 1fr; }
+  }
+  .nx-quality {
+    margin-top: 0;
+    align-items: center;
+  }
+  .nx-quality .ph {
+    aspect-ratio: 4/3;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    overflow: hidden;
+    background: var(--card-surface);
+  }
+  .nx-quality .ph img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block;
+  }
+  .nx-q-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .nx-eyebrow {
+    font: 600 11px var(--sans);
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+  }
+  .nx-q-body h2 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 4vw, 42px);
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .nx-q-body > p {
+    color: var(--mut);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .nx-q-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .nx-q-list div {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card-surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 14px 18px;
+    transition: background-color .25s ease, border-color .25s ease;
+  }
+  .nx-q-list div:before {
+    content: "✓";
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nx-q-list b {
+    font-size: 13px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .nx-cta {
+    --cta-rgb: 27, 68, 104;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: clamp(260px, 26vw, 380px);
+    overflow: hidden;
+    background: rgb(var(--cta-rgb));
+  }
+  [data-theme="dark"] .nx-cta {
+    --cta-rgb: 11, 27, 43;
+  }
+  .nx-cta-img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 70%;
+  }
+  .nx-cta-img img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  .nx-cta:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(var(--cta-rgb), 1) 0%, rgba(var(--cta-rgb), 1) 30%, rgba(var(--cta-rgb), .6) 37%, rgba(var(--cta-rgb), .2) 50%, rgba(var(--cta-rgb), .1) 100%);
+  }
+  .nx-cta-panel {
+    position: relative;
+    z-index: 2;
+    width: 32%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 32px clamp(24px, 4vw, 64px);
+    color: #fff;
+  }
+  .nx-cta-panel .nx-eyebrow {
+    color: rgba(255, 255, 255, .75);
+  }
+  .nx-cta-panel h3 {
+    color: #fff;
+    font-family: var(--serif);
+    font-size: clamp(26px, 2.9vw, 44px);
+    font-weight: 500;
+    line-height: 1.15;
+  }
+  .nx-cta-panel p {
+    color: #fff;
+    opacity: .9;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  @media (max-width: 900px) {
+    .nx-cta {
+      display: block;
+      height: auto;
+    }
+    .nx-cta:after {
+      display: none;
+    }
+    .nx-cta-img {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2/1;
+    }
+    .nx-cta-img img {
+      object-position: 60% center;
+    }
+    .nx-cta-img:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 65%;
+      background: linear-gradient(180deg, rgba(var(--cta-rgb), 0), rgba(var(--cta-rgb), 1));
+    }
+    .nx-cta-panel {
+      width: auto;
+      min-width: 0;
+      margin-top: -64px;
+      padding: 0 24px 36px;
+    }
+  }
 </style>
 
 <div id="view-premium-supplements">
   <section class="hero">
     <picture>
       <source media="(orientation: portrait)" srcset="{{ asset('assets/website/premium/hero-phone.webp') }}">
-      <img src="{{ asset('assets/website/premium/hero.webp') }}" alt="Novex Premium Supplements" loading="lazy">
+      <img src="{{ asset('assets/website/premium/hero.webp') }}" alt="Novex Premium Supplements" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1800&q=80'">
     </picture>
     <div class="wrap"><div class="in">
       <h1>Novex Premium<br>Supplements</h1>
@@ -296,8 +583,8 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
               if (!empty($item->image)) {
                   $decoded = json_decode($item->image, true);
                   if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                      $slides = array_values(array_filter($decoded, fn($p) => !empty($p)));
-                  } else {
+                      $slides = array_values(array_filter($decoded, fn($p) => is_string($p) && !empty($p)));
+                  } elseif (is_string($item->image) && !empty($item->image)) {
                       $slides = [$item->image];
                   }
               }
@@ -309,8 +596,8 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
                   ? $item->slug
                   : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
-              // Parameter ?from=premium dibawa ke paparan produk
-              $detailUrl = url('/products/' . $itemSlug) . '?from=premium';
+              $detailUrl = url('/premium/' . $itemSlug);
+              $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
           @endphp
 
           <div class="card pc" data-category="{{ $item->category ?? 'Supplements' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -321,8 +608,8 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
                     @foreach($slides as $sIdx => $imgSrc)
                       @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
                       <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                        <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                          <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                        <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Product' }}">
+                          <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
                         </a>
                       </div>
                     @endforeach
@@ -333,8 +620,8 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
                 <div class="prod-slider">
                   <div class="prod-slides">
                     <div class="prod-slide active">
-                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Product' }}">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
                       </a>
                     </div>
                   </div>
@@ -355,11 +642,11 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
             @endif
 
             <div class="b">
-              <h3>{{ $item->title }}</h3>
+              <h3>{{ $item->title ?? 'Untitled Formula' }}</h3>
               @if(!empty($item->subtitle))
                 <p class="s">{{ $item->subtitle }}</p>
               @endif
-              <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $item->price }}</div>
+              <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $displayPrice }}</div>
               <div class="meta">
                 <span>{{ $item->dosage_spec ?? '30 Capsules' }}</span>
                 <span>{{ $item->badge_category ?? 'Dietary Supplement' }}</span>
@@ -378,8 +665,10 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
 
   <section class="sec alt">
     <div class="wrap">
-      <div class="g2 nx-quality" style="margin-top:0">
-        <div class="ph"><img src="{{ asset('assets/website/premium/info.webp') }}" alt="Quality controlled laboratory" loading="lazy"></div>
+      <div class="g2 nx-quality">
+        <div class="ph">
+          <img src="{{ asset('assets/website/premium/info.webp') }}" alt="Quality controlled laboratory" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80'">
+        </div>
         <div class="nx-q-body">
           <span class="nx-eyebrow">Quality Promise</span>
           <h2>Premium Quality You Can Trust</h2>
@@ -396,7 +685,7 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
 
   <section class="nx-cta">
     <div class="nx-cta-img">
-      <img src="{{ asset('assets/website/premium/cta.webp') }}" alt="A Healthier, Stronger You" loading="lazy">
+      <img src="{{ asset('assets/website/premium/cta.webp') }}" alt="A Healthier, Stronger You" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1800&q=80'">
     </div>
     <div class="nx-cta-panel">
       <span class="nx-eyebrow">Novex Premium Supplements</span>
@@ -418,8 +707,13 @@ function setCardSlideCatalog(dot, idx){
   if(!slider) return;
   const slides = slider.querySelectorAll('.prod-slide');
   const dots = card.querySelectorAll('.ps-dot');
-  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
-  dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === idx);
+  });
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
 }
 </script>
 @endsection

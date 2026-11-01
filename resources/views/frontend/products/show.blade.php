@@ -155,441 +155,100 @@ $currProd = $allProducts[$reqKey]
 $hasVariants = !empty($currProd['variants']) && count($currProd['variants']) > 0;
 $isApparel   = ($currProd['category'] === 'Apparel') || (!empty($currProd['sizes']) && count($currProd['sizes']) > 0);
 
-$from = request('from');
-$isPremium = ($from === 'premium') 
+$firstSegment = request()->segment(1);
+
+$isPremium = ($firstSegment === 'premium') 
+    || request()->is('premium*') 
     || (($currProd['page_type'] ?? '') === 'premium') 
     || in_array($currProd['category'] ?? '', ['Premium Supplements', 'Supplements']);
 
-$isPerformance = ($from === 'performance')
-    || (($currProd['page_type'] ?? '') === 'performance')
-    || (($currProd['category'] ?? '') === 'Performance');
+$isPerformance = ($firstSegment === 'performance') 
+    || request()->is('performance*') 
+    || (($currProd['page_type'] ?? '') === 'performance') 
+    || in_array($currProd['category'] ?? '', ['Performance', 'Performance Apparel']);
 
-$isAccessory = ($from === 'accessory')
+$isAccessory = ($firstSegment === 'accessory') 
+    || request()->is('accessory*') 
     || (($currProd['page_type'] ?? '') === 'accessory') 
-    || in_array($currProd['category'] ?? '', ['Accessory', 'Injection Kit', 'Syringes']) 
-    || request()->is('accessory*');
+    || in_array($currProd['category'] ?? '', ['Accessory', 'Injection Kit', 'Syringes']);
 @endphp
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
-
-  :root {
-    --bg:#FFFFFF;--bg2:#E9F2FA;--ink:#1E2D3B;--mut:#5A6F82;--green:#2F6F9F;
-    --line:#D2E2EF;--card:#F6FAFD;--gold:#3F84B5;--red:#e11d48;
-    --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
-  }
-
-  .hero, .hero.sl, .mq, #lab-reports, #testimonies, .camp, .steps, .art, .g6, .div2,
-  section.sec:not(#productDetailSec) {
-    display: none !important;
-  }
-
-  #productDetailSec {
-    display: block !important;
-    padding: 60px 0 80px !important;
-    background: var(--bg) !important;
-  }
-  #productDetailSec .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  #productDetailSec h1 {
-    font-family: var(--serif);
-    font-weight: 500;
-    line-height: 1.15;
-    font-size: clamp(28px, 4vw, 44px);
-    color: var(--ink);
-  }
-
-  .detail-grid {
-    display: grid !important;
-    grid-template-columns: 1.15fr 1fr !important;
-    gap: 48px !important;
-    align-items: start !important;
-  }
-  .detail-media-wrap {
-    max-width: 580px !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  .detail-img-wrap {
-    aspect-ratio: 1 !important;
-    width: 100% !important;
-    border-radius: 28px !important;
-    overflow: hidden !important;
-    border: 1px solid var(--line) !important;
-    background: #ffffff !important;
-    position: relative !important;
-  }
-
-  .prod-slider {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: inherit;
-    background: #fff;
-  }
-  .prod-slides {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    overflow: hidden;
-    background: #fff;
-  }
-  .prod-slide {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity .65s ease-in-out;
-    pointer-events: none;
-    border-radius: inherit;
-    overflow: hidden;
-    background: #fff;
-  }
-  .prod-slide.active {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-  .prod-slide>img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
-    display: block;
-    background: #fff;
-  }
-  .prod-slide.contain-slide {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 18px !important;
-    background: #fff !important;
-  }
-  .prod-slide.contain-slide>img {
-    width: auto !important;
-    height: auto !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-    border-radius: 22px !important;
-    background: #fff;
-    box-shadow: 0 4px 14px rgba(14,40,66,.06);
-    flex-shrink: 0;
-  }
-
-  .detail-media-wrap .ps-dots {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin-top: 14px;
-    margin-bottom: 2px;
-    z-index: 5;
-  }
-  .detail-media-wrap .ps-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--line);
-    cursor: pointer;
-    transition: all .25s ease;
-  }
-  .detail-media-wrap .ps-dot:hover {
-    background: var(--mut);
-  }
-  .detail-media-wrap .ps-dot.active {
-    background: var(--green);
-    width: 22px;
-    border-radius: 999px;
-  }
-
-  .detail-info {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
-    text-align: left !important;
-  }
-  .detail-badge {
-    display: inline-block;
-    background: var(--bg2);
-    color: var(--green);
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    align-self: flex-start;
-  }
-  .detail-price {
-    font-size: clamp(26px,3vw,34px);
-    font-weight: 700;
-    color: var(--green);
-    font-family: var(--serif);
-  }
-  .stock-badge {
-    display: inline-flex;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 600;
-    color: #1ebe5a;
-    background: rgba(37,211,102,.12);
-    padding: 5px 14px;
-    border-radius: 999px;
-    align-self: flex-start;
-  }
-  .detail-desc {
-    font-size: 14px;
-    line-height: 1.7;
-    color: #3A4D5E;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 20px 0;
-  }
-  .qty-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 8px;
-    flex-wrap: wrap;
-  }
-  .qty-box {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--card);
-    overflow: hidden;
-  }
-  .qty-box button {
-    width: 40px;
-    height: 40px;
-    background: none;
-    font-size: 17px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-    color: var(--ink);
-  }
-  .qty-box button:hover {
-    background: var(--bg2);
-  }
-  .qty-box input {
-    width: 46px;
-    text-align: center;
-    border: 0;
-    background: none;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-  }
-  .btn-add-cart {
-    background: var(--green);
-    color: #fff;
-    padding: 14px 28px;
-    font-weight: 600;
-    font-size: 14px;
-    border-radius: 999px;
-    flex: 1;
-    min-width: 160px;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    transition: background .2s,transform .1s;
-  }
-  .btn-add-cart:active { transform: scale(0.98); }
-  .btn-add-cart:hover { background: #245a82; }
-
-  .size-picker {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin: 8px 0;
-  }
-  .size-btn {
-    border: 1px solid var(--line);
-    background: #fff;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all .2s;
-    color: var(--ink);
-  }
-  .size-btn:hover { border-color: var(--green); }
-  .size-btn.active {
-    background: var(--green);
-    color: #fff;
-    border-color: var(--green);
-  }
-  .chart-link {
-    font-size: 12px;
-    color: var(--gold);
-    text-decoration: underline;
-    cursor: pointer;
-    font-weight: 500;
-    display: inline-block;
-  }
-
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.6);
-    z-index: 999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-content {
-    background: #fff;
-    border-radius: 20px;
-    max-width: 540px;
-    width: 100%;
-    padding: 28px;
-    position: relative;
-    box-shadow: 0 20px 40px rgba(0,0,0,.2);
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: var(--mut);
-    cursor: pointer;
-  }
-  .table-scroll {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin: 16px 0;
-  }
-  .size-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    text-align: center;
-    min-width: 440px;
-  }
-  .size-table th, .size-table td {
-    border: 1px solid var(--line);
-    padding: 10px 8px;
-  }
-  .size-table th {
-    background: var(--bg2);
-    color: var(--green);
-    font-weight: 600;
-  }
-
-  /* Animasi Imej Terbang (Flying Animation Effect) */
-  .flying-img {
-    position: fixed;
-    z-index: 99999;
-    pointer-events: none;
-    object-fit: cover;
-    box-shadow: 0 14px 32px rgba(47,111,159,.4);
-    will-change: transform, top, left, width, height, opacity;
-  }
-
-  @media(max-width:900px){
-    .detail-grid { grid-template-columns: 1fr !important; }
-    .detail-media-wrap { max-width: 480px !important; margin: 0 auto; width: 100% !important; }
-    #productDetailSec { padding: 40px 0 60px !important; }
-  }
-</style>
-
-<section class="sec" id="productDetailSec">
-  <div class="wrap">
-    <div style="margin-bottom:24px">
+<section class="sec block pt-10 pb-[60px] min-[901px]:pt-[60px] min-[901px]:pb-20 bg-transparent" id="productDetailSec">
+  <div class="wrap max-w-[1200px] mx-auto px-4 sm:px-6">
+    <div class="mb-6">
       @if($isPremium)
-        <a href="{{ url('/premium') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Premium Supplements</a>
+        <a href="{{ url('/premium') }}" class="text-[13px] font-semibold text-[#2F6F9F] dark:text-[#327BB3] hover:underline">← Back to Premium Supplements</a>
       @elseif($isPerformance)
-        <a href="{{ url('/performance') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Performance Division</a>
+        <a href="{{ url('/performance') }}" class="text-[13px] font-semibold text-[#2F6F9F] dark:text-[#327BB3] hover:underline">← Back to Performance Division</a>
       @elseif($isAccessory)
-        <a href="{{ route('accessory') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Accessories</a>
+        <a href="{{ route('accessory') }}" class="text-[13px] font-semibold text-[#2F6F9F] dark:text-[#327BB3] hover:underline">← Back to Accessories</a>
       @else
-        <a href="{{ route('products.index') }}" style="font-size:13px;font-weight:600;color:var(--green)">← Back to Catalog</a>
+        <a href="{{ route('products.index') }}" class="text-[13px] font-semibold text-[#2F6F9F] dark:text-[#327BB3] hover:underline">← Back to Catalog</a>
       @endif
     </div>
 
-    <div class="detail-grid">
-      <div class="detail-media-wrap">
-        <div class="detail-img-wrap prod-slider">
-          <div class="prod-slides">
+    <div class="detail-grid grid grid-cols-1 min-[901px]:grid-cols-[1.15fr_1fr] gap-8 min-[901px]:gap-12 items-start">
+      <div class="detail-media-wrap w-full max-w-[480px] min-[901px]:max-w-[580px] mx-auto min-[901px]:mx-0 flex flex-col">
+        <div class="detail-img-wrap prod-slider relative aspect-square w-full rounded-[28px] overflow-hidden bg-transparent border-0">
+          <div class="prod-slides relative w-full h-full rounded-[28px] overflow-hidden bg-transparent">
             @foreach($currProd['imgs'] as $idx => $imgFile)
-              <div class="prod-slide {{ $idx === 0 ? 'active' : '' }} contain-slide">
+              <div class="prod-slide contain-slide absolute inset-0 w-full h-full opacity-0 transition-opacity duration-700 ease-in-out pointer-events-none rounded-[28px] overflow-hidden bg-transparent flex items-center justify-center p-0 {{ $idx === 0 ? 'active !opacity-100 !pointer-events-auto' : '' }}">
                 <img src="{{ $resolveImageUrl($imgFile) }}" 
                      alt="{{ $currProd['name'] }} Slide {{ $idx + 1 }}" 
                      onload="fitRoundedImg(this)"
-                     onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000'">
+                     onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000'"
+                     class="w-auto h-auto max-w-full max-h-full object-contain rounded-[28px] bg-transparent shadow-none shrink-0 block">
               </div>
             @endforeach
           </div>
         </div>
 
         @if(count($currProd['imgs']) > 1)
-          <div class="ps-dots">
+          <div class="ps-dots relative flex justify-center items-center gap-1.5 mt-3.5 mb-0.5 z-[5]">
             @foreach($currProd['imgs'] as $idx => $imgFile)
-              <span class="ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setImgSlide(this, {{ $idx }})"></span>
+              <span class="ps-dot w-2 h-2 rounded-full bg-[#D2E2EF] dark:bg-[#1C2D3E] cursor-pointer transition-all duration-250 hover:bg-[#5A6F82] {{ $idx === 0 ? 'active !bg-[#2F6F9F] dark:!bg-[#327BB3] !w-[22px]' : '' }}" onclick="setImgSlide(this, {{ $idx }})"></span>
             @endforeach
           </div>
         @endif
       </div>
 
-      <div class="detail-info">
-        <span class="detail-badge">{{ $currProd['category'] }}</span>
-        <h1>{{ $currProd['name'] }}</h1>
-        <p id="detailSubDisplay" style="color:var(--mut);font-size:16px">
+      <div class="detail-info flex flex-col gap-4 text-left">
+        <span class="detail-badge inline-block bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] py-1.5 px-3.5 rounded-full text-xs font-semibold tracking-[0.04em] self-start border border-[#D2E2EF] dark:border-[#1C2D3E]">{{ $currProd['category'] }}</span>
+        <h1 class="font-serif font-medium leading-[1.15] text-[clamp(28px,4vw,44px)] text-[#1E2D3B] dark:text-[#F0F6FC]">{{ $currProd['name'] }}</h1>
+        <p id="detailSubDisplay" class="text-base text-[#5A6F82] dark:text-[#8EA4B8]">
           {{ $currProd['title'] }}{{ !empty($currProd['spec']) ? ' (' . $currProd['spec'] . ')' : '' }}
         </p>
-        <div id="detailPriceDisplay" class="detail-price">{{ $currProd['price'] }}</div>
+        <div id="detailPriceDisplay" class="detail-price font-serif text-[clamp(26px,3vw,34px)] font-bold text-[#2F6F9F] dark:text-[#327BB3]">{{ $currProd['price'] }}</div>
         
-        <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
+        <div id="detailStockDisplay" class="stock-badge inline-flex items-center text-[13px] font-semibold text-[#1ebe5a] bg-[#25D366]/[0.12] py-1 px-3.5 rounded-full self-start">In Stock ({{ $currProd['stock'] }} units available)</div>
 
         @if($hasVariants)
-        <div style="margin-top:6px;background:var(--card);padding:16px;border-radius:18px;border:1px solid var(--line)">
-          <label style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:6px">
+        <div class="mt-1.5 bg-[#F6FAFD] dark:bg-[#0E1824] p-4 rounded-[18px] border border-[#D2E2EF] dark:border-[#1C2D3E]">
+          <label class="text-xs font-bold uppercase text-[#1E2D3B] dark:text-[#F0F6FC] block mb-1.5">
             {{ $currProd['variant_title'] }}
           </label>
-          <div class="size-picker" id="variantPickerGroup">
+          <div class="size-picker flex gap-2 flex-wrap my-2" id="variantPickerGroup">
             @foreach($currProd['variants'] as $vIdx => $v)
-              <button type="button" class="size-btn var-btn {{ $vIdx === 0 ? 'active' : '' }}" onclick="selectProductVariant({{ $vIdx }}, this)">
+              <button type="button" class="size-btn var-btn border border-[#D2E2EF] dark:border-[#1C2D3E] bg-white dark:bg-[#132232] py-2 px-4 text-[13px] font-semibold rounded-[10px] cursor-pointer transition-all duration-200 text-[#1E2D3B] dark:text-[#F0F6FC] hover:border-[#2F6F9F] dark:hover:border-[#327BB3] [&.active]:!bg-[#2F6F9F] dark:[&.active]:!bg-[#327BB3] [&.active]:!text-white [&.active]:!border-[#2F6F9F] dark:[&.active]:!border-[#327BB3] {{ $vIdx === 0 ? 'active' : '' }}" onclick="selectProductVariant({{ $vIdx }}, this)">
                 {{ $v['label'] }}
               </button>
             @endforeach
           </div>
-          <small id="varHint" style="font-size:12px;color:var(--mut);display:block;margin-top:4px">
+          <small id="varHint" class="text-xs text-[#5A6F82] dark:text-[#8EA4B8] block mt-1">
             Select a dosage above to display the exact price.
           </small>
         </div>
         @endif
 
         @if($isApparel)
-        <div style="margin-top:10px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <label style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--mut)">Select Size:</label>
-            <a class="chart-link" onclick="openSizeModal()">View Size Chart</a>
+        <div class="mt-2.5">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-semibold uppercase text-[#5A6F82] dark:text-[#8EA4B8]">Select Size:</label>
+            <a class="chart-link text-xs text-[#3F84B5] dark:text-[#5CA5DA] underline cursor-pointer font-medium inline-block" onclick="openSizeModal()">View Size Chart</a>
           </div>
-          <div class="size-picker" id="sizePickerGroup">
+          <div class="size-picker flex gap-2 flex-wrap my-2" id="sizePickerGroup">
             @foreach($currProd['sizes'] as $sIdx => $sz)
-              <button type="button" class="size-btn {{ $sIdx === 0 ? 'active' : '' }}" onclick="selectProductSize('{{ $sz }}', this)">
+              <button type="button" class="size-btn border border-[#D2E2EF] dark:border-[#1C2D3E] bg-white dark:bg-[#132232] py-2 px-4 text-[13px] font-semibold rounded-[10px] cursor-pointer transition-all duration-200 text-[#1E2D3B] dark:text-[#F0F6FC] hover:border-[#2F6F9F] dark:hover:border-[#327BB3] [&.active]:!bg-[#2F6F9F] dark:[&.active]:!bg-[#327BB3] [&.active]:!text-white [&.active]:!border-[#2F6F9F] dark:[&.active]:!border-[#327BB3] {{ $sIdx === 0 ? 'active' : '' }}" onclick="selectProductSize('{{ $sz }}', this)">
                 {{ $sz }}
               </button>
             @endforeach
@@ -597,50 +256,85 @@ $isAccessory = ($from === 'accessory')
         </div>
         @endif
 
-        <div class="detail-desc">
-          <h4 style="font-family:var(--serif);font-size:20px;margin-bottom:8px">Product Overview</h4>
+        <div class="detail-desc text-sm leading-[1.7] text-[#3A4D5E] dark:text-[#8EA4B8] border-y border-[#D2E2EF] dark:border-[#1C2D3E] py-5">
+          <h4 class="font-serif text-[20px] font-medium mb-2 text-[#1E2D3B] dark:text-[#F0F6FC]">Product Overview</h4>
           <p>{{ $currProd['desc'] }}</p>
         </div>
 
-        <div class="qty-row">
-          <div class="qty-box">
-            <button type="button" onclick="changeDetailQty(-1, {{ (int)$currProd['stock'] }})">-</button>
-            <input type="text" id="detailQtyInput" readonly value="1">
-            <button type="button" onclick="changeDetailQty(1, {{ (int)$currProd['stock'] }})">+</button>
+        <div class="qty-row flex items-center gap-4 mt-2 flex-wrap">
+          <div class="qty-box inline-flex items-center border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-full bg-[#F6FAFD] dark:bg-[#0E1824] overflow-hidden">
+            <button type="button" class="w-10 h-10 bg-transparent text-[17px] font-semibold flex items-center justify-center cursor-pointer border-0 text-[#1E2D3B] dark:text-[#F0F6FC] hover:bg-[#E9F2FA] dark:hover:bg-[#101B27]" onclick="changeDetailQty(-1, {{ (int)$currProd['stock'] }})">-</button>
+            <input type="text" id="detailQtyInput" readonly value="1" class="w-[46px] text-center border-0 bg-transparent font-semibold text-sm text-[#1E2D3B] dark:text-[#F0F6FC] outline-none">
+            <button type="button" class="w-10 h-10 bg-transparent text-[17px] font-semibold flex items-center justify-center cursor-pointer border-0 text-[#1E2D3B] dark:text-[#F0F6FC] hover:bg-[#E9F2FA] dark:hover:bg-[#101B27]" onclick="changeDetailQty(1, {{ (int)$currProd['stock'] }})">+</button>
           </div>
-          <button class="btn-add-cart" onclick="triggerAddToCart()">Add to Cart</button>
+          <button class="btn-add-cart bg-[#2F6F9F] dark:bg-[#327BB3] hover:bg-[#245a82] dark:hover:bg-[#286391] active:scale-[0.98] text-white py-3.5 px-7 font-semibold text-sm rounded-full flex-1 min-w-[160px] text-center border-0 cursor-pointer transition-all duration-200" onclick="triggerAddToCart()">Add to Cart</button>
         </div>
 
-        <div style="margin-top:18px;font-size:12px;color:var(--mut);line-height:1.6;border-top:1px solid var(--line);padding-top:14px">
-          • High purity formulation verified with third-party quality control.<br>
-          • Secure thermal-insulated packaging for all temperature-sensitive items.<br>
-          • Direct WhatsApp support available for wholesale or technical inquiries.
+        <div class="mt-[18px] text-xs text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.6] border-t border-[#D2E2EF] dark:border-[#1C2D3E] pt-3.5 space-y-1">
+          <p>• High purity formulation verified with third-party quality control.</p>
+          <p>• Secure thermal-insulated packaging for all temperature-sensitive items.</p>
+          <p>• Direct WhatsApp support available for wholesale or technical inquiries.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="modal-overlay" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeSizeModal()">&times;</button>
-    <h3 style="font-size:24px;margin-bottom:6px;font-family:var(--serif);color:var(--ink)">Size Chart (Adult)</h3>
-    <p style="font-size:13px;color:var(--mut);margin-bottom:12px">Novex Premium Athletic Jersey — All measurements in inches.</p>
-    <div class="table-scroll">
-      <table class="size-table">
+<div class="modal-overlay fixed inset-0 bg-black/60 z-[999] hidden [&.open]:flex items-center justify-center p-4 backdrop-blur-[4px]" id="sizeModal" onclick="if(event.target===this)closeSizeModal()">
+  <div class="modal-content bg-white dark:bg-[#132232] rounded-[20px] max-w-[540px] w-full p-7 relative shadow-[0_20px_40px_rgba(0,0,0,0.2)] max-h-[90vh] overflow-y-auto border border-[#D2E2EF] dark:border-[#1C2D3E]">
+    <button class="modal-close absolute top-4 right-4 bg-transparent border-0 text-[22px] text-[#5A6F82] dark:text-[#8EA4B8] hover:text-red-500 cursor-pointer" onclick="closeSizeModal()">&times;</button>
+    <h3 class="font-serif text-2xl font-medium mb-1.5 text-[#1E2D3B] dark:text-[#F0F6FC]">Size Chart (Adult)</h3>
+    <p class="text-[13px] text-[#5A6F82] dark:text-[#8EA4B8] mb-3">Novex Premium Athletic Jersey — All measurements in inches.</p>
+    <div class="table-scroll w-full overflow-x-auto my-4">
+      <table class="size-table w-full border-collapse text-[13px] text-center min-w-[440px]">
         <thead>
-          <tr><th>Size</th><th>Length (A)</th><th>Chest (B)</th><th>Shoulder</th><th>Short Sleeve</th><th>Long Sleeve</th></tr>
+          <tr>
+            <th class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2 bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-semibold">Size</th>
+            <th class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2 bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-semibold">Length (A)</th>
+            <th class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2 bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-semibold">Chest (B)</th>
+            <th class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2 bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-semibold">Shoulder</th>
+            <th class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2 bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-semibold">Short Sleeve</th>
+            <th class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2 bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-semibold">Long Sleeve</th>
+          </tr>
         </thead>
         <tbody>
-          <tr><td><b>S</b></td><td>26</td><td>38</td><td>16</td><td>8.5</td><td>22.5</td></tr>
-          <tr><td><b>M</b></td><td>27</td><td>40</td><td>17</td><td>9</td><td>23</td></tr>
-          <tr><td><b>L</b></td><td>28</td><td>42</td><td>18</td><td>9.5</td><td>23.5</td></tr>
-          <tr><td><b>XL</b></td><td>29</td><td>44</td><td>19</td><td>10</td><td>24</td></tr>
+          <tr>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2"><b>S</b></td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">26</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">38</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">16</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">8.5</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">22.5</td>
+          </tr>
+          <tr>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2"><b>M</b></td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">27</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">40</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">17</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">9</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">23</td>
+          </tr>
+          <tr>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2"><b>L</b></td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">28</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">42</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">18</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">9.5</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">23.5</td>
+          </tr>
+          <tr>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2"><b>XL</b></td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">29</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">44</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">19</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">10</td>
+            <td class="border border-[#D2E2EF] dark:border-[#1C2D3E] py-2.5 px-2">24</td>
+          </tr>
         </tbody>
       </table>
     </div>
-    <div style="font-size:12px;color:var(--mut);line-height:1.6;background:var(--bg2);padding:14px;border-radius:12px">
-      <b>How to Measure:</b><br>
+    <div class="text-xs text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.6] bg-[#E9F2FA] dark:bg-[#101B27] p-3.5 rounded-xl border border-[#D2E2EF] dark:border-[#1C2D3E]">
+      <b class="text-[#1E2D3B] dark:text-[#F0F6FC]">How to Measure:</b><br>
       • <b>Length (A):</b> Measure from the highest point of the shoulder to the bottom of the shirt.<br>
       • <b>Chest (B):</b> Measure around the fullest part of the chest, keeping the tape horizontal.
     </div>
@@ -734,7 +428,6 @@ $isAccessory = ($from === 'accessory')
     if(m) m.classList.remove('open');
   }
 
-  /* Animasi Terbang ke Troli (Sama seperti index.html) */
   function triggerFlyAnimation(sourceImgEl){
     const cartBtn = document.getElementById('headerCartBtn') || document.querySelector('.cart-trigger-btn');
     if(!sourceImgEl || !cartBtn) return;
@@ -782,7 +475,6 @@ $isAccessory = ($from === 'accessory')
     }, 760);
   }
 
-  /* Masukkan ke dalam Troli Tanpa Popup Alert */
   function triggerAddToCart(){
     let cart = [];
     try {
@@ -824,7 +516,12 @@ $isAccessory = ($from === 'accessory')
 
     localStorage.setItem('nvx_cart', JSON.stringify(cart));
 
-    // Kemaskini nombor badge di navbar header
+    if (typeof CART !== 'undefined') {
+      CART = cart;
+    } else {
+      window.CART = cart;
+    }
+
     if (typeof updateCartBadge === 'function') {
       updateCartBadge();
     } else {
@@ -834,11 +531,9 @@ $isAccessory = ($from === 'accessory')
       }
     }
 
-    // Gerakkan animasi gambar terbang terus ke troli header
     const mainImgEl = document.querySelector('.detail-img-wrap .prod-slide.active img') || document.querySelector('.detail-img-wrap img');
     triggerFlyAnimation(mainImgEl);
 
-    // Tunjuk toast ringkas jika fungsi wujud (tanpa popup alert browser)
     if (typeof showToast === 'function') {
       showToast('✓ Added to cart');
     }
