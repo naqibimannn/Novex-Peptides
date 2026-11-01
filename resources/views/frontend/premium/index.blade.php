@@ -35,548 +35,50 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
 );
 @endphp
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
-
-  :root {
-    --bg:#FFFFFF;--bg2:#E9F2FA;--ink:#1E2D3B;--mut:#5A6F82;--green:#2F6F9F;
-    --line:#D2E2EF;--card:#F6FAFD;--card-surface:#FFFFFF;--gold:#3F84B5;--red:#e11d48;
-    --serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
-  }
-
-  [data-theme="dark"] {
-    --bg:#0A111A;--bg2:#101B27;--ink:#F0F6FC;--mut:#8EA4B8;--green:#327BB3;
-    --line:#1C2D3E;--card:#0E1824;--card-surface:#132232;--gold:#5CA5DA;
-  }
-
-  #view-premium-supplements {
-    display: block !important;
-    width: 100%;
-  }
-
-  #view-premium-supplements .hero {
-    position: relative;
-    height: calc(100vh - var(--off, 110px));
-    height: calc(100svh - var(--off, 110px));
-    min-height: 520px;
-    overflow: hidden;
-    color: #fff !important;
-    display: flex;
-    align-items: center;
-  }
-  #view-premium-supplements .hero picture,
-  #view-premium-supplements .hero picture img,
-  #view-premium-supplements .hero>img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top center;
-    filter: saturate(1.08) brightness(1.05);
-    display: block;
-  }
-  #view-premium-supplements .hero:before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(90deg, rgba(10,17,26,.82), rgba(10,17,26,.25) 75%);
-  }
-  #view-premium-supplements .hero .wrap {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  #view-premium-supplements .hero .in {
-    max-width: 580px;
-  }
-  #view-premium-supplements .hero h1 {
-    font-size: clamp(34px, 5.5vw, 72px);
-    color: #FFFFFF !important;
-    font-family: var(--serif);
-    font-weight: 500;
-    line-height: 1.15;
-  }
-  #view-premium-supplements .hero p {
-    max-width: 480px;
-    margin: 18px 0 28px;
-    font-size: 16px;
-    line-height: 1.6;
-    opacity: .95;
-    color: #FFFFFF !important;
-  }
-  #view-premium-supplements .hero .btn {
-    background: #FFFFFF !important;
-    color: var(--green) !important;
-    border-radius: 999px;
-    padding: 12px 28px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    display: inline-block;
-    text-align: center;
-    transition: all .2s ease;
-    text-decoration: none;
-  }
-  #view-premium-supplements .hero .btn:hover {
-    background: #E9F2FA !important;
-    color: #245a82 !important;
-  }
-
-  #view-premium-supplements .mq {
-    overflow: hidden;
-    border-block: 1px solid var(--line);
-    border-top: none;
-    background: var(--card);
-    white-space: nowrap;
-    margin: 0;
-    transition: background-color .25s ease, border-color .25s ease;
-  }
-  #view-premium-supplements .mq div {
-    display: inline-flex;
-    gap: 46px;
-    padding: 17px 0;
-    animation: supMq 34s linear infinite;
-    font: italic 500 22px var(--serif);
-    color: var(--ink);
-  }
-  #view-premium-supplements .mq span:after {
-    content: "✦";
-    font-style: normal;
-    font-size: 11px;
-    color: var(--gold);
-    margin-left: 46px;
-  }
-  @keyframes supMq {
-    to { transform: translateX(-50%); }
-  }
-
-  #sup-formulas {
-    padding: 70px 0 80px !important;
-    background: var(--bg);
-    scroll-margin-top: 80px;
-  }
-  #sup-formulas .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-  #sup-formulas .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 32px;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  #sup-formulas .head h2 {
-    font-family: var(--serif);
-    font-size: clamp(28px, 4vw, 42px);
-    color: var(--ink);
-    line-height: 1.15;
-  }
-  #sup-formulas .head p {
-    font-size: 15px;
-    color: var(--mut);
-    line-height: 1.6;
-    margin-top: 6px;
-  }
-
-  .g4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
-  @media (max-width: 1024px) {
-    .g4 { grid-template-columns: repeat(3, 1fr); }
-  }
-  @media (max-width: 768px) {
-    .g4 { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  }
-  @media (max-width: 520px) {
-    .g4 { grid-template-columns: 1fr; }
-  }
-
-  .pc {
-    padding: 14px;
-    background: var(--card-surface);
-    border: 1px solid var(--line);
-    border-radius: 26px;
-    transition: transform .3s, box-shadow .3s, background-color .25s ease, border-color .25s ease;
-    display: flex;
-    flex-direction: column;
-  }
-  .pc:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 24px 44px -24px rgba(47,111,159,.5);
-  }
-  .pc .ph {
-    aspect-ratio: 1 !important;
-    border-radius: 20px;
-    position: relative;
-    background: var(--card-surface);
-    border: 1px solid var(--line);
-    overflow: hidden;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .prod-slider,
-  .prod-slides {
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-    overflow: hidden !important;
-    border-radius: inherit !important;
-    background: transparent !important;
-  }
-  .prod-slide {
-    position: absolute !important;
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-    transition: opacity .45s ease-in-out, visibility .45s ease-in-out !important;
-    padding: 12px;
-    margin: 0;
-    overflow: hidden;
-    border-radius: inherit;
-    background: var(--card-surface);
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    pointer-events: none !important;
-    z-index: 1 !important;
-  }
-  .prod-slide.active {
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-    z-index: 2 !important;
-  }
-  .prod-slide-link {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    text-decoration: none !important;
-    cursor: pointer !important;
-  }
-  .prod-slide img {
-    width: auto !important;
-    height: auto !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    border-radius: 14px !important;
-    display: block;
-    background: transparent;
-  }
-
-  .pc .ps-dots {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin-top: 10px;
-    margin-bottom: 2px;
-    z-index: 5;
-  }
-  .pc .ps-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--line);
-    cursor: pointer;
-    transition: all .25s ease;
-  }
-  .pc .ps-dot:hover {
-    background: var(--mut);
-  }
-  .pc .ps-dot.active {
-    background: var(--green);
-    width: 18px;
-    border-radius: 999px;
-    transform: none;
-  }
-
-  .pc .b {
-    text-align: left;
-    align-items: stretch;
-    padding: 14px 8px 8px;
-    gap: 8px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  .pc h3 {
-    font-size: 20px;
-    line-height: 1.2;
-    color: var(--ink);
-    font-family: var(--serif);
-  }
-  .pc .s {
-    font-size: 13px;
-    color: var(--mut);
-    line-height: 1.4;
-    min-height: 36px;
-  }
-  .pc .meta {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: auto;
-  }
-  .pc .meta span {
-    font-size: 11px;
-    background: var(--bg2);
-    color: var(--ink);
-    padding: 4px 10px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-  }
-
-  .btn-details {
-    background: var(--green);
-    color: #fff;
-    padding: 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 10px;
-    transition: background .2s;
-    text-decoration: none;
-    display: block;
-  }
-  .btn-details:hover {
-    background: #245a82;
-  }
-
-  .g2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: center;
-  }
-  @media (max-width: 900px) {
-    .g2 { grid-template-columns: 1fr; }
-  }
-  .nx-quality {
-    margin-top: 0;
-    align-items: center;
-  }
-  .nx-quality .ph {
-    aspect-ratio: 4/3;
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    overflow: hidden;
-    background: var(--card-surface);
-  }
-  .nx-quality .ph img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    display: block;
-  }
-  .nx-q-body {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .nx-eyebrow {
-    font: 600 11px var(--sans);
-    letter-spacing: .28em;
-    text-transform: uppercase;
-    color: var(--gold);
-    display: block;
-  }
-  .nx-q-body h2 {
-    font-family: var(--serif);
-    font-size: clamp(28px, 4vw, 42px);
-    color: var(--ink);
-    line-height: 1.15;
-  }
-  .nx-q-body > p {
-    color: var(--mut);
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  .nx-q-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 6px;
-  }
-  .nx-q-list div {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--card-surface);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 14px 18px;
-    transition: background-color .25s ease, border-color .25s ease;
-  }
-  .nx-q-list div:before {
-    content: "✓";
-    flex-shrink: 0;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--bg2);
-    border: 1px solid var(--line);
-    color: var(--green);
-    font-size: 12px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .nx-q-list b {
-    font-size: 13px;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-    color: var(--ink);
-  }
-
-  .nx-cta {
-    --cta-rgb: 27, 68, 104;
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: clamp(260px, 26vw, 380px);
-    overflow: hidden;
-    background: rgb(var(--cta-rgb));
-  }
-  [data-theme="dark"] .nx-cta {
-    --cta-rgb: 11, 27, 43;
-  }
-  .nx-cta-img {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 70%;
-  }
-  .nx-cta-img img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-  }
-  .nx-cta:after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(90deg, rgba(var(--cta-rgb), 1) 0%, rgba(var(--cta-rgb), 1) 30%, rgba(var(--cta-rgb), .6) 37%, rgba(var(--cta-rgb), .2) 50%, rgba(var(--cta-rgb), .1) 100%);
-  }
-  .nx-cta-panel {
-    position: relative;
-    z-index: 2;
-    width: 32%;
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 32px clamp(24px, 4vw, 64px);
-    color: #fff;
-  }
-  .nx-cta-panel .nx-eyebrow {
-    color: rgba(255, 255, 255, .75);
-  }
-  .nx-cta-panel h3 {
-    color: #fff;
-    font-family: var(--serif);
-    font-size: clamp(26px, 2.9vw, 44px);
-    font-weight: 500;
-    line-height: 1.15;
-  }
-  .nx-cta-panel p {
-    color: #fff;
-    opacity: .9;
-    font-size: 15px;
-    line-height: 1.6;
-  }
-  @media (max-width: 900px) {
-    .nx-cta {
-      display: block;
-      height: auto;
-    }
-    .nx-cta:after {
-      display: none;
-    }
-    .nx-cta-img {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 2/1;
-    }
-    .nx-cta-img img {
-      object-position: 60% center;
-    }
-    .nx-cta-img:after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 65%;
-      background: linear-gradient(180deg, rgba(var(--cta-rgb), 0), rgba(var(--cta-rgb), 1));
-    }
-    .nx-cta-panel {
-      width: auto;
-      min-width: 0;
-      margin-top: -64px;
-      padding: 0 24px 36px;
-    }
-  }
-</style>
-
-<div id="view-premium-supplements">
-  <section class="hero">
+<div id="view-premium-supplements" class="block w-full">
+  <section class="hero relative min-h-[520px] h-[calc(100vh-var(--off,110px))] overflow-hidden text-white flex items-center before:content-[''] before:absolute before:inset-0 before:z-[1] before:bg-gradient-to-r before:from-[#0A111A]/[0.82] before:to-[#0A111A]/[0.25]">
     <picture>
       <source media="(orientation: portrait)" srcset="{{ asset('assets/website/premium/hero-phone.webp') }}">
-      <img src="{{ asset('assets/website/premium/hero.webp') }}" alt="Novex Premium Supplements" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1800&q=80'">
+      <img src="{{ asset('assets/website/premium/hero.webp') }}" alt="Novex Premium Supplements" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1800&q=80'" class="absolute inset-0 w-full h-full object-cover object-top filter saturate-[1.08] brightness-[1.05] block">
     </picture>
-    <div class="wrap"><div class="in">
-      <h1>Novex Premium<br>Supplements</h1>
-      <p>Science-driven nutrition for a healthier, stronger and better you.</p>
-      <div style="display:flex;align-items:center;flex-wrap:wrap">
-        <a class="btn" href="#sup-formulas" onclick="document.getElementById('sup-formulas').scrollIntoView({behavior:'smooth'});return false;">Shop Now</a>
+    <div class="wrap relative z-[2] w-full max-w-[1200px] mx-auto px-4 sm:px-6">
+      <div class="in max-w-[580px]">
+        <h1 class="font-serif text-[clamp(34px,5.5vw,72px)] font-medium leading-[1.15] text-white">Novex Premium<br>Supplements</h1>
+        <p class="max-w-[480px] my-[18px] mb-7 text-base leading-[1.6] text-white opacity-95">Science-driven nutrition for a healthier, stronger and better you.</p>
+        <div class="flex items-center flex-wrap">
+          <a class="btn inline-block bg-white text-[#2F6F9F] dark:text-[#327BB3] hover:bg-[#E9F2FA] hover:text-[#245a82] rounded-full py-3 px-7 text-[13px] font-semibold tracking-[0.04em] text-center transition-all duration-200 no-underline" href="#sup-formulas" onclick="document.getElementById('sup-formulas').scrollIntoView({behavior:'smooth'});return false;">Shop Now</a>
+        </div>
       </div>
-    </div></div>
+    </div>
   </section>
 
-  <div class="mq"><div>
-    <span>Science-driven nutrition</span><span>High purity ingredients</span><span>Quality assured</span><span>Manufactured with care</span><span>30 capsules</span><span>Dietary supplement</span>
-    <span>Science-driven nutrition</span><span>High purity ingredients</span><span>Quality assured</span><span>Manufactured with care</span><span>30 capsules</span><span>Dietary supplement</span>
-  </div></div>
+  <div class="mq overflow-hidden border-b border-[#D2E2EF] dark:border-[#1C2D3E] bg-[#F6FAFD] dark:bg-[#0E1824] whitespace-nowrap m-0 transition-colors duration-200">
+    <div class="inline-flex gap-11 py-[17px] animate-mq font-serif italic font-medium text-[22px] text-[#1E2D3B] dark:text-[#F0F6FC]">
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Science-driven nutrition</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">High purity ingredients</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Quality assured</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Manufactured with care</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">30 capsules</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Dietary supplement</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Science-driven nutrition</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">High purity ingredients</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Quality assured</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Manufactured with care</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">30 capsules</span>
+      <span class="after:content-['✦'] after:not-italic after:text-[11px] after:text-[#3F84B5] dark:after:text-[#5CA5DA] after:ml-11">Dietary supplement</span>
+    </div>
+  </div>
 
-  <section class="sec" id="sup-formulas">
-    <div class="wrap">
-      <div class="head">
+  <section class="sec pt-[70px] pb-20 bg-white dark:bg-[#0A111A] scroll-mt-20 transition-colors duration-200" id="sup-formulas">
+    <div class="wrap max-w-[1200px] mx-auto px-4 sm:px-6">
+      <div class="head flex justify-between items-end mb-8 gap-5 flex-wrap">
         <div>
-          <h2>Our Formulas</h2>
-          <p>Premium formulas and specialized nutritional bundles for metabolic support, antioxidant care, and everyday wellness.</p>
+          <h2 class="font-serif text-[clamp(28px,4vw,42px)] text-[#1E2D3B] dark:text-[#F0F6FC] leading-[1.15] font-medium">Our Formulas</h2>
+          <p class="text-[15px] text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.6] mt-1.5">Premium formulas and specialized nutritional bundles for metabolic support, antioxidant care, and everyday wellness.</p>
         </div>
       </div>
 
-      <div class="g4" id="pg">
+      <div class="g4 grid grid-cols-1 min-[521px]:grid-cols-2 min-[769px]:grid-cols-3 min-[1025px]:grid-cols-4 gap-4 min-[769px]:gap-6" id="pg">
         @forelse($premiumProducts as $item)
           @php
               $slides = [];
@@ -600,16 +102,16 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
               $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
           @endphp
 
-          <div class="card pc" data-category="{{ $item->category ?? 'Supplements' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
-            <div class="ph">
+          <div class="card pc p-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[26px] transition-all duration-300 flex flex-col hover:-translate-y-1.5 hover:shadow-[0_24px_44px_-24px_rgba(47,111,159,0.5)]" data-category="{{ $item->category ?? 'Supplements' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
+            <div class="ph aspect-square rounded-[20px] relative bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] overflow-hidden flex items-center justify-center p-0">
               @if(count($slides) > 1)
-                <div class="prod-slider">
-                  <div class="prod-slides">
+                <div class="prod-slider relative w-full h-full overflow-hidden rounded-[inherit] bg-transparent">
+                  <div class="prod-slides relative w-full h-full rounded-[inherit] overflow-hidden bg-transparent">
                     @foreach($slides as $sIdx => $imgSrc)
                       @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
-                      <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                        <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Product' }}">
-                          <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                      <div class="prod-slide absolute inset-0 w-full h-full opacity-0 invisible transition-all duration-500 ease-in-out p-3 m-0 overflow-hidden rounded-[inherit] bg-white dark:bg-[#132232] flex items-center justify-center pointer-events-none z-[1] {{ $sIdx === 0 ? 'active !opacity-100 !visible !pointer-events-auto !z-[2]' : '' }}">
+                        <a href="{{ $detailUrl }}" class="prod-slide-link flex items-center justify-center w-full h-full no-underline cursor-pointer" title="{{ $item->title ?? 'Product' }}">
+                          <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'" class="w-auto h-auto max-w-full max-h-full object-contain object-center rounded-[14px] block bg-transparent">
                         </a>
                       </div>
                     @endforeach
@@ -617,45 +119,45 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
                 </div>
               @elseif(count($slides) === 1)
                 @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
-                <div class="prod-slider">
-                  <div class="prod-slides">
-                    <div class="prod-slide active">
-                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Product' }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                <div class="prod-slider relative w-full h-full overflow-hidden rounded-[inherit] bg-transparent">
+                  <div class="prod-slides relative w-full h-full rounded-[inherit] overflow-hidden bg-transparent">
+                    <div class="prod-slide active absolute inset-0 w-full h-full !opacity-100 !visible !pointer-events-auto !z-[2] p-3 m-0 overflow-hidden rounded-[inherit] bg-white dark:bg-[#132232] flex items-center justify-center">
+                      <a href="{{ $detailUrl }}" class="prod-slide-link flex items-center justify-center w-full h-full no-underline cursor-pointer" title="{{ $item->title ?? 'Product' }}">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Product' }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'" class="w-auto h-auto max-w-full max-h-full object-contain object-center rounded-[14px] block bg-transparent">
                       </a>
                     </div>
                   </div>
                 </div>
               @else
-                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--green);font-family:var(--serif);font-size:68px;font-weight:600;border-radius:12px;user-select:none;">
+                <div class="w-full h-full flex items-center justify-center bg-[#E9F2FA] dark:bg-[#101B27] text-[#2F6F9F] dark:text-[#327BB3] font-serif text-[68px] font-semibold rounded-[12px] select-none">
                   N
                 </div>
               @endif
             </div>
 
             @if(count($slides) > 1)
-              <div class="ps-dots">
+              <div class="ps-dots relative flex justify-center items-center gap-1.5 mt-2.5 mb-0.5 z-[5]">
                 @foreach($slides as $sIdx => $imgSrc)
-                  <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlideCatalog(this, {{ $sIdx }})"></span>
+                  <span class="ps-dot w-[7px] h-[7px] rounded-full bg-[#D2E2EF] dark:bg-[#1C2D3E] cursor-pointer transition-all duration-250 hover:bg-[#5A6F82] {{ $sIdx === 0 ? 'active !bg-[#2F6F9F] dark:!bg-[#327BB3] !w-[18px]' : '' }}" onclick="setCardSlideCatalog(this, {{ $sIdx }})"></span>
                 @endforeach
               </div>
             @endif
 
-            <div class="b">
-              <h3>{{ $item->title ?? 'Untitled Formula' }}</h3>
+            <div class="b text-left items-stretch pt-3.5 px-2 pb-2 gap-2 flex flex-col flex-1">
+              <h3 class="font-serif text-[20px] leading-[1.2] text-[#1E2D3B] dark:text-[#F0F6FC]">{{ $item->title ?? 'Untitled Formula' }}</h3>
               @if(!empty($item->subtitle))
-                <p class="s">{{ $item->subtitle }}</p>
+                <p class="s text-[13px] text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.4] min-h-[36px]">{{ $item->subtitle }}</p>
               @endif
-              <div style="font-size:17px;font-weight:700;color:var(--green);margin-top:4px">{{ $displayPrice }}</div>
-              <div class="meta">
-                <span>{{ $item->dosage_spec ?? '30 Capsules' }}</span>
-                <span>{{ $item->badge_category ?? 'Dietary Supplement' }}</span>
+              <div class="text-[17px] font-bold text-[#2F6F9F] dark:text-[#327BB3] mt-1">{{ $displayPrice }}</div>
+              <div class="meta flex gap-1.5 flex-wrap mt-auto">
+                <span class="text-[11px] bg-[#E9F2FA] dark:bg-[#101B27] text-[#1E2D3B] dark:text-[#F0F6FC] py-1 px-2.5 rounded-full border border-[#D2E2EF] dark:border-[#1C2D3E]">{{ $item->dosage_spec ?? '30 Capsules' }}</span>
+                <span class="text-[11px] bg-[#E9F2FA] dark:bg-[#101B27] text-[#1E2D3B] dark:text-[#F0F6FC] py-1 px-2.5 rounded-full border border-[#D2E2EF] dark:border-[#1C2D3E]">{{ $item->badge_category ?? 'Dietary Supplement' }}</span>
               </div>
-              <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
+              <a class="btn-details block w-full bg-[#2F6F9F] dark:bg-[#327BB3] hover:bg-[#245a82] dark:hover:bg-[#286391] text-white py-3 rounded-full text-[13px] font-semibold text-center mt-2.5 transition-colors duration-200 no-underline" href="{{ $detailUrl }}">See Details</a>
             </div>
           </div>
         @empty
-          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--mut);">
+          <div class="col-span-full text-center py-12 text-[#5A6F82] dark:text-[#8EA4B8]">
             No formulas currently available.
           </div>
         @endforelse
@@ -663,34 +165,40 @@ $premiumProducts = \Illuminate\Support\Facades\DB::select(
     </div>
   </section>
 
-  <section class="sec alt">
-    <div class="wrap">
-      <div class="g2 nx-quality">
-        <div class="ph">
-          <img src="{{ asset('assets/website/premium/info.webp') }}" alt="Quality controlled laboratory" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80'">
+  <section class="sec alt py-[54px] min-[901px]:py-20 bg-[#E9F2FA] dark:bg-[#101B27] transition-colors duration-200">
+    <div class="wrap max-w-[1200px] mx-auto px-4 sm:px-6">
+      <div class="g2 nx-quality grid grid-cols-1 min-[901px]:grid-cols-2 gap-10 items-center">
+        <div class="ph aspect-[4/3] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[24px] overflow-hidden bg-white dark:bg-[#132232]">
+          <img src="{{ asset('assets/website/premium/info.webp') }}" alt="Quality controlled laboratory" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80'" class="w-full h-full object-cover block">
         </div>
-        <div class="nx-q-body">
-          <span class="nx-eyebrow">Quality Promise</span>
-          <h2>Premium Quality You Can Trust</h2>
-          <p>Manufactured under strict quality control standards to ensure purity, safety and consistent performance.</p>
-          <div class="nx-q-list">
-            <div><b>High Purity Ingredients</b></div>
-            <div><b>Quality Assured</b></div>
-            <div><b>Manufactured With Care</b></div>
+        <div class="nx-q-body flex flex-col gap-3.5">
+          <span class="nx-eyebrow font-sans font-semibold text-[11px] tracking-[0.28em] uppercase text-[#3F84B5] dark:text-[#5CA5DA] block">Quality Promise</span>
+          <h2 class="font-serif text-[clamp(28px,4vw,42px)] text-[#1E2D3B] dark:text-[#F0F6FC] leading-[1.15] font-medium">Premium Quality You Can Trust</h2>
+          <p class="text-[#5A6F82] dark:text-[#8EA4B8] text-[15px] leading-[1.6]">Manufactured under strict quality control standards to ensure purity, safety and consistent performance.</p>
+          <div class="nx-q-list flex flex-col gap-3 mt-1.5">
+            <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:before:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
+              <b class="text-[13px] tracking-[0.05em] uppercase text-[#1E2D3B] dark:text-[#F0F6FC]">High Purity Ingredients</b>
+            </div>
+            <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:before:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
+              <b class="text-[13px] tracking-[0.05em] uppercase text-[#1E2D3B] dark:text-[#F0F6FC]">Quality Assured</b>
+            </div>
+            <div class="flex items-center gap-3.5 bg-white dark:bg-[#132232] border border-[#D2E2EF] dark:border-[#1C2D3E] rounded-[18px] py-3.5 px-[18px] transition-colors duration-200 before:content-['✓'] before:shrink-0 before:w-[26px] before:h-[26px] before:rounded-full before:bg-[#E9F2FA] dark:before:bg-[#101B27] before:border before:border-[#D2E2EF] dark:before:border-[#1C2D3E] before:text-[#2F6F9F] dark:before:text-[#327BB3] before:text-xs before:font-bold before:flex before:items-center before:justify-center">
+              <b class="text-[13px] tracking-[0.05em] uppercase text-[#1E2D3B] dark:text-[#F0F6FC]">Manufactured With Care</b>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="nx-cta">
-    <div class="nx-cta-img">
-      <img src="{{ asset('assets/website/premium/cta.webp') }}" alt="A Healthier, Stronger You" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1800&q=80'">
+  <section class="nx-cta relative flex items-center h-[clamp(260px,26vw,380px)] overflow-hidden bg-[#1B4468] dark:bg-[#0B1B2B] max-[900px]:block max-[900px]:h-auto after:content-[''] after:absolute after:inset-0 after:z-[1] after:pointer-events-none max-[900px]:after:hidden after:bg-[linear-gradient(90deg,#1B4468_0%,#1B4468_30%,rgba(27,68,104,0.6)_37%,rgba(27,68,104,0.2)_50%,rgba(27,68,104,0.1)_100%)] dark:after:bg-[linear-gradient(90deg,#0B1B2B_0%,#0B1B2B_30%,rgba(11,27,43,0.6)_37%,rgba(11,27,43,0.2)_50%,rgba(11,27,43,0.1)_100%)]">
+    <div class="nx-cta-img absolute top-0 right-0 bottom-0 w-[70%] max-[900px]:relative max-[900px]:w-full max-[900px]:aspect-[2/1] max-[900px]:after:content-[''] max-[900px]:after:absolute max-[900px]:after:inset-x-0 max-[900px]:after:bottom-0 max-[900px]:after:h-[65%] max-[900px]:after:bg-gradient-to-t max-[900px]:after:from-[#1B4468] max-[900px]:after:to-transparent dark:max-[900px]:after:from-[#0B1B2B]">
+      <img src="{{ asset('assets/website/premium/cta.webp') }}" alt="A Healthier, Stronger You" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1800&q=80'" class="absolute inset-0 w-full h-full object-cover object-center max-[900px]:object-[60%_center] block">
     </div>
-    <div class="nx-cta-panel">
-      <span class="nx-eyebrow">Novex Premium Supplements</span>
-      <h3>A Healthier, Stronger You</h3>
-      <p>Support your daily wellness, look better, feel better and perform at your best.</p>
+    <div class="nx-cta-panel relative z-[2] w-[32%] min-w-[300px] flex flex-col gap-3 py-8 px-[clamp(24px,4vw,64px)] text-white max-[900px]:w-auto max-[900px]:min-w-0 max-[900px]:-mt-16 max-[900px]:pt-0 max-[900px]:px-6 max-[900px]:pb-9">
+      <span class="nx-eyebrow text-white/75 font-sans font-semibold text-[11px] tracking-[0.28em] uppercase block">Novex Premium Supplements</span>
+      <h3 class="text-white font-serif text-[clamp(26px,2.9vw,44px)] font-medium leading-[1.15]">A Healthier, Stronger You</h3>
+      <p class="text-white/90 text-[15px] leading-[1.6]">Support your daily wellness, look better, feel better and perform at your best.</p>
     </div>
   </section>
 </div>

@@ -234,7 +234,7 @@ Route::prefix('/')->group(function () {
 | Admin Portal Routes
 |--------------------------------------------------------------------------
 */
-$adminSecret = config('admin.secret_key') ?: env('ADMIN_SECRET_KEY') ?: 'portal-admin-hyut746dhy74-novev-malaysia';
+$adminSecret = config('admin.secret_key') ?: env('ADMIN_SECRET_KEY') ?: 'default_secret_key';
 
 Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($adminSecret) {
 

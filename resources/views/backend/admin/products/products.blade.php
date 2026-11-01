@@ -16,110 +16,7 @@
     ];
 @endphp
 
-<style>
-  .admin-prod-slider {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: 16px;
-    background: transparent;
-  }
-  .admin-prod-slides {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    overflow: hidden;
-  }
-  .admin-prod-slide {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 0.65s ease-in-out;
-    padding: 0.75rem;
-    margin: 0;
-    border-radius: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-  }
-  .admin-prod-slide.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .admin-prod-slide img {
-    max-width: 100% !important;
-    max-height: 100% !important;
-    width: auto !important;
-    height: auto !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    border-radius: 12px !important;
-    display: block;
-    background: transparent;
-  }
-
-  .admin-ps-dots {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 2px 0 4px;
-    background: transparent;
-    border: none;
-  }
-  .admin-ps-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 9999px;
-    background: #cbd5e1;
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-  .admin-ps-dot.active {
-    width: 18px;
-    background: #0071E3;
-  }
-
-  .img-sort-item {
-    cursor: grab;
-    user-select: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  }
-  .img-sort-item:active {
-    cursor: grabbing;
-  }
-  .img-sort-item.dragging {
-    opacity: 0.35;
-    transform: scale(0.92);
-  }
-  .img-sort-item.drag-over {
-    border-color: #0071E3 !important;
-    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.35);
-  }
-
-  @keyframes subtleWiggle {
-    0%, 100% { transform: rotate(0deg); }
-    20% { transform: rotate(-1.5deg); }
-    40% { transform: rotate(1.5deg); }
-    60% { transform: rotate(-1deg); }
-    80% { transform: rotate(1deg); }
-  }
-  .new-asset-wiggling {
-    animation: subtleWiggle 3.2s infinite ease-in-out;
-    border: 1.5px dashed #0071E3 !important;
-    background-color: #F0F6FE !important;
-  }
-</style>
-
 <div class="flex flex-col gap-8">
-
-  <!-- HEADER SECTION (LENCANA TOTAL DI SEBELAH TAJUK TELAH DIBUANG) -->
   <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
     <div class="flex flex-col gap-1">
       <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -130,7 +27,6 @@
       </p>
     </div>
 
-    <!-- ACTION BUTTONS & TOTAL PRODUCTS BADGE (LAYOUT REFRESH VAULT TANPA SVG) -->
     <div class="flex flex-wrap items-center gap-2.5 shrink-0">
       <button type="button" onclick="openCreateProductModal()"
         class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer">
@@ -146,9 +42,7 @@
     </div>
   </div>
 
-  <!-- TOOLBAR: PAGE PILL TABS, CATEGORY DROPDOWN & SEARCH -->
   <div class="relative z-30 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-    
     <div class="flex flex-col sm:flex-row sm:items-center gap-3">
       <label class="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">Filter Page:</label>
       <div class="inline-flex items-center bg-slate-200/60 p-1 rounded-full text-xs font-medium overflow-x-auto max-w-full">
@@ -210,10 +104,8 @@
           class="w-full bg-slate-100/90 focus:bg-white border border-slate-200 hover:border-brand/40 rounded-xl py-2 pl-9 pr-4 text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand shadow-2xs transition-all">
       </div>
     </div>
-
   </div>
 
-  <!-- PRODUCT GRID CONTAINER -->
   <div id="productGridContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
     @forelse($rawProducts as $product)
       @php
@@ -242,11 +134,11 @@
         <div>
           <div class="relative w-full h-52 p-3 bg-slate-50/70 border-b border-slate-100 flex items-center justify-center overflow-hidden">
             @if(count($validImages) > 1)
-              <div class="admin-prod-slider">
-                <div class="admin-prod-slides">
+              <div class="admin-prod-slider relative w-full h-full overflow-hidden rounded-[16px] bg-transparent">
+                <div class="admin-prod-slides relative w-full h-full rounded-[inherit] overflow-hidden">
                   @foreach($validImages as $idx => $img)
-                    <div class="admin-prod-slide {{ $idx === 0 ? 'active' : '' }}">
-                      <img src="{{ asset($img) }}?v={{ time() }}" alt="{{ $product->title }} - Slide {{ $idx + 1 }}" loading="lazy">
+                    <div class="admin-prod-slide absolute inset-0 w-full h-full opacity-0 transition-opacity duration-700 ease-in-out p-3 m-0 rounded-[inherit] flex items-center justify-center pointer-events-none [&.active]:opacity-100 [&.active]:pointer-events-auto {{ $idx === 0 ? 'active' : '' }}">
+                      <img src="{{ asset($img) }}?v={{ time() }}" alt="{{ $product->title }} - Slide {{ $idx + 1 }}" loading="lazy" class="max-w-full max-h-full w-auto h-auto object-contain object-center rounded-[12px] block bg-transparent">
                     </div>
                   @endforeach
                 </div>
@@ -268,9 +160,9 @@
 
           <div class="p-4 sm:p-5 flex flex-col gap-3">
             @if(count($validImages) > 1)
-              <div class="admin-ps-dots">
+              <div class="admin-ps-dots relative flex items-center justify-center gap-1.5 pt-0.5 pb-1 bg-transparent border-none">
                 @foreach($validImages as $idx => $img)
-                  <span class="admin-ps-dot {{ $idx === 0 ? 'active' : '' }}" onclick="setAdminCardSlide(this, {{ $idx }})"></span>
+                  <span class="admin-ps-dot w-[7px] h-[7px] rounded-full bg-slate-300 cursor-pointer transition-all duration-250 [&.active]:w-[18px] [&.active]:bg-[#0071E3] {{ $idx === 0 ? 'active' : '' }}" onclick="setAdminCardSlide(this, {{ $idx }})"></span>
                 @endforeach
               </div>
             @endif
@@ -330,7 +222,6 @@
     @endforelse
   </div>
 
-  <!-- PAGINATION -->
   <div id="paginationWrapper" class="pt-4 border-t border-slate-200/60 flex flex-col items-center justify-center gap-3">
     <nav aria-label="Pagination" class="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xs" id="paginationNav">
     </nav>
@@ -338,10 +229,8 @@
       Showing 0 &ndash; 0 of 0 products
     </div>
   </div>
-
 </div>
 
-<!-- MODAL: ADD PRODUCT -->
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -446,7 +335,6 @@
         </div>
       </div>
 
-      <!-- MULTI OPTION PRICING & VARIANTS CONTAINER -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -526,7 +414,6 @@
   </div>
 </div>
 
-<!-- MODAL: EDIT PRODUCT -->
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -632,7 +519,6 @@
         </div>
       </div>
 
-      <!-- MULTI OPTION PRICING & VARIANTS CONTAINER -->
       <div class="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-slate-50/60 space-y-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex-1">
@@ -717,6 +603,13 @@
 </div>
 
 <script>
+  if (!document.getElementById('admin-vault-keyframes')) {
+    const kfStyle = document.createElement('style');
+    kfStyle.id = 'admin-vault-keyframes';
+    kfStyle.textContent = '@keyframes subtleWiggle { 0%,100%{transform:rotate(0deg);} 20%{transform:rotate(-1.5deg);} 40%{transform:rotate(1.5deg);} 60%{transform:rotate(-1deg);} 80%{transform:rotate(1deg);} }';
+    document.head.appendChild(kfStyle);
+  }
+
   let activeCategoryFilter = 'all';
   let activePageTypeFilter = 'all';
   
@@ -1143,7 +1036,7 @@
 
     createUploadFiles.forEach((file, index) => {
       const card = document.createElement('div');
-      card.className = 'img-sort-item relative w-20 h-20 rounded-xl border border-slate-200 bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden';
+      card.className = 'img-sort-item cursor-grab select-none transition-all duration-200 active:cursor-grabbing [&.dragging]:opacity-35 [&.dragging]:scale-[0.92] [&.drag-over]:!border-[#0071E3] [&.drag-over]:ring-2 [&.drag-over]:ring-[#0071E3]/35 relative w-20 h-20 rounded-xl border border-slate-200 bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden';
       card.setAttribute('draggable', 'true');
       card.dataset.index = index;
 
@@ -1286,7 +1179,7 @@
       const isNew = item.type === 'new';
       const card = document.createElement('div');
       
-      card.className = `img-sort-item relative w-20 h-20 rounded-xl border bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden ${isNew ? 'new-asset-wiggling' : 'border-slate-200'}`;
+      card.className = `img-sort-item cursor-grab select-none transition-all duration-200 active:cursor-grabbing [&.dragging]:opacity-35 [&.dragging]:scale-[0.92] [&.drag-over]:!border-[#0071E3] [&.drag-over]:ring-2 [&.drag-over]:ring-[#0071E3]/35 relative w-20 h-20 rounded-xl border bg-white p-1 shadow-2xs group flex items-center justify-center overflow-hidden ${isNew ? 'new-asset-wiggling animate-[subtleWiggle_3.2s_infinite_ease-in-out] !border-[1.5px] !border-dashed !border-[#0071E3] !bg-[#F0F6FE]' : 'border-slate-200'}`;
       card.setAttribute('draggable', 'true');
       card.dataset.index = index;
 

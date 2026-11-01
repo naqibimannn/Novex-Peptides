@@ -1,11 +1,10 @@
 @php
-    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY', 'portal-admin-hyut746dhy74-novev-malaysia'));
+    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY'));
     $secretPrefix = 'admin/' . $secretKey;
 @endphp
 
 <div class="flex flex-col gap-8">
 
-  <!-- HEADER SECTION -->
   <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-2 border-b border-slate-200/60">
     <div class="flex flex-col gap-1">
       <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -16,7 +15,6 @@
       </p>
     </div>
 
-    <!-- ACTION BUTTONS -->
     <div class="flex flex-wrap items-center gap-2.5 shrink-0">
       <a href="{{ url('/') }}" target="_blank"
         class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-xs transition-all active:scale-[0.98]">
@@ -36,22 +34,18 @@
     </div>
   </div>
 
-  <!-- MAIN CARD CONTAINER (TERUS DIBUKA TANPA DROPDOWN) -->
   <div class="relative z-30 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all">
     
-    <!-- CARD TITLE BAR -->
     <div class="p-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
       <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">
         Organization Directory &amp; Contact Desk Settings
       </span>
     </div>
 
-    <!-- FORM BODY -->
     <div class="p-5 sm:p-6 bg-white/50">
       <form action="{{ url($secretPrefix . '/info') }}" method="POST" class="space-y-5">
         @csrf
 
-        <!-- SEKSYEN 1: BRAND IDENTITY -->
         <div class="space-y-3">
           <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Brand &amp; Identity</h3>
 
@@ -62,7 +56,6 @@
           </div>
         </div>
 
-        <!-- SEKSYEN 2: CONTACT DETAILS -->
         <div class="space-y-3 pt-4 border-t border-slate-100">
           <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Contact Desk Inquiries</h3>
 
@@ -83,7 +76,6 @@
           </div>
         </div>
 
-        <!-- SEKSYEN 3: SOCIAL MEDIA -->
         <div class="space-y-3 pt-4 border-t border-slate-100">
           <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Official Social Media Channels</h3>
 
@@ -116,7 +108,6 @@
           </div>
         </div>
 
-        <!-- ACTION BUTTON -->
         <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
           <button type="submit"
             class="px-5 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer">

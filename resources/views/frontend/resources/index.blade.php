@@ -2,8 +2,6 @@
 
 @section('content')
 @php
-    $articles = \Illuminate\Support\Facades\DB::select("SELECT * FROM resources ORDER BY id DESC");
-    
     $resolveImageUrl = function($path) {
         if (empty($path)) return asset('assets/website/science/s1.webp');
         if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
@@ -14,124 +12,40 @@
         }
         return asset($clean);
     };
+
+    $paragraphs = array_filter(array_map('trim', explode("\n", $resource->content ?? '')));
 @endphp
 
-<style>
-.res-card{
-  background:var(--card-surface);
-  border:1px solid var(--line);
-  border-radius:24px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease, background-color .25s ease;
-  text-decoration:none;
-}
-.res-card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 24px 44px -20px rgba(47,111,159,.35);
-  border-color:var(--gold);
-}
-.res-thumb{
-  width:100%;
-  aspect-ratio:16/10;
-  overflow:hidden;
-  background:var(--card-surface);
-}
-.res-thumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:transform .5s ease;
-}
-.res-card:hover .res-thumb img{
-  transform:scale(1.04);
-}
-.res-body{
-  padding:22px;
-  display:flex;
-  flex-direction:column;
-  flex:1;
-}
-.res-body h3{
-  color:var(--ink);
-  transition:color .25s ease;
-}
-</style>
+<section class="sec block pt-[60px] pb-[90px] bg-white dark:bg-[#0A111A] min-h-[80vh] transition-colors duration-200" id="articleShowSec">
+  <div class="art-container max-w-[860px] mx-auto px-6">
+    <a href="{{ route('resources') }}" class="art-back-btn inline-flex items-center gap-2 bg-transparent border-0 p-0 text-[#2F6F9F] dark:text-[#327BB3] text-[13px] font-semibold cursor-pointer mb-6 no-underline transition-opacity duration-200 hover:opacity-80 hover:underline">
+      &larr; Back to Educational Resources
+    </a>
 
-<section class="hero">
-  <img id="heroImage" src="{{ asset('assets/website/resources/hero.webp') }}" href="{{ asset('assets/website/resources/hero.webp') }}" alt="Educational Resources" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
-  <div class="wrap">
-    <div class="in">
-      <span style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px;display:block">Resources &amp; Literature</span>
-      <h1>Read before you research</h1>
-      <p>Short, careful articles on the compounds in our catalogue, written to explain rather than to sell.</p>
+    <div class="art-meta-header flex items-center justify-between gap-3 mb-4 flex-wrap">
+      <span class="art-pill text-[11px] font-bold uppercase tracking-[0.08em] text-[#2F6F9F] dark:text-[#327BB3] bg-[#E9F2FA] dark:bg-[#101B27] py-1 px-3.5 rounded-full border border-[#D2E2EF] dark:border-[#1C2D3E]">Research Literature</span>
+      <span class="art-time text-[13px] text-[#5A6F82] dark:text-[#8EA4B8] font-medium">{{ $resource->read_time }} &bull; {{ $resource->author }}</span>
     </div>
-  </div>
-</section>
 
-<section class="sec">
-  <div class="wrap">
-    <div class="head">
-      <div>
-        <h1 style="font-size:42px">Educational Resources</h1>
-        <p>Short, careful articles on the compounds in our catalogue, written to explain rather than to sell.</p>
-      </div>
-    </div>
+    <h1 class="art-heading font-serif text-[clamp(32px,4.5vw,48px)] font-semibold leading-[1.15] text-[#1E2D3B] dark:text-[#F0F6FC] mb-3">{{ $resource->title }}</h1>
     
-    <div class="g4">
-      @forelse($articles as $art)
-        <a class="res-card" href="{{ url('/resources/' . $art->slug) }}">
-          <div class="res-thumb">
-            <img src="{{ $resolveImageUrl($art->image) }}" alt="{{ $art->title }}" loading="lazy">
-          </div>
-          <div class="res-body">
-            <h3 style="font-size:20px;line-height:1.25">{{ $art->title }}</h3>
-            <p style="font-size:13px;color:var(--mut);margin:10px 0 16px;line-height:1.55">
-              {{ $art->subtitle }}
-            </p>
-            <span style="font-size:12px;font-weight:600;color:var(--green);margin-top:auto">Read Article &rarr;</span>
-          </div>
-        </a>
-      @empty
-        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--mut);">
-          No educational resources currently published.
-        </div>
-      @endforelse
+    @if(!empty($resource->subtitle))
+      <p class="art-lead text-[17px] text-[#5A6F82] dark:text-[#8EA4B8] leading-[1.6] mb-7">{{ $resource->subtitle }}</p>
+    @endif
+
+    <div class="art-main-img-box w-full aspect-video rounded-[26px] overflow-hidden border border-[#D2E2EF] dark:border-[#1C2D3E] mb-8 bg-white dark:bg-[#132232] shadow-[0_10px_30px_rgba(14,40,66,0.05)]">
+      <img src="{{ $resolveImageUrl($resource->image) }}" alt="{{ $resource->title }}" class="w-full h-full object-cover block">
     </div>
 
-    <div style="font-size:12px;color:var(--mut);border-top:1px solid var(--line);margin-top:40px;padding-top:16px">
-      Educational content for research context only. It is not medical advice, diagnosis, or clinical recommendation.
+    <div class="art-prose flex flex-col gap-5 text-base leading-[1.85] text-[#1E2D3B] dark:text-[#F0F6FC] border-t border-[#D2E2EF] dark:border-[#1C2D3E] pt-7">
+      @foreach($paragraphs as $p)
+        <p class="m-0">{{ $p }}</p>
+      @endforeach
+    </div>
+
+    <div class="art-footer-disclaimer text-[13px] text-[#5A6F82] dark:text-[#8EA4B8] border-t border-[#D2E2EF] dark:border-[#1C2D3E] mt-10 pt-5 leading-[1.6]">
+      <strong class="text-[#1E2D3B] dark:text-[#F0F6FC]">Educational Disclaimer:</strong> This monograph is compiled strictly for analytical context and in-vitro laboratory reference. It does not constitute medical advice or human clinical recommendations.
     </div>
   </div>
 </section>
-
-<script>
-function updateHeroBanner(){
-  const heroImg = document.getElementById('heroImage');
-  if (!heroImg) return;
-
-  const isPortraitOrSmall = window.matchMedia('(orientation: portrait), (max-width: 768px)').matches;
-  const targetUrl = isPortraitOrSmall
-    ? "{{ asset('assets/website/resources/hero-phone.webp') }}"
-    : "{{ asset('assets/website/resources/hero.webp') }}";
-
-  if (heroImg.getAttribute('src') !== targetUrl) {
-    heroImg.setAttribute('src', targetUrl);
-  }
-  if (heroImg.getAttribute('href') !== targetUrl) {
-    heroImg.setAttribute('href', targetUrl);
-  }
-}
-
-const heroMediaQuery = window.matchMedia('(orientation: portrait), (max-width: 768px)');
-if (heroMediaQuery.addEventListener) {
-  heroMediaQuery.addEventListener('change', updateHeroBanner);
-} else if (heroMediaQuery.addListener) {
-  heroMediaQuery.addListener(updateHeroBanner);
-}
-window.addEventListener('resize', updateHeroBanner);
-document.addEventListener('DOMContentLoaded', updateHeroBanner);
-updateHeroBanner();
-</script>
 @endsection

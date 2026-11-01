@@ -12,7 +12,7 @@ class ResourcesController extends Controller
     public function index()
     {
         $resources = DB::select("SELECT * FROM resources ORDER BY id DESC");
-        $adminSecret = config('admin.secret_key') ?: env('ADMIN_SECRET_KEY') ?: 'portal-admin-hyut746dhy74-novev-malaysia';
+        $adminSecret = config('admin.secret_key') ?: env('ADMIN_SECRET_KEY') ?: 'default_secret_key';
 
         return view('backend.admin.dashboard.admin', [
             'section'   => 'blogs',
