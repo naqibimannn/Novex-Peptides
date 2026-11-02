@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class ResourcesController extends Controller
@@ -60,6 +61,8 @@ class ResourcesController extends Controller
             'updated_at' => now(),
         ]);
 
+        Cache::forget('frontend_resources_list');
+
         return back()->with('success', 'Article published successfully to Educational Resources.');
     }
 
@@ -97,6 +100,8 @@ class ResourcesController extends Controller
             'updated_at' => now(),
         ]);
 
+        Cache::forget('frontend_resources_list');
+
         return back()->with('success', 'Article updated successfully.');
     }
 
@@ -109,6 +114,8 @@ class ResourcesController extends Controller
             }
             DB::table('resources')->where('id', $id)->delete();
         }
+
+        Cache::forget('frontend_resources_list');
 
         return back()->with('success', 'Article removed permanently.');
     }

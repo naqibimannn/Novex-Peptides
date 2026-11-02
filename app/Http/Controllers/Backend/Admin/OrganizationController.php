@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
 
 class OrganizationController extends Controller
 {
@@ -13,30 +14,33 @@ class OrganizationController extends Controller
     {
         $secret = $secret ?? (config('admin.secret_key') ?: env('ADMIN_SECRET_KEY'));
 
-        if (Schema::hasTable('organization_info')) {
-            $org = DB::table('organization_info')->first();
-            if (!$org) {
-                DB::table('organization_info')->insert([
-                    'id'            => 1,
-                    'company_name'  => 'Novex Peptides',
-                    'phone_number'  => '+60 11-2549 0484',
-                    'email'         => 'support@novexsupps.com',
-                    'instagram_url' => 'https://www.instagram.com/novexperfomancedivision?rpxt=MWhrc2tlYjFkdXNjaA==',
-                    'tiktok_url'    => 'https://www.tiktok.com/@fthulaimn?_r=1&_t=ZS-9AigtDpLBg1',
-                    'created_at'    => now(),
-                    'updated_at'    => now(),
-                ]);
-                $org = DB::table('organization_info')->first();
+        $org = Cache::remember('site_organization_info', 86400, function () {
+            if (Schema::hasTable('organization_info')) {
+                $data = DB::table('organization_info')->first();
+                if (!$data) {
+                    DB::table('organization_info')->insert([
+                        'id'            => 1,
+                        'company_name'  => 'Novex Peptides',
+                        'phone_number'  => '+60 11-2549 0484',
+                        'email'         => 'support@novexsupps.com',
+                        'instagram_url' => 'https://www.instagram.com/novexperfomancedivision?rpxt=MWhrc2tlYjFkdXNjaA==',
+                        'tiktok_url'    => 'https://www.tiktok.com/@fthulaimn?_r=1&_t=ZS-9AigtDpLBg1',
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                    ]);
+                    $data = DB::table('organization_info')->first();
+                }
+                return $data;
             }
-        } else {
-            $org = (object)[
+
+            return (object)[
                 'company_name'  => 'Novex Peptides',
                 'phone_number'  => '+60 11-2549 0484',
                 'email'         => 'support@novexsupps.com',
                 'instagram_url' => 'https://www.instagram.com/novexperfomancedivision?rpxt=MWhrc2tlYjFkdXNjaA==',
                 'tiktok_url'    => 'https://www.tiktok.com/@fthulaimn?_r=1&_t=ZS-9AigtDpLBg1',
             ];
-        }
+        });
 
         $section = 'info';
 
@@ -64,6 +68,8 @@ class OrganizationController extends Controller
                     'updated_at'    => now(),
                 ]
             );
+
+            Cache::forget('site_organization_info');
         }
 
         return redirect()->back()->with('success', 'Organization profile & social links updated successfully!');

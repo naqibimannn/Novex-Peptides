@@ -79,7 +79,7 @@ $perfShowJsVer = file_exists(public_path($perfShowJsPath)) ? filemtime(public_pa
                 ? $item->slug
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
-            $detailUrl = url('/performance/' . $itemSlug);
+            $detailUrl = url('/performance/show/' . $itemSlug);
             $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
         @endphp
 

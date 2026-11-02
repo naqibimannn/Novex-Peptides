@@ -11,6 +11,9 @@ $resolveImageUrl = function($path) {
         $clean,
         'uploads/products/' . basename($clean),
         'storage/' . $clean,
+        'assets/website/skin/' . basename($clean),
+        'assets/website/premium/' . basename($clean),
+        'assets/website/category/' . basename($clean),
     ];
 
     foreach ($checkPaths as $p) {
@@ -22,50 +25,10 @@ $resolveImageUrl = function($path) {
     return asset($clean) . '?v=' . time();
 };
 
-$allProducts = [
-    'retatrutide' => [
-        'id'            => 'retatrutide',
-        'db_id'         => null,
-        'name'          => 'Retatrutide',
-        'title'         => 'Advanced Weight Management',
-        'spec'          => '10mg - 100mg',
-        'val'           => 280,
-        'price'         => 'RM280.00 - RM980.00',
-        'category'      => 'Weight Management',
-        'page_type'     => 'products',
-        'imgs'          => ['reta1.webp', 'reta2.webp', 'reta3.webp', 'reta4.webp', 'reta5.webp'],
-        'stock'         => 63,
-        'variant_title' => 'Select Vial Concentration / Dosage:',
-        'variants'      => [
-            ['label' => '10mg', 'val' => 280, 'p' => 'RM280.00', 'stock' => 25],
-            ['label' => '30mg', 'val' => 480, 'p' => 'RM480.00', 'stock' => 18],
-            ['label' => '60mg', 'val' => 780, 'p' => 'RM780.00', 'stock' => 12],
-            ['label' => '100mg', 'val' => 980, 'p' => 'RM980.00', 'stock' => 8],
-        ],
-        'sizes'         => [],
-        'desc'          => 'High-purity lyophilised triple-receptor agonist peptide synthesized for metabolic pathway investigations and weight management receptor studies. Select your preferred vial concentration above to view exact pricing.',
-    ],
-    'jersey-01' => [
-        'id'            => 'jersey-01',
-        'db_id'         => null,
-        'name'          => 'Premium Athletic Jersey',
-        'title'         => 'Performance. Style. Everyday.',
-        'spec'          => 'Adult Size',
-        'val'           => 40,
-        'price'         => 'RM40.00',
-        'category'      => 'Apparel',
-        'page_type'     => 'products',
-        'imgs'          => ['jry1.webp', 'jry2.webp'],
-        'stock'         => 50,
-        'variant_title' => 'Select Vial Concentration / Dosage:',
-        'variants'      => [],
-        'sizes'         => ['S', 'M', 'L', 'XL'],
-        'desc'          => 'Official Novex Peptides merchandise. Crafted with lightweight, breathable, and moisture-wicking hexagonal weave fabric. Features premium V-neck design and durable finish.',
-    ]
-];
+$allProducts = [];
 
 try {
-    $dbRows = \Illuminate\Support\Facades\DB::select("SELECT * FROM products");
+    $dbRows = \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC");
     foreach ($dbRows as $row) {
         $imgs = [];
         if (!empty($row->image)) {
@@ -119,19 +82,19 @@ try {
         $itemData = [
             'id'            => $key,
             'db_id'         => $row->id,
-            'name'          => $row->title ?? 'Untitled Product',
+            'name'          => $row->title ?? 'Untitled Formulation',
             'title'         => $row->subtitle ?? '',
             'spec'          => !empty($row->dosage_spec) ? $row->dosage_spec : '',
             'val'           => $numericVal,
             'price'         => !empty($row->price) ? $row->price : ('RM' . number_format($numericVal, 2)),
-            'category'      => !empty($row->category) ? $row->category : 'Weight Management',
+            'category'      => !empty($row->category) ? $row->category : 'General Catalog',
             'page_type'     => $row->page_type ?? 'products',
             'imgs'          => $imgs,
             'stock'         => (int)($row->stock ?? 0),
-            'variant_title' => !empty($row->variant_title) ? $row->variant_title : 'Select Vial Concentration / Dosage:',
+            'variant_title' => !empty($row->variant_title) ? $row->variant_title : 'Select Formulation / Dosage:',
             'variants'      => $variants,
             'sizes'         => $sizes,
-            'desc'          => !empty($row->description) ? $row->description : ($allProducts[$key]['desc'] ?? 'High-purity laboratory formulation verified with third-party quality control.'),
+            'desc'          => !empty($row->description) ? $row->description : 'High-purity laboratory formulation verified with strict quality control standards.',
         ];
 
         $allProducts[$key] = $itemData;
@@ -141,21 +104,42 @@ try {
     }
 } catch (\Throwable $e) {}
 
-$reqKey = $id ?? request()->route('id') ?? request()->route('product') ?? request()->segment(2) ?? 'retatrutide';
+$reqKey = $id ?? request()->route('id') ?? request()->route('product') ?? request()->segment(3) ?? request()->segment(2) ?? '';
 if (is_object($reqKey)) {
-    $reqKey = $reqKey->slug ?? $reqKey->id ?? 'retatrutide';
+    $reqKey = $reqKey->slug ?? $reqKey->id ?? '';
 }
 $reqKey = urldecode((string)$reqKey);
 
 $currProd = $allProducts[$reqKey]
     ?? $allProducts[strtolower($reqKey)]
     ?? $allProducts[\Illuminate\Support\Str::slug($reqKey)]
-    ?? reset($allProducts);
+    ?? (!empty($allProducts) ? reset($allProducts) : [
+        'id'            => 'not-found',
+        'db_id'         => null,
+        'name'          => 'Product Not Found',
+        'title'         => 'No details available',
+        'spec'          => '',
+        'val'           => 0,
+        'price'         => 'RM0.00',
+        'category'      => 'Catalog',
+        'page_type'     => 'products',
+        'imgs'          => ['reta1.webp'],
+        'stock'         => 0,
+        'variant_title' => 'Select Option:',
+        'variants'      => [],
+        'sizes'         => [],
+        'desc'          => 'The requested product could not be found or has not been published yet.',
+    ]);
 
 $hasVariants = !empty($currProd['variants']) && count($currProd['variants']) > 0;
 $isApparel   = ($currProd['category'] === 'Apparel') || (!empty($currProd['sizes']) && count($currProd['sizes']) > 0);
 
 $firstSegment = request()->segment(1);
+
+$isSkin = ($firstSegment === 'skin') 
+    || request()->is('skin*') 
+    || (($currProd['page_type'] ?? '') === 'skin') 
+    || in_array($currProd['category'] ?? '', ['Skin Lab', 'Skincare', 'Novex Skincare', 'Skin', 'Skincare Peptides', 'Skincare Collection']);
 
 $isPremium = ($firstSegment === 'premium') 
     || request()->is('premium*') 
@@ -184,10 +168,12 @@ $showJsVer = file_exists(public_path($showJsPath)) ? filemtime(public_path($show
 <section class="product-detail-sec" id="productDetailSec">
   <div class="wrap">
     <div class="detail-back-nav">
-      @if($isPremium)
-        <a href="{{ url('/premium') }}" class="detail-back-link">&larr; Back to Premium Supplements</a>
+      @if($isSkin)
+        <a href="{{ url('/skin/show') }}" class="detail-back-link">&larr; Back to Novex Skin Lab</a>
+      @elseif($isPremium)
+        <a href="{{ url('/premium/show') }}" class="detail-back-link">&larr; Back to Premium Supplements</a>
       @elseif($isPerformance)
-        <a href="{{ url('/performance') }}" class="detail-back-link">&larr; Back to Performance Division</a>
+        <a href="{{ url('/performance/show') }}" class="detail-back-link">&larr; Back to Performance Division</a>
       @elseif($isAccessory)
         <a href="{{ route('accessory') }}" class="detail-back-link">&larr; Back to Accessories</a>
       @else
@@ -352,6 +338,7 @@ $showJsVer = file_exists(public_path($showJsPath)) ? filemtime(public_path($show
 <script>
 window.CURRENT_PROD = @json($currProd);
 window.PROD_FLAGS = {
+  isSkin: @json($isSkin),
   isPremium: @json($isPremium),
   isPerformance: @json($isPerformance),
   isAccessory: @json($isAccessory)

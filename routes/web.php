@@ -74,6 +74,20 @@ Route::prefix('/')->group(function () {
         return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
     })->name('products.show');
 
+    Route::get('/show/{id}', function (Request $request, $id) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'show/' . $id,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
+    })->name('products.direct_show');
+
     Route::get('/accessory', function (Request $request) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
@@ -130,6 +144,20 @@ Route::prefix('/')->group(function () {
         return view('frontend.performance.show');
     })->name('performance.show');
 
+    Route::get('/performance/show/{id}', function (Request $request, $id) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'performance/show/' . $id,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
+    })->name('performance.show.detail');
+
     Route::get('/performance/{id}', function (Request $request, $id) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
@@ -172,6 +200,20 @@ Route::prefix('/')->group(function () {
         return view('frontend.premium.show');
     })->name('premium.show');
 
+    Route::get('/premium/show/{id}', function (Request $request, $id) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'premium/show/' . $id,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
+    })->name('premium.show.detail');
+
     Route::get('/premium/{id}', function (Request $request, $id) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
@@ -200,6 +242,34 @@ Route::prefix('/')->group(function () {
         return view('frontend.skin.index');
     })->name('skin');
 
+    Route::get('/skin/show', function (Request $request) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'skin/show',
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return view('frontend.skin.show');
+    })->name('skin.show');
+
+    Route::get('/skin/show/{id}', function (Request $request, $id) {
+        if (Schema::hasTable('page_views')) {
+            DB::table('page_views')->insert([
+                'page_url'   => 'skin/show/' . $id,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr((string) $request->userAgent(), 0, 500),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
+    })->name('skin.show.detail');
+
     Route::get('/skin/{id}', function (Request $request, $id) {
         if (Schema::hasTable('page_views')) {
             DB::table('page_views')->insert([
@@ -212,7 +282,7 @@ Route::prefix('/')->group(function () {
         }
 
         return view('frontend.products.show', ['id' => $id, 'productId' => $id]);
-    })->name('skin.show');
+    })->where('id', '^(?!show$).*')->name('skin.detail');
 
     Route::get('/resources', function (Request $request) {
         if (Schema::hasTable('page_views')) {

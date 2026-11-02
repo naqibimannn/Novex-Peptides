@@ -78,11 +78,12 @@ $premShowJsVer = file_exists(public_path($premShowJsPath)) ? filemtime(public_pa
                 ? $item->slug
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
-            $detailUrl = url('/products/' . $itemSlug);
+            $detailUrl = url('/premium/show/' . $itemSlug);
             $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
+            $itemCategory = $item->category ?? 'Premium Supplements';
         @endphp
 
-        <div class="catalog-card card pc" data-category="Premium Supplements" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
+        <div class="catalog-card card pc" data-category="{{ $itemCategory }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
           <div class="card-ph">
             @if(count($slides) > 1)
               <div class="prod-slider">
@@ -131,7 +132,7 @@ $premShowJsVer = file_exists(public_path($premShowJsPath)) ? filemtime(public_pa
             <div class="card-price">{{ $displayPrice }}</div>
             <div class="card-meta">
               <span class="meta-tag">{{ $item->dosage_spec ?? '30 Capsules' }}</span>
-              <span class="meta-tag">Premium Supplements</span>
+              <span class="meta-tag">{{ $itemCategory }}</span>
             </div>
             <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
           </div>

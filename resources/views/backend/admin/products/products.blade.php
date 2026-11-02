@@ -52,6 +52,9 @@
         <button type="button" onclick="switchPageTypeFilter('products', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
           Products
         </button>
+        <button type="button" onclick="switchPageTypeFilter('skin', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
+          Skin
+        </button>
         <button type="button" onclick="switchPageTypeFilter('accessory', this)" class="page-type-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
           Accessory
         </button>
@@ -260,6 +263,10 @@
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Products Catalog Page
             </button>
+            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'skin', 'Skin Lab Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Skin Lab Page
+            </button>
             <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'accessory', 'Accessory Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Accessory Page
@@ -443,6 +450,10 @@
             <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'products', 'Products Catalog Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Products Catalog Page
+            </button>
+            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'skin', 'Skin Lab Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Skin Lab Page
             </button>
             <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'accessory', 'Accessory Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
@@ -1317,6 +1328,7 @@
 
       const pageLabels = {
         'products': 'Products Catalog Page',
+        'skin': 'Skin Lab Page',
         'accessory': 'Accessory Page',
         'premium': 'Premium Supplements Page',
         'performance': 'Performance Division Page'

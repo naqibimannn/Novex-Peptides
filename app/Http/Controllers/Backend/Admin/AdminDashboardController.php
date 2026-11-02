@@ -6,29 +6,33 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 
 class AdminDashboardController extends Controller
 {
-
     public function index(Request $request, string $section = 'dashboard')
     {
         $secret = env('ADMIN_SECRET_KEY');
-
-        // Pengambilan kiraan statistik pangkalan data secara dinamik
-        $articlesCount = Schema::hasTable('blog_posts') 
-            ? DB::table('blog_posts')->count() 
-            : 0;
-
         $pagesCount = 6;
 
-        $audienceViewsCount = Schema::hasTable('page_views') 
-            ? DB::table('page_views')->count() 
-            : 0;
+        $stats = Cache::remember('admin_dashboard_stats', 600, function () {
+            return [
+                'articlesCount' => Schema::hasTable('blog_posts') 
+                    ? DB::table('blog_posts')->count() 
+                    : 0,
+                'audienceViewsCount' => Schema::hasTable('page_views') 
+                    ? DB::table('page_views')->count() 
+                    : 0,
+                'recentArticles' => Schema::hasTable('blog_posts')
+                    ? DB::table('blog_posts')->latest('created_at')->take(2)->get()
+                    : collect(),
+            ];
+        });
 
-        $recentArticles = Schema::hasTable('blog_posts')
-            ? DB::table('blog_posts')->latest('created_at')->take(2)->get()
-            : collect();
+        $articlesCount = $stats['articlesCount'];
+        $audienceViewsCount = $stats['audienceViewsCount'];
+        $recentArticles = $stats['recentArticles'];
 
         return view('backend.admin.dashboard.admin', compact(
             'section',
@@ -44,7 +48,6 @@ class AdminDashboardController extends Controller
     {
         $period = $request->query('period', 'overview');
 
-        // Data lalai berasaskan mod paparan kalendar
         if ($period === 'daily') {
             $labels = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
             $data = [15, 30, 85, 160, 120, 100];

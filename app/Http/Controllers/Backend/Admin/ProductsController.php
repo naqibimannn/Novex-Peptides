@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class ProductsController extends Controller
@@ -183,6 +184,8 @@ class ProductsController extends Controller
             ]
         );
 
+        Cache::forget('frontend_products_list');
+
         return back()->with('success', 'Product formulation successfully published.');
     }
 
@@ -293,6 +296,8 @@ class ProductsController extends Controller
             ]
         );
 
+        Cache::forget('frontend_products_list');
+
         return back()->with('success', 'Product formulation successfully updated.');
     }
 
@@ -315,6 +320,9 @@ class ProductsController extends Controller
             }
 
             DB::delete("DELETE FROM products WHERE id = ?", [$id]);
+
+            Cache::forget('frontend_products_list');
+
             return back()->with('success', 'Product successfully removed from database.');
         }
 
