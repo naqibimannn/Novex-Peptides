@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>CentraDesk &middot; Enterprise Management Console</title>
 
   <link rel="icon" type="image/png" href="{{ asset('assets/admin/logo.png') }}">
@@ -11,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -85,6 +86,15 @@
     </div>
   </div>
 
+  @if(session('success'))
+    <div id="toastSuccess"
+      class="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 bg-slate-900 text-white rounded-xl transition-all duration-300 translate-y-0 opacity-100 text-xs shadow-md">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+      <span class="font-medium tracking-tight">{{ session('success') }}</span>
+      <button type="button" onclick="this.parentElement.remove()" class="ml-1 text-slate-400 hover:text-white cursor-pointer">&times;</button>
+    </div>
+  @endif
+
   <div class="w-full min-h-screen flex flex-col md:flex-row relative">
 
     <div class="w-full md:w-1/2 flex flex-col justify-between p-8 sm:p-12 lg:p-16 bg-slate-50/50 min-h-screen z-10">
@@ -100,8 +110,7 @@
 
         <div class="mb-10">
           <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Sign In</h1>
-          <p class="text-xs sm:text-sm text-slate-500 mt-2 font-medium">Enter your verified credentials to access the
-            admin portal.</p>
+          <p class="text-xs sm:text-sm text-slate-500 mt-2 font-medium">Enter your verified credentials to access the admin portal.</p>
         </div>
 
         @if ($errors->any())
@@ -126,8 +135,7 @@
           </div>
 
           <div class="space-y-2">
-            <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-600">Email
-              Address</label>
+            <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-600">Email Address</label>
             <div class="relative group">
               <div
                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-blue transition-colors">
@@ -144,13 +152,11 @@
 
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <label for="password"
-                class="block text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
-              <a href="#"
-                class="text-xs font-semibold text-brand-blue hover:text-brand-deep hover:underline transition-colors"
-                onclick="event.preventDefault(); alert('Modul reset password keselamatan tinggi hanya melalui terminal SSH.');">
+              <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-600">Password</label>
+              <button type="button" onclick="openResetModal()"
+                class="text-xs font-semibold text-brand-blue hover:text-brand-deep hover:underline transition-colors cursor-pointer">
                 Forgot password?
-              </a>
+              </button>
             </div>
             <div class="relative group">
               <div
@@ -167,14 +173,12 @@
               <button type="button" onclick="togglePasswordVisibility()"
                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer focus:outline-none"
                 aria-label="Toggle password visibility">
-                <svg id="eyeOpenIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                  viewBox="0 0 24 24">
+                <svg id="eyeOpenIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <svg id="eyeClosedIcon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2"
-                  viewBox="0 0 24 24">
+                <svg id="eyeClosedIcon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                 </svg>
@@ -186,8 +190,7 @@
             <label class="flex items-center gap-2.5 cursor-pointer select-none group">
               <input type="checkbox" name="remember"
                 class="w-4 h-4 rounded-md border-slate-300 text-brand-deep focus:ring-brand-blue transition-colors">
-              <span class="text-xs font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">Remember
-                session</span>
+              <span class="text-xs font-semibold text-slate-600 group-hover:text-slate-900 transition-colors">Remember session</span>
             </label>
           </div>
 
@@ -248,6 +251,109 @@
 
   </div>
 
+  <div id="resetPasswordModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 tracking-tight">Reset Password</h3>
+          <p class="text-xs text-slate-400 font-medium mt-0.5">Instant 6-digit verification</p>
+        </div>
+        <button type="button" onclick="closeResetModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition-colors cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="modalAlert" class="hidden p-3 rounded-2xl mb-4 text-xs font-medium"></div>
+
+      <div id="stepRequestCode" class="space-y-5">
+        <p class="text-xs text-slate-500 leading-relaxed font-medium">
+          A 6-digit verification code will be dispatched to your registered administrator email to authenticate this terminal.
+        </p>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="button" onclick="closeResetModal()" class="w-1/3 py-3 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">
+            Cancel
+          </button>
+          <button type="button" id="btnSendCode" onclick="handleSendCode()" class="w-2/3 py-3 px-4 rounded-xl bg-brand-deep hover:bg-slate-900 text-white text-xs font-bold tracking-wider uppercase transition-all shadow-md shadow-brand-deep/20 cursor-pointer flex items-center justify-center gap-2">
+            <span id="sendCodeText">Send 6-Digit Code</span>
+            <svg id="sendCodeSpinner" class="animate-spin h-3.5 w-3.5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <form id="stepVerifyCode" onsubmit="handleVerifyAndReset(event)" class="hidden space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">6-Digit Verification Code</label>
+            <button type="button" onclick="handleSendCode()" class="text-[11px] text-brand-blue hover:underline font-semibold cursor-pointer">Resend Code</button>
+          </div>
+          <input type="text" id="reset_otp_code" maxlength="6" required placeholder="000000"
+            class="w-full bg-white border border-slate-200 rounded-2xl py-3 px-4 text-center font-mono text-lg tracking-[6px] font-bold text-slate-900 focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">New Password</label>
+          <div class="relative group">
+            <input type="password" id="reset_new_password" required minlength="8" placeholder="••••••••••••"
+              class="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-4 pr-11 text-xs font-semibold text-slate-900 focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 transition-all">
+            <button type="button" onclick="toggleModalPasswordVisibility('reset_new_password', 'eyeOpenNew', 'eyeClosedNew')"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer focus:outline-none"
+              aria-label="Toggle password visibility">
+              <svg id="eyeOpenNew" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <svg id="eyeClosedNew" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Confirm New Password</label>
+          <div class="relative group">
+            <input type="password" id="reset_conf_password" required minlength="8" placeholder="••••••••••••"
+              class="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-4 pr-11 text-xs font-semibold text-slate-900 focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 transition-all">
+            <button type="button" onclick="toggleModalPasswordVisibility('reset_conf_password', 'eyeOpenConf', 'eyeClosedConf')"
+              class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer focus:outline-none"
+              aria-label="Toggle password visibility">
+              <svg id="eyeOpenConf" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <svg id="eyeClosedConf" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2">
+          <button type="button" onclick="showStep1()" class="w-1/3 py-3 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">
+            Back
+          </button>
+          <button type="submit" id="btnVerifySubmit" class="w-2/3 py-3 px-4 rounded-xl bg-brand-deep hover:bg-slate-900 text-white text-xs font-bold tracking-wider uppercase transition-all shadow-md shadow-brand-deep/20 cursor-pointer flex items-center justify-center gap-2">
+            <span id="verifyBtnText">Verify &amp; Update</span>
+            <svg id="verifySpinner" class="animate-spin h-3.5 w-3.5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const overlay = document.getElementById('pageLoaderOverlay');
@@ -294,6 +400,24 @@
       }
     }
 
+    function toggleModalPasswordVisibility(fieldId, openIconId, closedIconId) {
+      const field = document.getElementById(fieldId);
+      const eyeOpen = document.getElementById(openIconId);
+      const eyeClosed = document.getElementById(closedIconId);
+
+      if (!field || !eyeOpen || !eyeClosed) return;
+
+      if (field.type === 'password') {
+        field.type = 'text';
+        eyeOpen.classList.add('hidden');
+        eyeClosed.classList.remove('hidden');
+      } else {
+        field.type = 'password';
+        eyeOpen.classList.remove('hidden');
+        eyeClosed.classList.add('hidden');
+      }
+    }
+
     function handleFormSubmit() {
       const btn = document.getElementById('submitBtn');
       const btnText = document.getElementById('btnText');
@@ -308,6 +432,141 @@
 
       btn.disabled = true;
       btn.classList.add('opacity-80', 'cursor-not-allowed');
+    }
+
+    function openResetModal() {
+      const modal = document.getElementById('resetPasswordModal');
+      if (modal) modal.classList.remove('hidden');
+      showStep1();
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('resetPasswordModal');
+      if (modal) modal.classList.add('hidden');
+      hideModalAlert();
+    }
+
+    function showStep1() {
+      document.getElementById('stepRequestCode').classList.remove('hidden');
+      document.getElementById('stepVerifyCode').classList.add('hidden');
+      hideModalAlert();
+    }
+
+    function showStep2() {
+      document.getElementById('stepRequestCode').classList.add('hidden');
+      document.getElementById('stepVerifyCode').classList.remove('hidden');
+      hideModalAlert();
+      setTimeout(() => document.getElementById('reset_otp_code').focus(), 100);
+    }
+
+    function showModalAlert(msg, type = 'error') {
+      const el = document.getElementById('modalAlert');
+      el.classList.remove('hidden', 'bg-rose-50', 'text-rose-800', 'border', 'border-rose-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+      if (type === 'error') {
+        el.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+      } else {
+        el.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+      }
+      el.innerText = msg;
+    }
+
+    function hideModalAlert() {
+      const el = document.getElementById('modalAlert');
+      el.classList.add('hidden');
+      el.innerText = '';
+    }
+
+    function handleSendCode() {
+      const btn = document.getElementById('btnSendCode');
+      const text = document.getElementById('sendCodeText');
+      const spinner = document.getElementById('sendCodeSpinner');
+
+      btn.disabled = true;
+      text.innerText = 'Sending...';
+      spinner.classList.remove('hidden');
+      hideModalAlert();
+
+      fetch('{{ route("admin.password.code.send") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({})
+      })
+      .then(res => res.json())
+      .then(data => {
+        btn.disabled = false;
+        text.innerText = 'Send 6-Digit Code';
+        spinner.classList.add('hidden');
+
+        if (data.status === 'success') {
+          showStep2();
+        } else {
+          showModalAlert(data.message || 'Failed to send verification code. Please try again.');
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        text.innerText = 'Send 6-Digit Code';
+        spinner.classList.add('hidden');
+        showModalAlert('Server connection error. Please try again.');
+      });
+    }
+
+    function handleVerifyAndReset(e) {
+      e.preventDefault();
+
+      const code = document.getElementById('reset_otp_code').value.trim();
+      const password = document.getElementById('reset_new_password').value;
+      const conf = document.getElementById('reset_conf_password').value;
+
+      if (password !== conf) {
+        showModalAlert('Password confirmation does not match.');
+        return;
+      }
+
+      const btn = document.getElementById('btnVerifySubmit');
+      const text = document.getElementById('verifyBtnText');
+      const spinner = document.getElementById('verifySpinner');
+
+      btn.disabled = true;
+      text.innerText = 'Verifying...';
+      spinner.classList.remove('hidden');
+      hideModalAlert();
+
+      fetch('{{ route("admin.password.code.verify") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          code: code,
+          password: password,
+          password_confirmation: conf
+        })
+      })
+      .then(res => res.json().then(d => ({ status: res.status, body: d })))
+      .then(resObj => {
+        btn.disabled = false;
+        text.innerText = 'Verify & Update';
+        spinner.classList.add('hidden');
+
+        if (resObj.status === 200 && resObj.body.status === 'success') {
+          window.location.href = resObj.body.redirect || '{{ route("admin.login") }}';
+        } else {
+          showModalAlert(resObj.body.message || 'Invalid passcode or password does not meet requirements.');
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        text.innerText = 'Verify & Update';
+        spinner.classList.add('hidden');
+        showModalAlert('Server connection error. Please try again.');
+      });
     }
   </script>
 

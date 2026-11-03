@@ -1,9 +1,10 @@
 @php
     $rawProducts = $products ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC");
-    $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY'));
+    $secretKey = $secret ?? config('admin.secret_key') ?? env('ADMIN_SECRET_KEY') ?? 'default_secret_key';
     $secretPrefix = 'admin/' . $secretKey;
 
     $categories = [
+        'Skin Lab',
         'Weight Management',
         'Skincare Peptides',
         'Skincare Collection',
@@ -225,15 +226,20 @@
     @endforelse
   </div>
 
-  <div id="paginationWrapper" class="pt-4 border-t border-slate-200/60 flex flex-col items-center justify-center gap-3">
-    <nav aria-label="Pagination" class="inline-flex items-center gap-1 sm:gap-1.5 p-1.5 sm:px-2.5 sm:py-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xs" id="paginationNav">
-    </nav>
-    <div class="text-xs font-semibold text-slate-400" id="paginationResultText">
-      Showing 0 &ndash; 0 of 0 products
+  {{-- Reka Bentuk Paginasi Bulat (Audit Logs Style) --}}
+  <div id="paginationWrapper" class="pt-4 border-t border-slate-200/60">
+    <div class="flex items-center justify-between bg-white rounded-full px-5 sm:px-7 py-3 border border-slate-200 shadow-2xs">
+      <div class="flex items-center gap-3 sm:gap-6" id="paginationControls">
+      </div>
+
+      <div class="text-xs font-medium text-slate-500 whitespace-nowrap hidden md:block" id="paginationResultText">
+        Showing 0 of 0 results
+      </div>
     </div>
   </div>
 </div>
 
+{{-- Modal Create Product --}}
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -397,7 +403,7 @@
         </div>
         
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" id="create_images_input" name="images[]" multiple accept="image/*"
+          <input type="file" id="create_images_input" name="images[]" multiple accept="image/jpeg,image/png,image/webp"
             onchange="handleNewUploadFiles(event, 'createImagesPreviewGrid', 'create')"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           
@@ -405,7 +411,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             <span>Click or drag files to upload &amp; build slider</span>
           </div>
-          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">PNG, JPG, or WEBP up to 3MB each</span>
+          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">WEBP, PNG, or JPG up to 5MB (SVG is strictly prohibited)</span>
         </div>
 
         <div id="createImagesPreviewGrid" class="flex flex-wrap gap-2.5 mt-3 empty:hidden p-2 rounded-2xl bg-slate-50 border border-slate-200/80"></div>
@@ -421,6 +427,7 @@
   </div>
 </div>
 
+{{-- Modal Edit Product --}}
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -591,7 +598,7 @@
       <div>
         <label class="block text-xs font-bold text-slate-700 mb-1.5">Add More Visual Asset(s)</label>
         <div class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" id="edit_images_input" name="images[]" multiple accept="image/*"
+          <input type="file" id="edit_images_input" name="images[]" multiple accept="image/jpeg,image/png,image/webp"
             onchange="handleEditAdditionalUpload(event)"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           
@@ -599,7 +606,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             <span>Click or drag files to add to catalog slider</span>
           </div>
-          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">Newly added pictures appear right next to existing ones</span>
+          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">WEBP, PNG, or JPG up to 5MB (SVG is strictly prohibited)</span>
         </div>
       </div>
 
@@ -849,65 +856,83 @@
     if (resultTextEl) {
       const fromItem = startIndex + 1;
       const toItem = Math.min(endIndex, totalItems);
-      resultTextEl.innerHTML = `Showing <span class="font-bold text-slate-700">${fromItem}&ndash;${toItem}</span> of <span class="font-bold text-slate-700">${totalItems}</span> products`;
+      resultTextEl.innerHTML = `Showing ${toItem} of ${totalItems} results`;
     }
 
     renderPaginationButtons(totalPages);
   }
 
   function renderPaginationButtons(totalPages) {
-    const nav = document.getElementById('paginationNav');
-    if (!nav) return;
+    const controls = document.getElementById('paginationControls');
+    if (!controls) return;
 
     let html = '';
 
-    const baseItem = "min-w-[36px] h-9 px-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center select-none transition-all duration-150";
-    const activeBtn = `${baseItem} bg-brand text-white font-bold shadow-xs pointer-events-none`;
-    const inactiveBtn = `${baseItem} bg-transparent text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-semibold cursor-pointer`;
-    const ellipsisSpan = `min-w-[32px] h-9 px-1 flex items-center justify-center text-slate-400 font-bold text-xs sm:text-sm select-none`;
-    const arrowEnabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer`;
-    const arrowDisabled = `w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 cursor-not-allowed pointer-events-none`;
-
+    // Butang Previous
     if (currentPage > 1) {
-      html += `<button type="button" onclick="goToPage(${currentPage - 1})" class="${arrowEnabled}" aria-label="Previous page">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-        </svg>
-      </button>`;
+      html += `
+        <button type="button" onclick="goToPage(${currentPage - 1})" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer select-none">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          <span>Previous</span>
+        </button>
+      `;
     } else {
-      html += `<button type="button" disabled class="${arrowDisabled}" aria-label="Previous page">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-        </svg>
-      </button>`;
+      html += `
+        <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 cursor-not-allowed select-none">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          <span>Previous</span>
+        </span>
+      `;
     }
 
+    // Nombor Muka Surat (Bulat mengikut reka bentuk Audit Logs)
+    html += `<div class="flex items-center gap-1 sm:gap-2">`;
     const pages = getPaginationPageList(currentPage, totalPages);
     pages.forEach(p => {
       if (p === '...') {
-        html += `<span class="${ellipsisSpan}">&hellip;</span>`;
+        html += `<span class="w-7 h-7 flex items-center justify-center text-xs font-bold text-slate-400 select-none">...</span>`;
       } else if (p === currentPage) {
-        html += `<button type="button" aria-current="page" class="${activeBtn}">${p}</button>`;
+        html += `
+          <span class="w-8 h-8 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center ring-4 ring-brand/20 shadow-xs select-none">
+            ${p}
+          </span>
+        `;
       } else {
-        html += `<button type="button" onclick="goToPage(${p})" class="${inactiveBtn}">${p}</button>`;
+        html += `
+          <button type="button" onclick="goToPage(${p})" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer">
+            ${p}
+          </button>
+        `;
       }
     });
+    html += `</div>`;
 
+    // Butang Next
     if (currentPage < totalPages) {
-      html += `<button type="button" onclick="goToPage(${currentPage + 1})" class="${arrowEnabled}" aria-label="Next page">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>`;
+      html += `
+        <button type="button" onclick="goToPage(${currentPage + 1})" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer select-none">
+          <span>Next</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      `;
     } else {
-      html += `<button type="button" disabled class="${arrowDisabled}" aria-label="Next page">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>`;
+      html += `
+        <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 cursor-not-allowed select-none">
+          <span>Next</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </span>
+      `;
     }
 
-    nav.innerHTML = html;
+    controls.innerHTML = html;
   }
 
   function getPaginationPageList(current, total) {
@@ -1020,7 +1045,17 @@
     const files = Array.from(event.target.files);
     if (!files || files.length === 0) return;
 
-    createUploadFiles = createUploadFiles.concat(files);
+    // Sekatan peringkat klien: Singkirkan fail SVG
+    const validFiles = files.filter(f => {
+      const isSvg = f.name.toLowerCase().endsWith('.svg') || f.type.toLowerCase().includes('svg');
+      if (isSvg) {
+        alert(`File "${f.name}" was blocked. SVG formats are not permitted for security.`);
+        return false;
+      }
+      return true;
+    });
+
+    createUploadFiles = createUploadFiles.concat(validFiles);
     renderCreateUploadPreview();
   }
 
@@ -1140,6 +1175,11 @@
     if (!files || files.length === 0) return;
 
     files.forEach(f => {
+      const isSvg = f.name.toLowerCase().endsWith('.svg') || f.type.toLowerCase().includes('svg');
+      if (isSvg) {
+        alert(`File "${f.name}" was blocked. SVG formats are not permitted for security.`);
+        return;
+      }
       editCombinedItems.push({
         type: 'new',
         file: f,

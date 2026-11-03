@@ -12,7 +12,7 @@
   --primary: #2F6F9F;
   --primary-hover: #266391;
   --primary-light: #3F84B5;
-  --header-bg: rgba(255, 255, 255, 0.98);
+  --header-bg: #ffffff;
   --drawer-bg: #ffffff;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
   --shadow-md: 0 12px 32px rgba(14, 40, 66, 0.07);
@@ -32,7 +32,7 @@
   --primary: #327BB3;
   --primary-hover: #286391;
   --primary-light: #5CA5DA;
-  --header-bg: rgba(10, 17, 26, 0.97);
+  --header-bg: #0A111A;
   --drawer-bg: #132232;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4);
@@ -96,8 +96,6 @@ header {
   background-color: var(--header-bg);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   margin: 0;
   transition: background-color 0.2s, border-color 0.2s;
 }
@@ -106,7 +104,6 @@ header {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
-  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -116,6 +113,7 @@ header {
 
 @media (min-width: 1081px) {
   .bar {
+    position: static;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     height: 78px;
@@ -125,10 +123,11 @@ header {
 
 .dnav {
   display: none;
-  align-items: center;
+  align-items: stretch;
   gap: 24px;
   font-size: 13px;
   font-weight: 500;
+  height: 100%;
 }
 
 @media (min-width: 1081px) {
@@ -137,16 +136,43 @@ header {
   }
 }
 
-.dnav a,
-.dd-trigger {
-  padding: 6px 0;
+.dnav > a {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 2px;
   border-bottom: 2px solid transparent;
   transition: color 0.2s, border-color 0.2s;
   cursor: pointer;
   color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.dnav > a:hover,
+.dnav > a.active {
+  border-bottom-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.dd {
+  position: static;
+  height: 100%;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.dd-trigger {
+  height: 100%;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  padding: 0 2px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  cursor: pointer;
+  color: var(--text);
   font-size: 13px;
   font-weight: 500;
   background: none;
@@ -155,27 +181,21 @@ header {
   border-right: none;
 }
 
-.dnav a:hover,
-.dd-trigger:hover,
-.dnav a.active,
-.dd-trigger.active {
-  border-color: var(--primary-light);
-  color: var(--primary);
-}
-
-.dd {
-  position: relative;
-}
-
 .dd-trigger svg {
   width: 12px;
   height: 12px;
   stroke: currentColor;
   fill: none;
-  stroke-width: 2.4;
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: transform 0.2s;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dd:hover .dd-trigger,
+.dd.open .dd-trigger {
+  color: var(--primary);
+  border-bottom-color: var(--primary-light);
 }
 
 .dd:hover .dd-trigger svg,
@@ -183,48 +203,94 @@ header {
   transform: rotate(180deg);
 }
 
+/* Sub-Bar Dropdown Horizontal Penuh */
 .dd-menu {
   display: none;
   position: absolute;
   top: 100%;
   left: 0;
-  padding-top: 12px;
-  z-index: 120;
+  right: 0;
+  width: 100%;
+  z-index: 99;
+  background-color: var(--header-bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 14px 28px -8px rgba(14, 40, 66, 0.08);
+}
+
+[data-theme="dark"] .dd-menu {
+  background-color: var(--header-bg);
+  box-shadow: 0 16px 30px -8px rgba(0, 0, 0, 0.5);
+}
+
+/* Jambatan halimunan: sambung rapat antara header & bar supaya mouse tidak terputus */
+.dd-menu::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: transparent;
 }
 
 .dd:hover .dd-menu,
-.dd:focus-within .dd-menu,
+.dd-menu:hover,
 .dd.open .dd-menu {
   display: block;
 }
 
-.dd-box {
-  min-width: 260px;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 6px;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+.dd-strip-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 52px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
 }
 
-.dd-box a {
-  display: block;
-  padding: 11px 14px;
-  border-radius: 10px;
-  font-size: 12px;
+.dd-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Butang Menu Teks Bersih Dengan Ruang Selesa */
+.dd-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none !important;
+  background: transparent !important;
+  border: none !important;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.dd-link:hover {
+  color: var(--primary) !important;
+  background-color: var(--bg-alt) !important;
+}
+
+.dd-link.active {
+  color: var(--primary) !important;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--text);
-  transition: background-color 0.15s, color 0.15s;
+  background-color: var(--bg-alt) !important;
 }
 
-.dd-box a:hover,
-.dd-box a.active {
-  background-color: var(--bg-alt);
-  color: var(--primary);
+/* Garisan Pemisah (Divider) Kemas */
+.dd-sep {
+  display: inline-block;
+  width: 1px;
+  height: 16px;
+  background-color: var(--border);
+  margin: 0 4px;
+  opacity: 0.8;
+  flex-shrink: 0;
 }
 
 .logo {
@@ -430,8 +496,6 @@ header {
   left: 0;
   right: 0;
   background-color: var(--header-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   flex-direction: column;
   padding: 12px 24px 24px;
   border-bottom: 1px solid var(--border);

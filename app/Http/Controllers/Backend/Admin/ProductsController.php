@@ -6,7 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class ProductsController extends Controller
 {
@@ -22,6 +26,139 @@ class ProductsController extends Controller
         ]);
     }
 
+    private function recordAuditLog(Request $request, string $event, array $payload = []): void
+    {
+        if (!Schema::hasTable('audit_logs')) {
+            return;
+        }
+
+        try {
+            DB::statement("ALTER TABLE `audit_logs` MODIFY COLUMN `event` VARCHAR(100) NOT NULL");
+        } catch (\Throwable $e) {
+        }
+
+        $columns = Schema::getColumnListing('audit_logs');
+        $userId = auth()->id() ?? DB::table('users')->orderBy('id', 'asc')->value('id') ?? 1;
+        $nowKl = Carbon::now('Asia/Kuala_Lumpur')->format('Y-m-d H:i:s');
+
+        $logData = [];
+
+        if (in_array('user_id', $columns, true)) {
+            $logData['user_id'] = $userId;
+        }
+        if (in_array('event', $columns, true)) {
+            $logData['event'] = $event;
+        }
+        if (in_array('ip_address', $columns, true)) {
+            $logData['ip_address'] = $request->ip() ?? '127.0.0.1';
+        }
+        if (in_array('user_agent', $columns, true)) {
+            $logData['user_agent'] = substr((string) $request->userAgent(), 0, 255);
+        }
+        if (in_array('payload', $columns, true)) {
+            $logData['payload'] = json_encode($payload);
+        }
+        if (in_array('created_at', $columns, true)) {
+            $logData['created_at'] = $nowKl;
+        }
+        if (in_array('updated_at', $columns, true)) {
+            $logData['updated_at'] = $nowKl;
+        }
+
+        DB::table('audit_logs')->insert($logData);
+    }
+
+    private function validateImageSecurity($file): void
+    {
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        $allowedExts  = ['jpg', 'jpeg', 'png', 'webp'];
+
+        $realMime   = $file->getMimeType();
+        $clientExt  = strtolower($file->getClientOriginalExtension());
+        $guessedExt = strtolower($file->guessExtension() ?? '');
+
+        if (
+            $clientExt === 'svg' ||
+            str_contains(strtolower($realMime), 'svg') ||
+            str_contains(strtolower($realMime), 'xml') ||
+            !in_array($realMime, $allowedMimes, true) ||
+            !in_array($clientExt, $allowedExts, true) ||
+            !in_array($guessedExt, $allowedExts, true)
+        ) {
+            throw ValidationException::withMessages([
+                'images' => 'Format imej tidak sah. Hanya JPG, JPEG, PNG, dan WEBP dibenarkan (SVG disekat).',
+            ]);
+        }
+    }
+
+    private function processImageToWebp($file, $destinationDir, $maxDimension = 1200, $quality = 80): string
+    {
+        $filename = 'prod_' . time() . '_' . Str::random(16) . '.webp';
+        $targetPath = $destinationDir . DIRECTORY_SEPARATOR . $filename;
+        $sourcePath = $file->getRealPath();
+
+        $imageInfo = @getimagesize($sourcePath);
+        if (!$imageInfo) {
+            $fallbackExt = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
+            $fallbackName = 'prod_' . time() . '_' . Str::random(16) . '.' . $fallbackExt;
+            $file->move($destinationDir, $fallbackName);
+            return 'uploads/products/' . $fallbackName;
+        }
+
+        $mime = $imageInfo['mime'];
+        $srcImage = match ($mime) {
+            'image/jpeg', 'image/jpg' => @imagecreatefromjpeg($sourcePath),
+            'image/png'               => @imagecreatefrompng($sourcePath),
+            'image/webp'              => @imagecreatefromwebp($sourcePath),
+            default                   => null,
+        };
+
+        if (!$srcImage) {
+            $fallbackExt = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
+            $fallbackName = 'prod_' . time() . '_' . Str::random(16) . '.' . $fallbackExt;
+            $file->move($destinationDir, $fallbackName);
+            return 'uploads/products/' . $fallbackName;
+        }
+
+        $origWidth = imagesx($srcImage);
+        $origHeight = imagesy($srcImage);
+
+        if ($origWidth > $maxDimension || $origHeight > $maxDimension) {
+            if ($origWidth >= $origHeight) {
+                $newWidth = $maxDimension;
+                $newHeight = (int) round(($origHeight / $origWidth) * $maxDimension);
+            } else {
+                $newHeight = $maxDimension;
+                $newWidth = (int) round(($origWidth / $origHeight) * $maxDimension);
+            }
+        } else {
+            $newWidth = $origWidth;
+            $newHeight = $origHeight;
+        }
+
+        $targetImage = imagecreatetruecolor($newWidth, $newHeight);
+
+        imagealphablending($targetImage, false);
+        imagesavealpha($targetImage, true);
+        $transparentColor = imagecolorallocatealpha($targetImage, 0, 0, 0, 127);
+        imagefill($targetImage, 0, 0, $transparentColor);
+
+        imagecopyresampled(
+            $targetImage,
+            $srcImage,
+            0, 0, 0, 0,
+            $newWidth, $newHeight,
+            $origWidth, $origHeight
+        );
+
+        imagewebp($targetImage, $targetPath, $quality);
+
+        imagedestroy($srcImage);
+        imagedestroy($targetImage);
+
+        return 'uploads/products/' . $filename;
+    }
+
     private function extractNumericPrice($priceString, $explicitVal = null)
     {
         if ($explicitVal !== null && $explicitVal !== '' && is_numeric($explicitVal) && (float)$explicitVal > 0) {
@@ -33,7 +170,7 @@ class ProductsController extends Controller
         return 0.00;
     }
 
-    private function processVariants(Request $request)
+    private function processVariants(Request $request): array
     {
         $hasVariants = $request->boolean('has_variants') ? 1 : 0;
         if (!$hasVariants) {
@@ -77,7 +214,7 @@ class ProductsController extends Controller
         return [1, $variantTitle, json_encode($variantsArray)];
     }
 
-    private function processSizes(Request $request, $variantsJson)
+    private function processSizes(Request $request, $variantsJson): ?string
     {
         $extractedSizes = [];
         if ($variantsJson) {
@@ -113,11 +250,11 @@ class ProductsController extends Controller
             'stock'          => 'nullable|integer|min:0',
             'badge_category' => 'nullable|string|max:100',
             'category'       => 'nullable|string|max:100',
-            'page_type'      => 'nullable|in:products,accessory,premium,performance',
+            'page_type'      => 'nullable|in:products,skin,accessory,premium,performance',
             'keywords'       => 'nullable|string',
             'description'    => 'nullable|string',
             'images'         => 'nullable|array',
-            'images.*'       => 'image|mimes:jpeg,png,webp,jpg|max:3072',
+            'images.*'       => 'file|max:12288|mimes:jpeg,png,webp,jpg|mimetypes:image/jpeg,image/png,image/webp',
         ]);
 
         $slug = Str::slug($validated['title']);
@@ -130,16 +267,17 @@ class ProductsController extends Controller
         }
 
         $destination = public_path('uploads/products');
-        if (!file_exists($destination)) {
-            mkdir($destination, 0777, true);
+        if (!File::isDirectory($destination)) {
+            File::makeDirectory($destination, 0755, true, true);
         }
 
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                $file->move($destination, $filename);
-                $imagePaths[] = 'uploads/products/' . $filename;
+                if ($file->isValid()) {
+                    $this->validateImageSecurity($file);
+                    $imagePaths[] = $this->processImageToWebp($file, $destination);
+                }
             }
         }
 
@@ -157,34 +295,39 @@ class ProductsController extends Controller
             }
         }
 
-        DB::insert(
-            "INSERT INTO products (
-                title, subtitle, slug, price, price_val, dosage_spec, stock, 
-                badge_category, category, page_type, keywords, description, 
-                has_variants, variant_title, variants, sizes, image, created_at, updated_at
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())",
-            [
-                $validated['title'],
-                $validated['subtitle'] ?? null,
-                $slug,
-                $validated['price'],
-                $priceVal,
-                $validated['dosage_spec'] ?? null,
-                $totalStock,
-                $validated['badge_category'] ?? null,
-                $validated['category'] ?? 'Weight Management',
-                $validated['page_type'] ?? 'products',
-                $validated['keywords'] ?? strtolower($validated['title']),
-                $validated['description'] ?? null,
-                $hasVariants,
-                $variantTitle,
-                $variantsJson,
-                $sizesJson,
-                $finalImageJson,
-            ]
-        );
+        $nowKl = Carbon::now('Asia/Kuala_Lumpur')->format('Y-m-d H:i:s');
+
+        $productId = DB::table('products')->insertGetId([
+            'title'          => $validated['title'],
+            'subtitle'       => $validated['subtitle'] ?? null,
+            'slug'           => $slug,
+            'price'          => $validated['price'],
+            'price_val'      => $priceVal,
+            'dosage_spec'    => $validated['dosage_spec'] ?? null,
+            'stock'          => $totalStock,
+            'badge_category' => $validated['badge_category'] ?? null,
+            'category'       => $validated['category'] ?? 'Weight Management',
+            'page_type'      => $validated['page_type'] ?? 'products',
+            'keywords'       => $validated['keywords'] ?? strtolower($validated['title']),
+            'description'    => $validated['description'] ?? null,
+            'has_variants'   => $hasVariants,
+            'variant_title'  => $variantTitle,
+            'variants'       => $variantsJson,
+            'sizes'          => $sizesJson,
+            'image'          => $finalImageJson,
+            'created_at'     => $nowKl,
+            'updated_at'     => $nowKl,
+        ]);
 
         Cache::forget('frontend_products_list');
+
+        $this->recordAuditLog($request, 'product_created', [
+            'product_id' => $productId,
+            'title'      => $validated['title'],
+            'category'   => $validated['category'] ?? 'Weight Management',
+            'price'      => $validated['price'],
+            'stock'      => $totalStock,
+        ]);
 
         return back()->with('success', 'Product formulation successfully published.');
     }
@@ -192,21 +335,21 @@ class ProductsController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'title'          => 'required|string|max:255',
-            'subtitle'       => 'nullable|string|max:255',
-            'price'          => 'required|string|max:100',
-            'price_val'      => 'nullable|numeric',
-            'dosage_spec'    => 'nullable|string|max:100',
-            'stock'          => 'nullable|integer|min:0',
-            'badge_category' => 'nullable|string|max:100',
-            'category'       => 'nullable|string|max:100',
-            'page_type'      => 'nullable|in:products,accessory,premium,performance',
-            'keywords'       => 'nullable|string',
-            'description'    => 'nullable|string',
-            'images'         => 'nullable|array',
-            'images.*'       => 'image|mimes:jpeg,png,webp,jpg|max:3072',
-            'image_mode'     => 'nullable|in:replace,append',
-            'retained_images'=> 'nullable|array',
+            'title'             => 'required|string|max:255',
+            'subtitle'          => 'nullable|string|max:255',
+            'price'             => 'required|string|max:100',
+            'price_val'         => 'nullable|numeric',
+            'dosage_spec'       => 'nullable|string|max:100',
+            'stock'             => 'nullable|integer|min:0',
+            'badge_category'    => 'nullable|string|max:100',
+            'category'          => 'nullable|string|max:100',
+            'page_type'         => 'nullable|in:products,skin,accessory,premium,performance',
+            'keywords'          => 'nullable|string',
+            'description'       => 'nullable|string',
+            'images'            => 'nullable|array',
+            'images.*'          => 'file|max:12288|mimes:jpeg,png,webp,jpg|mimetypes:image/jpeg,image/png,image/webp',
+            'image_mode'        => 'nullable|in:replace,append',
+            'retained_images'   => 'nullable|array',
             'retained_images.*' => 'string',
         ]);
 
@@ -217,15 +360,15 @@ class ProductsController extends Controller
         $product = $current[0];
 
         $destination = public_path('uploads/products');
-        if (!file_exists($destination)) {
-            mkdir($destination, 0777, true);
+        if (!File::isDirectory($destination)) {
+            File::makeDirectory($destination, 0755, true, true);
         }
 
         $existingImages = [];
         if (!empty($product->image)) {
             $decoded = json_decode($product->image, true);
-            $existingImages = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) 
-                ? $decoded 
+            $existingImages = (json_last_error() === JSON_ERROR_NONE && is_array($decoded))
+                ? $decoded
                 : [$product->image];
         }
 
@@ -239,8 +382,9 @@ class ProductsController extends Controller
             $retainedMap = array_flip($retained);
             foreach ($existingImages as $oldFile) {
                 if (!isset($retainedMap[$oldFile])) {
-                    if ($oldFile && file_exists(public_path($oldFile)) && str_starts_with($oldFile, 'uploads/')) {
-                        @unlink(public_path($oldFile));
+                    $fullPath = public_path(ltrim($oldFile, '/'));
+                    if (File::exists($fullPath) && !str_contains($fullPath, 'assets/website/')) {
+                        File::delete($fullPath);
                     }
                 }
             }
@@ -249,9 +393,10 @@ class ProductsController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-                $file->move($destination, $filename);
-                $finalImageList[] = 'uploads/products/' . $filename;
+                if ($file->isValid()) {
+                    $this->validateImageSecurity($file);
+                    $finalImageList[] = $this->processImageToWebp($file, $destination);
+                }
             }
         }
 
@@ -269,11 +414,13 @@ class ProductsController extends Controller
             }
         }
 
+        $nowKl = Carbon::now('Asia/Kuala_Lumpur')->format('Y-m-d H:i:s');
+
         DB::update(
             "UPDATE products 
              SET title = ?, subtitle = ?, price = ?, price_val = ?, dosage_spec = ?, stock = ?, 
                  badge_category = ?, category = ?, page_type = ?, keywords = ?, description = ?, 
-                 has_variants = ?, variant_title = ?, variants = ?, sizes = ?, image = ?, updated_at = NOW() 
+                 has_variants = ?, variant_title = ?, variants = ?, sizes = ?, image = ?, updated_at = ? 
              WHERE id = ?",
             [
                 $validated['title'],
@@ -292,29 +439,41 @@ class ProductsController extends Controller
                 $variantsJson,
                 $sizesJson,
                 $imagePathJson,
+                $nowKl,
                 $id,
             ]
         );
 
         Cache::forget('frontend_products_list');
 
+        $this->recordAuditLog($request, 'product_updated', [
+            'product_id' => $id,
+            'title'      => $validated['title'],
+            'category'   => $validated['category'] ?? 'Weight Management',
+            'price'      => $validated['price'],
+            'stock'      => $totalStock,
+        ]);
+
         return back()->with('success', 'Product formulation successfully updated.');
     }
 
     public function destroy($id)
     {
-        $product = DB::select("SELECT image FROM products WHERE id = ? LIMIT 1", [$id]);
+        $product = DB::select("SELECT id, title, image FROM products WHERE id = ? LIMIT 1", [$id]);
 
         if (!empty($product)) {
-            if (!empty($product[0]->image)) {
-                $decoded = json_decode($product[0]->image, true);
-                $files = (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) 
-                    ? $decoded 
-                    : [$product[0]->image];
+            $productRecord = $product[0];
+
+            if (!empty($productRecord->image)) {
+                $decoded = json_decode($productRecord->image, true);
+                $files = (json_last_error() === JSON_ERROR_NONE && is_array($decoded))
+                    ? $decoded
+                    : [$productRecord->image];
 
                 foreach ($files as $filePath) {
-                    if ($filePath && file_exists(public_path($filePath)) && str_starts_with($filePath, 'uploads/')) {
-                        @unlink(public_path($filePath));
+                    $fullPath = public_path(ltrim($filePath, '/'));
+                    if (File::exists($fullPath) && !str_contains($fullPath, 'assets/website/')) {
+                        File::delete($fullPath);
                     }
                 }
             }
@@ -322,6 +481,11 @@ class ProductsController extends Controller
             DB::delete("DELETE FROM products WHERE id = ?", [$id]);
 
             Cache::forget('frontend_products_list');
+
+            $this->recordAuditLog(request(), 'product_deleted', [
+                'product_id' => $id,
+                'title'      => $productRecord->title ?? 'Formulation Item',
+            ]);
 
             return back()->with('success', 'Product successfully removed from database.');
         }

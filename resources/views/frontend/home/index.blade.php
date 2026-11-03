@@ -67,26 +67,43 @@
       <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a>
 
       <div class="dd" id="ddCatalog">
-        <button type="button" class="dd-trigger {{ $isCatalogActive ? 'active' : '' }}" onclick="toggleDD(event,'ddCatalog')" aria-haspopup="true">
+        <button type="button" class="dd-trigger {{ $isCatalogActive ? 'active' : '' }}" aria-haspopup="true">
           Catalog <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
         <div class="dd-menu">
-          <div class="dd-box">
-            <a href="{{ route('products.index') }}">Products</a>
-            <a href="{{ route('accessory') }}">Accessory</a>
+          <div class="dd-strip-wrap">
+            <div class="dd-links">
+              <a href="{{ route('products.index') }}" class="dd-link {{ request()->routeIs('products.index') ? 'active' : '' }}">
+                Products Catalog
+              </a>
+              <span class="dd-sep"></span>
+              <a href="{{ route('accessory') }}" class="dd-link {{ request()->routeIs('accessory') ? 'active' : '' }}">
+                Accessory &amp; Kits
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="dd" id="ddStore">
-        <button type="button" class="dd-trigger {{ $isStoreActive ? 'active' : '' }}" onclick="toggleDD(event,'ddStore')" aria-haspopup="true">
+        <button type="button" class="dd-trigger {{ $isStoreActive ? 'active' : '' }}" aria-haspopup="true">
           Novex Store <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
         <div class="dd-menu">
-          <div class="dd-box">
-            <a href="{{ url('/performance') }}" class="{{ request()->is('performance*') || $fromOrigin === 'performance' ? 'active' : '' }}">Novex Performance Division</a>
-            <a href="{{ url('/premium') }}" class="{{ request()->is('premium*') || $fromOrigin === 'premium' ? 'active' : '' }}">Novex Premium Supplements</a>
-            <a href="{{ url('/skin') }}" class="{{ request()->is('skin*') || $fromOrigin === 'skin' ? 'active' : '' }}">Novex Skin Lab</a>
+          <div class="dd-strip-wrap">
+            <div class="dd-links">
+              <a href="{{ url('/performance') }}" class="dd-link {{ request()->is('performance*') || $fromOrigin === 'performance' ? 'active' : '' }}">
+                Performance Division
+              </a>
+              <span class="dd-sep"></span>
+              <a href="{{ url('/premium') }}" class="dd-link {{ request()->is('premium*') || $fromOrigin === 'premium' ? 'active' : '' }}">
+                Premium Supplements
+              </a>
+              <span class="dd-sep"></span>
+              <a href="{{ url('/skin') }}" class="dd-link {{ request()->is('skin*') || $fromOrigin === 'skin' ? 'active' : '' }}">
+                Skin Lab
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -173,7 +190,7 @@
         <img id="heroSlide2" src="{{ asset('assets/website/home/hero2.webp') }}" href="{{ asset('assets/website/home/hero2.webp') }}" alt="Hero Banner 2" onerror="this.src='https://images.unsplash.com/photo-1608068811588-3a67006b7489?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'">
         <div class="wrap">
           <div class="in">
-            <h1>Certified Purity &<br>Rigorous Assay</h1>
+            <h1>Certified Purity &amp;<br>Rigorous Assay</h1>
             <p>Precision micro-pipetting, HPLC chromatographic testing, and batch-level verification.</p>
             <div class="hero-btns">
               <a class="hero-btn-primary" href="{{ route('products.index') }}">Shop Now</a>
@@ -248,14 +265,14 @@
             <img src="{{ asset('assets/website/category/c4.webp') }}" alt="Performance" loading="lazy">
             <div class="cat-info">
               <h3>04 | Performance</h3>
-              <p>Longevity & Power</p>
+              <p>Longevity &amp; Power</p>
             </div>
           </a>
           <a class="cat" href="{{ route('products.index') }}">
             <img src="{{ asset('assets/website/category/c5.webp') }}" alt="Novex Skincare" loading="lazy">
             <div class="cat-info">
               <h3>05 | Novex Skincare</h3>
-              <p>Serums & Cream</p>
+              <p>Serums &amp; Cream</p>
             </div>
           </a>
           <a class="cat" href="{{ route('products.show', 'jersey-01') }}">
@@ -352,8 +369,8 @@
 
               $items = $featuredProducts ?? \Illuminate\Support\Facades\DB::select(
                   "SELECT * FROM products 
-                   WHERE (page_type != 'accessory' OR page_type IS NULL OR page_type = '') 
-                     AND (category NOT IN ('Accessory', 'Injection Kit', 'Syringes') OR category IS NULL) 
+                   WHERE (page_type NOT IN ('skin', 'accessory', 'premium', 'performance') OR page_type IS NULL OR page_type = '') 
+                     AND (category NOT IN ('Skin Lab', 'Accessory', 'Injection Kit', 'Syringes', 'Premium Supplements', 'Supplements', 'Performance Apparel') OR category IS NULL) 
                    ORDER BY id DESC LIMIT 4"
               );
           @endphp

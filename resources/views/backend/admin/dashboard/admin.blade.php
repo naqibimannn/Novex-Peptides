@@ -46,7 +46,6 @@
       0% {
         transform: translateX(-100%);
       }
-
       100% {
         transform: translateX(250%);
       }
@@ -112,6 +111,17 @@
     ];
 
     $selectedHero = $randomHeroes[array_rand($randomHeroes)];
+
+    $resolveResourceImg = function ($path) {
+      if (empty($path)) return asset('assets/website/science/s1.webp');
+      if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
+      $clean = ltrim($path, '/');
+      if (file_exists(public_path($clean))) return asset($clean);
+      if (file_exists(public_path('uploads/resources/' . basename($clean)))) {
+        return asset('uploads/resources/' . basename($clean));
+      }
+      return asset($clean);
+    };
   @endphp
 
   <div id="pageLoaderOverlay"
@@ -201,7 +211,6 @@
       </nav>
     </div>
 
-    <!-- SEKSYEN BAWAH SIDEBAR: LOG KELUAR -->
     <div class="flex flex-col gap-1 pt-4 border-t border-slate-300">
       <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
         @csrf
@@ -218,10 +227,8 @@
     </div>
   </aside>
 
-  <!-- SECTION: MAIN CANVAS CONTAINER -->
   <div class="flex-1 flex flex-col min-w-0 bg-[#EEF2F6] overflow-y-auto relative h-screen transition-all duration-300">
 
-    <!-- TOP HEADER -->
     <header
       class="w-full px-5 sm:px-7 py-4 flex items-center justify-between gap-4 sticky top-0 z-50 bg-[#EEF2F6]/90 backdrop-blur-md border-b border-slate-300">
       <div class="flex items-center gap-3">
@@ -279,7 +286,6 @@
       </div>
     </header>
 
-    <!-- MAIN CONTENT BODY -->
     <main class="px-5 sm:px-7 pt-3 pb-7 flex-1 flex flex-col gap-6">
 
       @if($currentSection === 'dashboard')
@@ -304,15 +310,15 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-1">
           <div class="inline-flex items-center bg-slate-200/60 p-1 rounded-full text-xs font-medium">
             <button type="button" onclick="setSelectMode('overview')" id="tabWeekly"
-              class="period-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs">
+              class="period-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs cursor-pointer">
               Overview
             </button>
             <button type="button" onclick="setSelectMode('daily')" id="tabDaily"
-              class="period-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800">
+              class="period-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
               Daily
             </button>
             <button type="button" onclick="setSelectMode('monthly')" id="tabMonthly"
-              class="period-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800">
+              class="period-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
               Monthly
             </button>
           </div>
@@ -345,15 +351,15 @@
                 class="hidden absolute right-0 top-full mt-2 w-[310px] bg-white border-0 rounded-3xl shadow-2xl p-4 z-50 transition-all">
                 <div class="flex items-center justify-between px-1 mb-4">
                   <div class="flex items-center gap-1 font-bold text-slate-900 text-sm">
-                    <span id="calMonthYearText">October 2026</span>
+                    <span id="calMonthYearText">Date</span>
                   </div>
                   <div class="flex items-center gap-3">
-                    <button type="button" onclick="changeCalYear(-1)" class="text-sky-600 hover:text-sky-700 p-1">
+                    <button type="button" onclick="changeCalYear(-1)" class="text-sky-600 hover:text-sky-700 p-1 cursor-pointer">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                       </svg>
                     </button>
-                    <button type="button" onclick="changeCalYear(1)" class="text-sky-600 hover:text-sky-700 p-1">
+                    <button type="button" onclick="changeCalYear(1)" class="text-sky-600 hover:text-sky-700 p-1 cursor-pointer">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
@@ -361,7 +367,6 @@
                   </div>
                 </div>
 
-                <!-- TAMPILAN BULAN (1-12) / HARI (GRID KALENDAR) -->
                 <div id="calendarHeaderDays" class="grid grid-cols-7 text-center mb-2">
                   <span class="text-xs font-semibold text-slate-400">Sun</span>
                   <span class="text-xs font-semibold text-slate-400">Mon</span>
@@ -383,30 +388,33 @@
         <!-- STATS CARDS -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-          <!-- CARD 1: Published Articles -->
+          <!-- CARD 1: Total Products (Real-time Connect ke Products Admin) -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
             <div>
-              <span class="text-xs font-semibold text-slate-500">Published Articles</span>
-            </div>
-            <div class="flex items-baseline justify-between mt-2">
-              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $articlesCount ?? 0 }}</span>
-            </div>
-          </div>
-
-          <!-- CARD 2: Security Events -->
-          <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
-            <div>
-              <span class="text-xs font-semibold text-slate-500">Security Events</span>
+              <span class="text-xs font-semibold text-slate-500">Total Products</span>
             </div>
             <div class="flex items-baseline justify-between mt-2">
               @php
-                $sqlSecCount = \Illuminate\Support\Facades\Schema::hasTable('audit_logs') ? DB::table('audit_logs')->count() : 0;
+                $realProductsCount = $productsCount ?? (\Illuminate\Support\Facades\Schema::hasTable('products') ? DB::table('products')->count() : 0);
               @endphp
-              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $sqlSecCount }}</span>
+              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ number_format($realProductsCount) }}</span>
             </div>
           </div>
 
-          <!-- CARD 3: Audience Views -->
+          <!-- CARD 2: Security Events (Dinamik mengikut penapis masa) -->
+          <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
+            <div>
+              <span class="text-xs font-semibold text-slate-500" id="cardSecurityLabel">Security Events</span>
+            </div>
+            <div class="flex items-baseline justify-between mt-2">
+              @php
+                $initialSecCount = $securityEventsCount ?? (\Illuminate\Support\Facades\Schema::hasTable('audit_logs') ? DB::table('audit_logs')->count() : 0);
+              @endphp
+              <span id="metricSecurityEvents" class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ number_format($initialSecCount) }}</span>
+            </div>
+          </div>
+
+          <!-- CARD 3: Audience Views (Dinamik mengikut penapis tarikh) -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
             <div>
               <span class="text-xs font-semibold text-slate-500" id="cardAudienceLabel">Audience Views</span>
@@ -420,13 +428,13 @@
             </div>
           </div>
 
-          <!-- CARD 4: Total Pages -->
+          <!-- CARD 4: Total Pages (Ditetapkan kepada 11) -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
             <div>
               <span class="text-xs font-semibold text-slate-500">Total Pages</span>
             </div>
             <div class="flex items-baseline justify-between mt-2">
-              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $pagesCount ?? 6 }}</span>
+              <span class="font-extrabold text-2xl text-slate-900 tracking-tight">{{ $pagesCount ?? 11 }}</span>
             </div>
           </div>
 
@@ -436,6 +444,7 @@
 
           <div class="xl:col-span-8 flex flex-col gap-6 justify-between h-full">
 
+            <!-- Graf Audience Views & Performance -->
             <div class="bg-white border-0 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
               <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div>
@@ -454,6 +463,7 @@
               </div>
             </div>
 
+            <!-- 2 LATEST ARTICLES DARI JADUAL RESOURCES -->
             <div class="bg-white border-0 rounded-2xl p-5 flex flex-col justify-between flex-1 shadow-sm">
               <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
@@ -469,8 +479,8 @@
                   if (isset($recentArticles) && $recentArticles->isNotEmpty()) {
                     $latestTwoPosts = $recentArticles->take(2);
                   } else {
-                    $latestTwoPosts = \Illuminate\Support\Facades\Schema::hasTable('blog_posts')
-                      ? DB::table('blog_posts')->latest('created_at')->take(2)->get()
+                    $latestTwoPosts = \Illuminate\Support\Facades\Schema::hasTable('resources')
+                      ? DB::table('resources')->orderBy('id', 'desc')->take(2)->get()
                       : collect();
                   }
                 @endphp
@@ -478,11 +488,15 @@
                 @if($latestTwoPosts->isNotEmpty())
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     @foreach ($latestTwoPosts as $dp)
-                      <a href="{{ url('/blog/' . $dp->slug) }}" target="_blank"
+                      @php
+                        $articleImg = !empty($dp->image) ? $resolveResourceImg($dp->image) : asset('assets/website/science/s1.webp');
+                        $articleUrl = !empty($dp->slug) ? url('/resources/' . $dp->slug) : url($secretPrefix . '/blogs');
+                      @endphp
+                      <a href="{{ $articleUrl }}" target="_blank"
                         class="flex items-center gap-3 group p-3.5 rounded-xl bg-slate-50/80 hover:bg-brand-tint border-0 transition-all">
                         <div class="w-12 h-12 rounded-lg bg-slate-200 overflow-hidden shrink-0">
-                          <img src="{{ $dp->cover_image ?: asset('assets/admin/logo-cms.png') }}"
-                            onerror="this.src='{{ asset('logo-cms.png') }}'" alt="{{ $dp->title }}"
+                          <img src="{{ $articleImg }}"
+                            onerror="this.src='{{ asset('assets/website/science/s1.webp') }}'" alt="{{ $dp->title }}"
                             class="w-full h-full object-cover">
                         </div>
                         <div class="truncate flex-1 min-w-0">
@@ -490,7 +504,10 @@
                             {{ $dp->title }}
                           </h4>
                           <span class="block text-xs text-slate-400 mt-0.5">
-                            {{ \Carbon\Carbon::parse($dp->created_at ?? $dp->published_at)->format('d M Y') }}
+                            {{ \Carbon\Carbon::parse($dp->created_at)->format('d M Y') }}
+                            @if(!empty($dp->classification))
+                              &bull; {{ $dp->classification }}
+                            @endif
                           </span>
                         </div>
                         <span class="text-slate-300 group-hover:text-brand font-bold text-xs">&rsaquo;</span>
@@ -505,7 +522,7 @@
               </div>
 
               <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 mt-3">
-                <span>Showing latest articles</span>
+                <span>Showing 2 latest published resources</span>
               </div>
             </div>
 
@@ -523,7 +540,7 @@
               </div>
 
               <div class="grid grid-cols-2 gap-3">
-                <a href="{{ url($secretPrefix . '/products/create') }}"
+                <a href="{{ url($secretPrefix . '/products') }}"
                   class="group p-3.5 rounded-xl bg-slate-50/80 border-0 hover:bg-brand-tint transition-all flex flex-col justify-between min-h-[85px]">
                   <div class="flex items-center justify-between">
                     <div
@@ -542,7 +559,7 @@
                     <span
                       class="block truncate text-xs font-bold text-slate-800 group-hover:text-brand transition-colors mt-2">New
                       Product</span>
-                    <span class="block text-[11px] text-slate-400 mt-0.5">Add new product</span>
+                    <span class="block text-[11px] text-slate-400 mt-0.5">Manage products</span>
                   </div>
                 </a>
 
@@ -592,7 +609,7 @@
                     ? DB::table('audit_logs')
                       ->leftJoin('users', 'audit_logs.user_id', '=', 'users.id')
                       ->select('audit_logs.*', 'users.name as user_name', 'users.email as user_email')
-                      ->orderBy('audit_logs.created_at', 'desc')
+                      ->orderBy('audit_logs.id', 'desc')
                       ->take(4)
                       ->get()
                     : collect();
@@ -602,8 +619,11 @@
                   @if($recentLogs->isNotEmpty())
                     @foreach($recentLogs as $log)
                       @php
-                        $eventTitle = 'Activity Logged';
-                        $eventDesc = 'System action performed.';
+                        $payload = is_string($log->payload) ? json_decode($log->payload, true) : (array)$log->payload;
+                        $itemTitle = $payload['title'] ?? null;
+
+                        $eventTitle = ucwords(str_replace('_', ' ', $log->event));
+                        $eventDesc = $itemTitle ? "Target item: {$itemTitle}" : 'System action performed.';
                         $badgeColor = 'text-slate-600';
 
                         if ($log->event === 'login_success') {
@@ -622,11 +642,24 @@
                           $eventTitle = 'Terminal Logout';
                           $eventDesc = 'User session ended successfully.';
                           $badgeColor = 'text-slate-500';
-                        } else {
-                          $eventTitle = ucwords(str_replace('_', ' ', $log->event));
+                        } elseif ($log->event === 'product_created') {
+                          $eventTitle = 'Product Formulation Added';
+                          $eventDesc = $itemTitle ? "Published: {$itemTitle}" : 'Product registered.';
+                          $badgeColor = 'text-emerald-600 font-semibold';
+                        } elseif ($log->event === 'product_updated') {
+                          $eventTitle = 'Product Formulation Updated';
+                          $eventDesc = $itemTitle ? "Updated: {$itemTitle}" : 'Product inventory updated.';
+                          $badgeColor = 'text-blue-600 font-semibold';
+                        } elseif ($log->event === 'resource_created') {
+                          $eventTitle = 'Article Published';
+                          $eventDesc = $itemTitle ? "Published: {$itemTitle}" : 'Educational monograph added.';
+                          $badgeColor = 'text-emerald-600 font-semibold';
+                        } elseif ($log->event === 'resource_updated') {
+                          $eventTitle = 'Article Updated';
+                          $eventDesc = $itemTitle ? "Updated: {$itemTitle}" : 'Educational monograph modified.';
+                          $badgeColor = 'text-blue-600 font-semibold';
                         }
 
-                        $payload = json_decode($log->payload, true);
                         $actor = $log->user_name ?? ($payload['attempted_email'] ?? $payload['email'] ?? 'Admin Novex');
                       @endphp
 
@@ -706,7 +739,9 @@
         @endif
 
       @elseif($currentSection === 'settings')
-        @if(view()->exists('backend.admin.settings'))
+        @if(view()->exists('backend.admin.settings.settings'))
+          @include('backend.admin.settings.settings')
+        @elseif(view()->exists('backend.admin.settings'))
           @include('backend.admin.settings')
         @else
           <div class="bg-white p-6 rounded-2xl shadow-sm text-center text-slate-500">Settings module loaded.</div>
@@ -718,8 +753,8 @@
   </div>
 
   @php
-    $searchArticles = \Illuminate\Support\Facades\Schema::hasTable('blog_posts')
-      ? DB::table('blog_posts')->select('id', 'title', 'slug', 'published_at')->latest('published_at')->take(40)->get()
+    $searchArticles = \Illuminate\Support\Facades\Schema::hasTable('resources')
+      ? DB::table('resources')->select('id', 'title', 'slug', 'created_at as published_at')->latest('id')->take(40)->get()
       : collect();
   @endphp
 
@@ -782,7 +817,9 @@
 
     function changeCalYear(dir) {
       calYear += dir;
+      updateDisplayVal();
       renderHeroCalendar();
+      fetchDatabaseMetrics();
     }
 
     function handleDateClick(day) {
@@ -790,6 +827,11 @@
       updateDisplayVal();
       renderHeroCalendar();
       fetchDatabaseMetrics();
+
+      if (pickerMode === 'daily') {
+        const popover = document.getElementById('heroDatePickerPopover');
+        if (popover) popover.classList.add('hidden');
+      }
     }
 
     function handleMonthClick(mIdx) {
@@ -797,6 +839,37 @@
       updateDisplayVal();
       renderHeroCalendar();
       fetchDatabaseMetrics();
+
+      const popover = document.getElementById('heroDatePickerPopover');
+      if (popover) popover.classList.add('hidden');
+    }
+
+    function updateCardLabels() {
+      const cardAudienceLabel = document.getElementById('cardAudienceLabel');
+      const cardSecurityLabel = document.getElementById('cardSecurityLabel');
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      if (cardAudienceLabel) {
+        if (pickerMode === 'daily') {
+          const mStr = calMonth + 1;
+          cardAudienceLabel.innerText = `Daily Views (${selectedDay}/${mStr}/${calYear})`;
+        } else if (pickerMode === 'monthly') {
+          cardAudienceLabel.innerText = `${monthNames[calMonth]} ${calYear} Views`;
+        } else {
+          cardAudienceLabel.innerText = "7-Day Overview Views";
+        }
+      }
+
+      if (cardSecurityLabel) {
+        if (pickerMode === 'daily') {
+          const mStr = calMonth + 1;
+          cardSecurityLabel.innerText = `Daily Security Events (${selectedDay}/${mStr}/${calYear})`;
+        } else if (pickerMode === 'monthly') {
+          cardSecurityLabel.innerText = `${monthNames[calMonth]} ${calYear} Security Events`;
+        } else {
+          cardSecurityLabel.innerText = "7-Day Security Events";
+        }
+      }
     }
 
     function updateDisplayVal() {
@@ -821,6 +894,8 @@
 
         displayElem.innerText = `${startD}/${startM}/${startY} - ${selectedDay}/${mStr}/${calYear}`;
       }
+
+      updateCardLabels();
     }
 
     function renderHeroCalendar() {
@@ -843,11 +918,11 @@
         for (let m = 0; m < 12; m++) {
           const isSelected = (m === calMonth);
           const activeClass = isSelected
-            ? 'bg-[#006FEE] text-white font-bold shadow-sm'
+            ? 'bg-brand text-white font-bold shadow-sm'
             : 'bg-slate-50 text-slate-700 hover:bg-slate-100 font-semibold';
 
           html += `
-            <button type="button" onclick="handleMonthClick(${m})" class="py-2.5 rounded-xl text-xs transition-all ${activeClass}">
+            <button type="button" onclick="handleMonthClick(${m})" class="py-2.5 rounded-xl text-xs transition-all cursor-pointer ${activeClass}">
               ${displayMonthNames[m].substring(0, 3)} (${m + 1})
             </button>
           `;
@@ -881,13 +956,13 @@
 
           if (pickerMode === 'daily') {
             if (day === selectedDay) {
-              bgClass = 'bg-[#006FEE] text-white font-bold rounded-full shadow-sm';
+              bgClass = 'bg-brand text-white font-bold rounded-full shadow-sm';
               textClass = 'text-white';
             }
           } else {
             if (thisDate >= startDateObj && thisDate <= curDate) {
               if (day === selectedDay) {
-                bgClass = 'bg-[#006FEE] text-white font-bold rounded-full shadow-sm';
+                bgClass = 'bg-brand text-white font-bold rounded-full shadow-sm';
                 textClass = 'text-white';
               } else {
                 bgClass = 'bg-[#E6F1FE] text-slate-900 font-semibold rounded-full';
@@ -970,24 +1045,11 @@
         const tabBtn = document.getElementById('tab' + m.charAt(0).toUpperCase() + m.slice(1));
         if (!tabBtn) return;
         if ((mode === 'overview' && m === 'weekly') || m === mode) {
-          tabBtn.className = 'period-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs';
+          tabBtn.className = 'period-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs cursor-pointer';
         } else {
-          tabBtn.className = 'period-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800';
+          tabBtn.className = 'period-tab px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 cursor-pointer';
         }
       });
-
-      const cardAudienceLabel = document.getElementById('cardAudienceLabel');
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-      if (cardAudienceLabel) {
-        if (mode === 'daily') {
-          cardAudienceLabel.innerText = "Daily Audience Views";
-        } else if (mode === 'monthly') {
-          cardAudienceLabel.innerText = `${monthNames[calMonth]} Audience Views`;
-        } else {
-          cardAudienceLabel.innerText = "7-Day Audience Views";
-        }
-      }
 
       updateDisplayVal();
       renderHeroCalendar();
@@ -1009,19 +1071,19 @@
             audienceChart.update();
           }
 
-          const chartSum = (resData.data && resData.data.length > 0) ? resData.data.reduce((a, b) => a + Number(b), 0) : 0;
           const metricVal = document.getElementById('metricAudienceViews');
+          const secMetricVal = document.getElementById('metricSecurityEvents');
           const impresstionsText = document.getElementById('totalImpressionsText');
 
-          let displayedCount = 0;
-          if (pickerMode === 'daily') {
-            displayedCount = resData.todayViews !== undefined ? resData.todayViews : chartSum;
-          } else {
-            displayedCount = chartSum > 0 ? chartSum : (resData.total || 0);
-          }
+          const displayedCount = resData.total !== undefined ? resData.total : 0;
 
           if (metricVal) metricVal.innerText = Number(displayedCount).toLocaleString();
           if (impresstionsText) impresstionsText.innerText = `${Number(displayedCount).toLocaleString()} sessions`;
+
+          // Kemas kini kad Security Events secara automatik mengikut tarikh pilihan
+          if (secMetricVal && resData.securityEvents !== undefined) {
+            secMetricVal.innerText = Number(resData.securityEvents).toLocaleString();
+          }
         })
         .catch(err => {
           console.error("Error fetching database metrics:", err);
@@ -1098,7 +1160,7 @@
               <a href="${globalSearchData.prefix}/blogs" class="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 transition-colors group">
                 <div class="truncate">
                   <p class="truncate text-sm font-semibold text-slate-800 group-hover:text-brand transition-colors">${escapeHtml(art.title)}</p>
-                  <p class="text-xs text-slate-400 font-mono truncate">/blog/${escapeHtml(art.slug)}</p>
+                  <p class="text-xs text-slate-400 font-mono truncate">/resources/${escapeHtml(art.slug)}</p>
                 </div>
                 <span class="shrink-0 text-xs font-medium text-slate-400 group-hover:text-brand ml-2">Edit &rarr;</span>
               </a>

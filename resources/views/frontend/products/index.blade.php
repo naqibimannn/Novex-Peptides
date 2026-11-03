@@ -55,8 +55,8 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
       @php
           $allProducts = \Illuminate\Support\Facades\DB::select(
               "SELECT * FROM products 
-               WHERE (page_type NOT IN ('accessory', 'premium', 'performance') OR page_type IS NULL OR page_type = '') 
-                 AND (category NOT IN ('Accessory', 'Injection Kit', 'Syringes', 'Premium Supplements', 'Supplements', 'Performance Apparel') OR category IS NULL) 
+               WHERE (page_type NOT IN ('skin', 'accessory', 'premium', 'performance') OR page_type IS NULL OR page_type = '') 
+                 AND (category NOT IN ('Skin Lab', 'Accessory', 'Injection Kit', 'Syringes', 'Premium Supplements', 'Supplements', 'Performance Apparel') OR category IS NULL) 
                  AND (slug NOT IN ('nx-polo-navy', 'polo', 'half-zip-polo') OR slug IS NULL)
                ORDER BY id DESC"
           );
@@ -78,7 +78,7 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
             }
 
             $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
-                ? $item->slug
+                ? $itemSlug = $item->slug
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
             $detailUrl = url('/products/' . $itemSlug);

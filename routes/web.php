@@ -5,14 +5,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Backend\Admin\AdminLoginController;
+use App\Http\Controllers\Backend\Admin\SettingsController;
 use App\Http\Controllers\Backend\Admin\ProductsController;
 use App\Http\Controllers\Backend\Admin\AuditController;
 use App\Http\Controllers\Backend\Admin\AudienceController;
 use App\Http\Controllers\Backend\Admin\OrganizationController;
 use App\Http\Controllers\Backend\Admin\ResourcesController;
+use App\Http\Controllers\Frontend\PageRouterController;
 
 Route::any('/login', fn() => abort(404));
 Route::any('/admin', fn() => abort(404));
+
+Route::post('/admin/password/code/send', [AdminLoginController::class, 'sendResetCode'])->name('admin.password.code.send');
+Route::post('/admin/password/code/verify', [AdminLoginController::class, 'verifyCodeAndReset'])->name('admin.password.code.verify');
 
 Route::prefix('/')->group(function () {
 
@@ -357,7 +362,7 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
             : redirect()->route('admin.login');
     });
 
-    Route::middleware('guest')->group(function () {
+    Route::middleware('guest')->group(function () use ($adminSecret) {
         Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
         Route::post('/login', [AdminLoginController::class, 'login'])
             ->middleware('throttle:5,1')
@@ -389,11 +394,14 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
         Route::get('/info', [OrganizationController::class, 'index'])->name('info');
         Route::post('/info', [OrganizationController::class, 'update'])->name('info.update');
 
-        Route::get('/settings', fn() => view('backend.admin.dashboard.admin', [
-            'section' => 'settings',
-            'secret'  => $adminSecret,
-        ]))->name('settings');
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+        Route::post('/settings/otp/send', [SettingsController::class, 'sendOtp'])->name('settings.otp.send');
+        Route::post('/settings/password/update', [SettingsController::class, 'updatePassword'])->name('settings.password.update');
+        Route::post('/settings/email/update', [SettingsController::class, 'updateEmail'])->name('settings.email.update');
+        Route::post('/settings/password/request', [SettingsController::class, 'sendOtp'])->name('settings.password.request');
 
         Route::match(['get', 'post'], '/logout', [AdminLoginController::class, 'logout'])->name('logout');
     });
 });
+
+Route::fallback([PageRouterController::class, 'handle']);

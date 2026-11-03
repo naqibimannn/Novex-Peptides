@@ -26,24 +26,18 @@
   }
 
   @keyframes subtleWiggle {
-
-    0%,
-    100% {
+    0%, 100% {
       transform: rotate(0deg);
     }
-
     20% {
       transform: rotate(-1.5deg);
     }
-
     40% {
       transform: rotate(1.5deg);
     }
-
     60% {
       transform: rotate(-1deg);
     }
-
     80% {
       transform: rotate(1deg);
     }
@@ -64,8 +58,7 @@
         Educational Resources &amp; Articles
       </h1>
       <p class="text-xs sm:text-sm text-slate-500 font-medium">
-        CentraDesk Publishing &middot; Manage laboratory scientific reviews, compound monographs, and education
-        literature.
+        CentraDesk Publishing &middot; Manage laboratory scientific reviews, compound monographs, and education literature.
       </p>
     </div>
 
@@ -78,15 +71,13 @@
         <span>Add New Article</span>
       </button>
 
-      <div
-        class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white border border-slate-200/80 text-slate-700 font-bold text-xs shadow-xs select-none">
+      <div class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white border border-slate-200/80 text-slate-700 font-bold text-xs shadow-xs select-none">
         <span>Total Articles: <strong class="text-slate-900 font-extrabold">{{ count($rawResources) }}</strong></span>
       </div>
     </div>
   </div>
 
-  <div
-    class="relative z-30 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div class="relative z-30 bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">
       Published Monograph Library
     </div>
@@ -114,19 +105,18 @@
         data-author="{{ strtolower($art->author ?? '') }}">
 
         <div>
-          <!-- THUMBNAIL BOX -->
           <div class="relative w-full h-48 bg-slate-100 border-b border-slate-100 overflow-hidden">
             <img src="{{ $imgUrl }}" alt="{{ $art->title }}"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
             <div
               class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/90 text-brand backdrop-blur-md border border-slate-200/60 shadow-2xs">
-              Research Literature
+              {{ $art->classification ?: 'Research Literature' }}
             </div>
           </div>
 
           <div class="p-4 sm:p-5 flex flex-col gap-2.5">
             <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-              <span class="truncate max-w-[200px]">{{ $art->read_time ?? '4 min read' }}</span>
+              <span class="truncate max-w-[200px]">{{ $art->read_time ?: '4 min read' }}</span>
               <span>{{ \Carbon\Carbon::parse($art->created_at)->format('d M Y') }}</span>
             </div>
 
@@ -139,13 +129,12 @@
             </p>
 
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Author: <strong class="text-slate-800 font-bold">{{ $art->author ?? 'Research Team' }}</strong></span>
+              <span>Author: <strong class="text-slate-800 font-bold">{{ $art->author ?: 'Research Team' }}</strong></span>
             </div>
           </div>
         </div>
 
-        <div
-          class="px-4 sm:px-5 py-3.5 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between gap-2">
+        <div class="px-4 sm:px-5 py-3.5 bg-slate-50/50 border-t border-slate-200/60 flex items-center justify-between gap-2">
           <a href="{{ url('/resources/' . $art->slug) }}" target="_blank"
             class="p-2 rounded-xl bg-white border border-slate-200/80 hover:border-brand/40 text-slate-500 hover:text-brand shadow-2xs transition-all"
             title="View Published Article">
@@ -180,11 +169,21 @@
         </div>
       </div>
     @empty
-      <div
-        class="col-span-full p-12 text-center bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 text-slate-400 text-xs font-semibold shadow-xs">
+      <div class="col-span-full p-12 text-center bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 text-slate-400 text-xs font-semibold shadow-xs">
         No educational articles currently available. Click "Add New Article" to publish your first monograph.
       </div>
     @endforelse
+  </div>
+
+  <div id="articlePaginationWrapper" class="pt-4 border-t border-slate-200/60 hidden">
+    <div class="flex items-center justify-between bg-white rounded-full px-5 sm:px-7 py-3 border border-slate-200 shadow-2xs">
+      <div class="flex items-center gap-3 sm:gap-6" id="articlePaginationControls">
+      </div>
+
+      <div class="text-xs font-medium text-slate-500 whitespace-nowrap hidden md:block" id="articlePaginationResultText">
+        Showing 0 of 0 results
+      </div>
+    </div>
   </div>
 
 </div>
@@ -196,8 +195,7 @@
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">Add New Educational Article</h3>
-        <p class="text-xs text-slate-400 font-medium">Configure article metadata, author details, content paragraphs,
-          and banner visual.</p>
+        <p class="text-xs text-slate-400 font-medium">Configure article metadata, author details, content paragraphs, and banner visual.</p>
       </div>
       <button type="button" onclick="closeCreateArticleModal()"
         class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
@@ -220,23 +218,26 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Author Name</label>
-          <input type="text" name="author" value="Dr. Aris Thorne, Ph.D." placeholder="e.g. Dr. Aris Thorne, Ph.D."
+          <input type="text" name="author" placeholder="e.g. Dr. Aris Thorne, Ph.D."
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Read Time &amp; Classification</label>
-          <input type="text" name="read_time" value="4 min read &bull; Monograph Review"
-            placeholder="e.g. 4 min read &bull; Monograph Review"
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Read Time</label>
+          <input type="text" name="read_time" placeholder="e.g. 4 min read"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Classification</label>
+          <input type="text" name="classification" placeholder="e.g. Monograph Review"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1.5">Article Paragraphs &amp; Monograph Content
-          *</label>
+        <label class="block text-xs font-bold text-slate-700 mb-1.5">Article Paragraphs &amp; Monograph Content *</label>
         <textarea name="content" rows="6" required placeholder="Write or paste your article content here..."
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-brand leading-relaxed"></textarea>
       </div>
@@ -245,7 +246,7 @@
         <label class="block text-xs font-bold text-slate-700 mb-1.5">Featured Banner Visual</label>
         <div
           class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" name="image" accept="image/*" onchange="previewUploadImage(event, 'createArtImgPreview')"
+          <input type="file" name="image" accept="image/jpeg,image/png,image/webp" onchange="previewUploadImage(event, 'createArtImgPreview')"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline pointer-events-none">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -265,8 +266,7 @@
         <button type="button" onclick="closeCreateArticleModal()"
           class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
         <button type="submit"
-          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-xs cursor-pointer">Publish
-          Article</button>
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-xs cursor-pointer">Publish Article</button>
       </div>
     </form>
   </div>
@@ -279,8 +279,7 @@
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
       <div class="flex flex-col">
         <h3 class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">Edit Educational Article</h3>
-        <p class="text-xs text-slate-400 font-medium">Update article metadata, content paragraphs, and replace banner
-          visual.</p>
+        <p class="text-xs text-slate-400 font-medium">Update article metadata, content paragraphs, and replace banner visual.</p>
       </div>
       <button type="button" onclick="closeEditArticleModal()"
         class="text-slate-400 hover:text-slate-700 text-lg cursor-pointer">✕</button>
@@ -303,22 +302,26 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Author Name</label>
-          <input type="text" id="edit_art_author" name="author"
+          <input type="text" id="edit_art_author" name="author" placeholder="e.g. Dr. Aris Thorne, Ph.D."
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Read Time &amp; Classification</label>
-          <input type="text" id="edit_art_read_time" name="read_time"
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Read Time</label>
+          <input type="text" id="edit_art_read_time" name="read_time" placeholder="e.g. 4 min read"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Classification</label>
+          <input type="text" id="edit_art_classification" name="classification" placeholder="e.g. Monograph Review"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1.5">Article Paragraphs &amp; Monograph Content
-          *</label>
+        <label class="block text-xs font-bold text-slate-700 mb-1.5">Article Paragraphs &amp; Monograph Content *</label>
         <textarea id="edit_art_content" name="content" rows="6" required
           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-800 leading-relaxed"></textarea>
       </div>
@@ -341,7 +344,7 @@
         <label class="block text-xs font-bold text-slate-700 mb-1.5">Upload New Banner (Replaces Current)</label>
         <div
           class="border-2 border-dashed border-slate-200 hover:border-brand/50 rounded-2xl p-4 bg-slate-50/50 flex flex-col items-center justify-center text-center cursor-pointer relative group">
-          <input type="file" name="image" accept="image/*" onchange="previewEditNewImage(event)"
+          <input type="file" name="image" accept="image/jpeg,image/png,image/webp" onchange="previewEditNewImage(event)"
             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
           <div class="flex items-center gap-2 text-xs font-bold text-brand group-hover:underline pointer-events-none">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -349,8 +352,7 @@
             </svg>
             <span>Click to upload replacement visual</span>
           </div>
-          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">Leave blank to retain current
-            visual</span>
+          <span class="text-[11px] text-slate-400 mt-0.5 pointer-events-none">Leave blank to retain current visual</span>
         </div>
       </div>
 
@@ -358,8 +360,7 @@
         <button type="button" onclick="closeEditArticleModal()"
           class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer">Cancel</button>
         <button type="submit"
-          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-xs cursor-pointer">Save
-          Modifications</button>
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-brand hover:bg-brand-hover shadow-xs cursor-pointer">Save Modifications</button>
       </div>
     </form>
   </div>
@@ -368,25 +369,171 @@
 <script>
   const updateResourceRouteTemplate = "{{ route('admin.resources.update', ':id') }}";
 
+  let currentArticlePage = 1;
+  const articlesPerPage = 6;
+  let filteredArticleCards = [];
+
   function onSearchArticleInput() {
+    currentArticlePage = 1;
+    filterArticles();
+  }
+
+  function filterArticles() {
     const q = (document.getElementById('articleSearchInput')?.value || '').toLowerCase().trim();
-    const cards = document.querySelectorAll('.article-vault-card');
+    const cards = Array.from(document.querySelectorAll('.article-vault-card'));
+    filteredArticleCards = [];
+
     cards.forEach(card => {
       const title = card.dataset.title || '';
       const sub = card.dataset.sub || '';
       const author = card.dataset.author || '';
       if (!q || title.includes(q) || sub.includes(q) || author.includes(q)) {
-        card.style.display = '';
+        filteredArticleCards.push(card);
       } else {
         card.style.display = 'none';
       }
     });
+
+    renderArticlePaginationView();
+  }
+
+  function renderArticlePaginationView() {
+    const totalItems = filteredArticleCards.length;
+    const totalPages = Math.ceil(totalItems / articlesPerPage) || 1;
+
+    if (currentArticlePage > totalPages) currentArticlePage = totalPages;
+    if (currentArticlePage < 1) currentArticlePage = 1;
+
+    const startIndex = (currentArticlePage - 1) * articlesPerPage;
+    const endIndex = startIndex + articlesPerPage;
+
+    filteredArticleCards.forEach((card, idx) => {
+      card.style.display = (idx >= startIndex && idx < endIndex) ? '' : 'none';
+    });
+
+    const wrapper = document.getElementById('articlePaginationWrapper');
+    const resultTextEl = document.getElementById('articlePaginationResultText');
+
+    if (totalItems === 0) {
+      if (wrapper) wrapper.classList.add('hidden');
+      return;
+    } else {
+      if (wrapper) wrapper.classList.remove('hidden');
+    }
+
+    if (resultTextEl) {
+      const toItem = Math.min(endIndex, totalItems);
+      resultTextEl.innerHTML = `Showing ${toItem} of ${totalItems} results`;
+    }
+
+    renderArticlePaginationButtons(totalPages);
+  }
+
+  function renderArticlePaginationButtons(totalPages) {
+    const controls = document.getElementById('articlePaginationControls');
+    if (!controls) return;
+
+    let html = '';
+
+    if (currentArticlePage > 1) {
+      html += `
+        <button type="button" onclick="goToArticlePage(${currentArticlePage - 1})" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer select-none">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          <span>Previous</span>
+        </button>
+      `;
+    } else {
+      html += `
+        <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 cursor-not-allowed select-none">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          <span>Previous</span>
+        </span>
+      `;
+    }
+
+    html += `<div class="flex items-center gap-1 sm:gap-2">`;
+    const pages = getArticlePaginationPageList(currentArticlePage, totalPages);
+    pages.forEach(p => {
+      if (p === '...') {
+        html += `<span class="w-7 h-7 flex items-center justify-center text-xs font-bold text-slate-400 select-none">...</span>`;
+      } else if (p === currentArticlePage) {
+        html += `
+          <span class="w-8 h-8 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center ring-4 ring-brand/20 shadow-xs select-none">
+            ${p}
+          </span>
+        `;
+      } else {
+        html += `
+          <button type="button" onclick="goToArticlePage(${p})" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer">
+            ${p}
+          </button>
+        `;
+      }
+    });
+    html += `</div>`;
+
+    if (currentArticlePage < totalPages) {
+      html += `
+        <button type="button" onclick="goToArticlePage(${currentArticlePage + 1})" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer select-none">
+          <span>Next</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      `;
+    } else {
+      html += `
+        <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 cursor-not-allowed select-none">
+          <span>Next</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </span>
+      `;
+    }
+
+    controls.innerHTML = html;
+  }
+
+  function getArticlePaginationPageList(current, total) {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 3) {
+      return [1, 2, 3, '...', total - 2, total - 1, total];
+    }
+    if (current >= total - 2) {
+      return [1, 2, '...', total - 2, total - 1, total];
+    }
+    return [1, '...', current - 1, current, current + 1, '...', total];
+  }
+
+  function goToArticlePage(page) {
+    currentArticlePage = page;
+    renderArticlePaginationView();
+
+    const grid = document.getElementById('articlesGridContainer');
+    if (grid) {
+      grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   function previewUploadImage(e, targetBoxId) {
     const file = e.target.files[0];
     const box = document.getElementById(targetBoxId);
     if (!file || !box) return;
+
+    if (file.name.toLowerCase().endsWith('.svg') || file.type.toLowerCase().includes('svg')) {
+      alert('Format SVG tidak dibenarkan atas faktor keselamatan.');
+      e.target.value = '';
+      box.classList.add('hidden');
+      return;
+    }
+
     box.querySelector('img').src = URL.createObjectURL(file);
     box.classList.remove('hidden');
   }
@@ -396,6 +543,14 @@
     const newBox = document.getElementById('editNewImgBox');
     const newImg = document.getElementById('editNewImgSrc');
     if (!file || !newBox || !newImg) return;
+
+    if (file.name.toLowerCase().endsWith('.svg') || file.type.toLowerCase().includes('svg')) {
+      alert('Format SVG tidak dibenarkan atas faktor keselamatan.');
+      e.target.value = '';
+      newBox.classList.add('hidden');
+      return;
+    }
+
     newImg.src = URL.createObjectURL(file);
     newBox.classList.remove('hidden');
   }
@@ -427,6 +582,7 @@
       document.getElementById('edit_art_subtitle').value = art.subtitle || '';
       document.getElementById('edit_art_author').value = art.author || '';
       document.getElementById('edit_art_read_time').value = art.read_time || '';
+      document.getElementById('edit_art_classification').value = art.classification || '';
       document.getElementById('edit_art_content').value = art.content || '';
 
       const existImg = document.getElementById('editExistingImgSrc');
@@ -447,4 +603,8 @@
       modal.classList.remove('flex');
     }
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    filterArticles();
+  });
 </script>

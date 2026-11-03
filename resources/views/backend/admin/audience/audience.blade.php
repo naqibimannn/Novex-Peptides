@@ -83,6 +83,11 @@
             <span>Premium Supplements Page</span>
           </button>
 
+          <button type="button" onclick="filterAudienceByPage('skin', 'Skin Lab Page')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Skin Lab Page</span>
+          </button>
+
           <button type="button" onclick="filterAudienceByPage('resources', 'Resources Page')"
             class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
             <span>Resources Page</span>

@@ -67,6 +67,11 @@ class AudienceController extends Controller
                     $q->where('page_url', 'premium')
                       ->orWhere('page_url', 'LIKE', 'premium/%');
                 });
+            } elseif ($page === 'skin') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'skin')
+                      ->orWhere('page_url', 'LIKE', 'skin/%');
+                });
             } elseif ($page === 'resources') {
                 $query->where(function ($q) {
                     $q->where('page_url', 'resources')

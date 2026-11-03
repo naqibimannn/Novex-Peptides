@@ -14,9 +14,14 @@ class OrganizationController extends Controller
     {
         $secret = $secret ?? (config('admin.secret_key') ?: env('ADMIN_SECRET_KEY'));
 
-        $org = Cache::remember('site_organization_info', 86400, function () {
+        if (Cache::get('site_organization_info') instanceof \__PHP_Incomplete_Class) {
+            Cache::forget('site_organization_info');
+        }
+
+        $orgData = Cache::remember('site_organization_info', 86400, function () {
             if (Schema::hasTable('organization_info')) {
                 $data = DB::table('organization_info')->first();
+
                 if (!$data) {
                     DB::table('organization_info')->insert([
                         'id'            => 1,
@@ -28,12 +33,14 @@ class OrganizationController extends Controller
                         'created_at'    => now(),
                         'updated_at'    => now(),
                     ]);
+
                     $data = DB::table('organization_info')->first();
                 }
-                return $data;
+
+                return (array) $data;
             }
 
-            return (object)[
+            return [
                 'company_name'  => 'Novex Peptides',
                 'phone_number'  => '+60 11-2549 0484',
                 'email'         => 'support@novexsupps.com',
@@ -42,6 +49,7 @@ class OrganizationController extends Controller
             ];
         });
 
+        $org = (object) $orgData;
         $section = 'info';
 
         return view('backend.admin.dashboard.admin', compact('section', 'secret', 'org'));
@@ -50,6 +58,7 @@ class OrganizationController extends Controller
     public function update(Request $request, $secret = null)
     {
         $request->validate([
+            'company_name'  => 'required|string|max:150',
             'phone_number'  => 'required|string|max:50',
             'email'         => 'required|email|max:150',
             'instagram_url' => 'nullable|url|max:255',
