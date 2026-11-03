@@ -1,6 +1,5 @@
 @extends('frontend.home.index')
 
-@section('content')
 @php
 $resolveImageUrl = function($path) {
     if (empty($path)) return asset('assets/website/performance/front-view.webp');
@@ -36,8 +35,44 @@ $perfShowCssVer = file_exists(public_path($perfShowCssPath)) ? filemtime(public_
 
 $perfShowJsPath = 'frontend/performance/show.js';
 $perfShowJsVer = file_exists(public_path($perfShowJsPath)) ? filemtime(public_path($perfShowJsPath)) : time();
+
+$itemListElements = [];
+foreach ($performanceProducts as $index => $item) {
+    $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
+        ? $item->slug
+        : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
+
+    $itemListElements[] = [
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => $item->title ?? 'Performance Product',
+        'url' => url('/performance/show/' . $itemSlug),
+    ];
+}
+
+$canonicalUrl = url('/performance/show');
 @endphp
 
+@section('seo')
+<x-seo 
+    title="Performance Division Collection | Novex Peptides"
+    description="Discover engineered performance sportswear and athletic apparel. Designed for movement, athletic discipline, and daily comfort."
+    :canonical="$canonicalUrl"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => 'Novex Performance Division Collection',
+        'url' => $canonicalUrl,
+        'description' => 'Discover engineered performance sportswear and athletic apparel. Designed for movement, athletic discipline, and daily comfort.',
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'itemListElement' => $itemListElements
+        ]
+    ]"
+/>
+@endsection
+
+@section('content')
 <link rel="stylesheet" href="{{ asset($perfShowCssPath) }}?v={{ $perfShowCssVer }}">
 
 <section class="catalog-sec" id="cat">
@@ -92,7 +127,7 @@ $perfShowJsVer = file_exists(public_path($perfShowJsPath)) ? filemtime(public_pa
                     @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
                     <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
                       <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Performance Product' }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Performance Product' }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Performance Product' }} {{ $sIdx + 1 }}" width="300" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
                       </a>
                     </div>
                   @endforeach
@@ -104,7 +139,7 @@ $perfShowJsVer = file_exists(public_path($perfShowJsPath)) ? filemtime(public_pa
                 <div class="prod-slides">
                   <div class="prod-slide active">
                     <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Performance Product' }}">
-                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Performance Product' }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Performance Product' }}" width="300" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
                     </a>
                   </div>
                 </div>

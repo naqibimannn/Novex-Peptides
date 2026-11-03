@@ -3,7 +3,54 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Novex Peptides | Precision in Every Molecule</title>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T50LPJRHD4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-T50LPJRHD4');
+</script>
+
+@hasSection('seo')
+    @yield('seo')
+@else
+    <x-seo 
+        title="Novex Peptides | Precision in Every Molecule"
+        description="Advanced peptide research. Science drives results, with premium quality made in USA. Certified purity and rigorous HPLC assay."
+        region="MY-10"
+        placename="Selangor, Malaysia"
+        latitude="3.2384"
+        longitude="101.4278"
+        :schema="[
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => 'Novex Peptides',
+            'url' => url('/'),
+            'logo' => asset('logo.png'),
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Puncak Alam',
+                'addressRegion' => 'Selangor',
+                'addressCountry' => 'MY'
+            ],
+            'geo' => [
+                '@type' => 'GeoCoordinates',
+                'latitude' => 3.2384,
+                'longitude' => 101.4278
+            ],
+            'contactPoint' => [
+                '@type' => 'ContactPoint',
+                'telephone' => '+601125490484',
+                'contactType' => 'customer support',
+                'areaServed' => ['MY', 'SG'],
+                'availableLanguage' => ['en', 'ms']
+            ]
+        ]"
+    />
+@endif
+
 <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
 <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -173,7 +220,7 @@
   <div class="nx-view" id="view-home">
     <section class="hero sl">
       <div class="slide on">
-        <img id="heroSlide1" src="{{ asset('assets/website/home/hero1.webp') }}" href="{{ asset('assets/website/home/hero1.webp') }}" alt="Hero Banner 1" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
+        <img id="heroSlide1" src="{{ asset('assets/website/home/hero1.webp') }}" alt="Novex Peptides Research Compounds" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
         <div class="wrap">
           <div class="in">
             <h1>Precision in<br>Every Molecule</h1>
@@ -187,10 +234,10 @@
       </div>
       
       <div class="slide">
-        <img id="heroSlide2" src="{{ asset('assets/website/home/hero2.webp') }}" href="{{ asset('assets/website/home/hero2.webp') }}" alt="Hero Banner 2" onerror="this.src='https://images.unsplash.com/photo-1608068811588-3a67006b7489?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'">
+        <img id="heroSlide2" src="{{ asset('assets/website/home/hero2.webp') }}" alt="Certified HPLC Assay Testing" onerror="this.src='https://images.unsplash.com/photo-1608068811588-3a67006b7489?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D'">
         <div class="wrap">
           <div class="in">
-            <h1>Certified Purity &amp;<br>Rigorous Assay</h1>
+            <h2 style="font-family: inherit; font-size: inherit; font-weight: inherit; line-height: inherit; text-transform: inherit; margin: 0 0 16px;">Certified Purity &amp;<br>Rigorous Assay</h2>
             <p>Precision micro-pipetting, HPLC chromatographic testing, and batch-level verification.</p>
             <div class="hero-btns">
               <a class="hero-btn-primary" href="{{ route('products.index') }}">Shop Now</a>
@@ -241,42 +288,42 @@
         </div>
         <div class="g6">
           <a class="cat" href="{{ route('products.show', 'retatrutide') }}">
-            <img src="{{ asset('assets/website/category/c1.webp') }}" alt="Retatrutide" loading="lazy">
+            <img src="{{ asset('assets/website/category/c1.webp') }}" alt="Retatrutide Series" width="400" height="400" loading="lazy">
             <div class="cat-info">
               <h3>01 | Retatrutide</h3>
               <p>Weight Management</p>
             </div>
           </a>
           <a class="cat" href="{{ route('products.show', 'reta-plus') }}">
-            <img src="{{ asset('assets/website/category/c2.webp') }}" alt="Retatrutide Plus" loading="lazy">
+            <img src="{{ asset('assets/website/category/c2.webp') }}" alt="Retatrutide Plus Series" width="400" height="400" loading="lazy">
             <div class="cat-info">
               <h3>02 | Retatrutide Plus</h3>
               <p>Dual Action Formulation</p>
             </div>
           </a>
           <a class="cat" href="{{ route('products.index') }}">
-            <img src="{{ asset('assets/website/category/c3.webp') }}" alt="Skincare Peptides" loading="lazy">
+            <img src="{{ asset('assets/website/category/c3.webp') }}" alt="Skincare Peptides Series" width="400" height="400" loading="lazy">
             <div class="cat-info">
               <h3>03 | Skincare Peptides</h3>
               <p>Cellular Rejuvenation</p>
             </div>
           </a>
           <a class="cat" href="{{ route('products.index') }}">
-            <img src="{{ asset('assets/website/category/c4.webp') }}" alt="Performance" loading="lazy">
+            <img src="{{ asset('assets/website/category/c4.webp') }}" alt="Performance Peptides Series" width="400" height="400" loading="lazy">
             <div class="cat-info">
               <h3>04 | Performance</h3>
               <p>Longevity &amp; Power</p>
             </div>
           </a>
           <a class="cat" href="{{ route('products.index') }}">
-            <img src="{{ asset('assets/website/category/c5.webp') }}" alt="Novex Skincare" loading="lazy">
+            <img src="{{ asset('assets/website/category/c5.webp') }}" alt="Novex Skincare Line" width="400" height="400" loading="lazy">
             <div class="cat-info">
               <h3>05 | Novex Skincare</h3>
               <p>Serums &amp; Cream</p>
             </div>
           </a>
           <a class="cat" href="{{ route('products.show', 'jersey-01') }}">
-            <img src="{{ asset('assets/website/category/c6.webp') }}" alt="Athletic Apparel" loading="lazy">
+            <img src="{{ asset('assets/website/category/c6.webp') }}" alt="Athletic Apparel Line" width="400" height="400" loading="lazy">
             <div class="cat-info">
               <h3>06 | Athletic Apparel</h3>
               <p>Performance Jersey</p>
@@ -314,7 +361,7 @@
                     $tFullUrl = asset($tFilename) . '?v=' . $tVersion;
                   @endphp
                   <a href="{{ $tFullUrl }}" onclick="openLightboxModal('{{ $tFullUrl }}', 'Client Transformation #{{ $i }} - Real Results'); return false;" class="t-slide {{ $i === 2 ? 'active' : '' }}">
-                    <img src="{{ $tFullUrl }}" alt="Client Transformation {{ $i }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
+                    <img src="{{ $tFullUrl }}" alt="Client Transformation Journey {{ $i }}" width="500" height="500" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=700'">
                     <div class="t-badge-zoom">
                       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                       <span>Enlarge</span>
@@ -408,7 +455,7 @@
                   <div class="prod-slides">
                     @foreach($slides as $sIdx => $imgSrc)
                       <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                        <img src="{{ $resolveImageUrl($imgSrc) }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
+                        <img src="{{ $resolveImageUrl($imgSrc) }}" alt="{{ $item->title }}" width="300" height="300" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600'">
                       </div>
                     @endforeach
                   </div>
@@ -443,10 +490,10 @@
 
         <div class="div2">
           <a class="camp" href="{{ route('products.index') }}" aria-label="Explore Performance Peptides">
-            <img src="{{ asset('f1.webp') }}" alt="Performance Peptides Banner" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85'">
+            <img src="{{ asset('f1.webp') }}" alt="Performance Peptides Banner" width="600" height="400" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1000&q=85'">
           </a>
           <a class="camp" href="{{ route('products.index') }}" aria-label="Explore Peptide Skincare">
-            <img src="{{ asset('r1.webp') }}" alt="Skincare Peptides Banner" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1000&q=85'">
+            <img src="{{ asset('r1.webp') }}" alt="Skincare Peptides Banner" width="600" height="400" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1000&q=85'">
           </a>
         </div>
       </div>
@@ -523,7 +570,7 @@
             @endphp
             <a class="article-card" href="{{ $artUrl }}">
               <div class="ph">
-                <img src="{{ $artImg }}" alt="{{ $art->title }}" loading="lazy" onerror="this.src='{{ asset('assets/website/science/s1.webp') }}'">
+                <img src="{{ $artImg }}" alt="{{ $art->title }}" width="400" height="250" loading="lazy" onerror="this.src='{{ asset('assets/website/science/s1.webp') }}'">
               </div>
               <div class="b">
                 <h3>{{ $art->title }}</h3>

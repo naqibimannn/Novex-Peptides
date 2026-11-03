@@ -184,11 +184,23 @@ class ResourcesController extends Controller
             return back()->withErrors(['Article not found.']);
         }
 
+        $slug = $existing->slug ?? '';
+        if (empty($slug)) {
+            $baseSlug = Str::slug($request->input('title'));
+            $slug = $baseSlug;
+            $counter = 1;
+            while (DB::table('resources')->where('slug', $slug)->where('id', '!=', $id)->exists()) {
+                $slug = "{$baseSlug}-{$counter}";
+                $counter++;
+            }
+        }
+
         $imagePath = $this->handleUpload($request, $existing->image);
         $nowKl = Carbon::now('Asia/Kuala_Lumpur')->format('Y-m-d H:i:s');
 
         $updateData = [
             'title'      => $request->input('title'),
+            'slug'       => $slug,
             'subtitle'   => $request->input('subtitle'),
             'author'     => $request->input('author'),
             'read_time'  => $request->input('read_time'),

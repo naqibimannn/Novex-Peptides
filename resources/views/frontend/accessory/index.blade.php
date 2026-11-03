@@ -1,7 +1,75 @@
 @extends('frontend.home.index')
 
+@php
+$allAccessories = \Illuminate\Support\Facades\DB::select(
+    "SELECT * FROM products 
+     WHERE page_type = 'accessory' 
+        OR category IN ('Accessory', 'Injection Kit', 'Syringes') 
+     ORDER BY id DESC"
+);
+
+$itemListElements = [];
+foreach ($allAccessories as $index => $item) {
+    $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
+        ? $item->slug
+        : \Illuminate\Support\Str::slug($item->title ?? ('accessory-' . $item->id));
+
+    $itemUrl = \Illuminate\Support\Facades\Route::has('accessory.show') 
+        ? route('accessory.show', $itemSlug) 
+        : url('/accessory/' . $itemSlug);
+
+    $itemListElements[] = [
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => $item->title,
+        'url' => $itemUrl,
+    ];
+}
+
+$canonicalUrl = \Illuminate\Support\Facades\Route::has('accessory') ? route('accessory') : url('/accessory');
+@endphp
+
+@section('seo')
+<x-seo 
+    title="Laboratory Accessories &amp; Injection Kits | Novex Peptides"
+    description="Explore sterile laboratory accessories, reconstitution solutions, and precision injection kits engineered for research handling."
+    :canonical="$canonicalUrl"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => 'Novex Peptides Accessory Catalog',
+        'url' => $canonicalUrl,
+        'description' => 'Explore sterile laboratory accessories, reconstitution solutions, and precision injection kits engineered for research handling.',
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'itemListElement' => $itemListElements
+        ]
+    ]"
+/>
+@endsection
+
 @section('content')
 @php
+$resolveImageUrl = function($path) {
+    if (empty($path)) return asset('assets/website/placeholder.webp');
+    if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
+
+    $clean = ltrim($path, '/');
+    $checkPaths = [
+        $clean,
+        'uploads/products/' . basename($clean),
+        'storage/' . $clean,
+    ];
+
+    foreach ($checkPaths as $p) {
+        $realPath = public_path($p);
+        if (file_exists($realPath)) {
+            return asset($p) . '?v=' . filemtime($realPath);
+        }
+    }
+    return asset($clean) . '?v=' . time();
+};
+
 $accCssPath = 'frontend/accessory/accessory.css';
 $accCssVer = file_exists(public_path($accCssPath)) ? filemtime(public_path($accCssPath)) : time();
 
@@ -30,25 +98,19 @@ $accJsVer = file_exists(public_path($accJsPath)) ? filemtime(public_path($accJsP
     </div>
     
     <div class="catalog-grid" id="pg">
-      @php
-          $allAccessories = \Illuminate\Support\Facades\DB::select(
-              "SELECT * FROM products 
-               WHERE page_type = 'accessory' 
-                  OR category IN ('Accessory', 'Injection Kit', 'Syringes') 
-               ORDER BY id DESC"
-          );
-      @endphp
-
       @forelse($allAccessories as $item)
         @php
             $slides = [];
             if (!empty($item->image)) {
                 $decoded = json_decode($item->image, true);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    $slides = array_values(array_filter($decoded, fn($p) => !empty($p) && (file_exists(public_path($p)) || file_exists(public_path('uploads/products/' . basename($p))))));
-                } elseif (file_exists(public_path($item->image))) {
+                    $slides = array_values(array_filter($decoded, fn($p) => !empty($p)));
+                } elseif (is_string($item->image) && !empty($item->image)) {
                     $slides = [$item->image];
                 }
+            }
+            if (empty($slides)) {
+                $slides = ['assets/website/placeholder.webp'];
             }
 
             $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
@@ -66,20 +128,22 @@ $accJsVer = file_exists(public_path($accJsPath)) ? filemtime(public_path($accJsP
               <div class="prod-slider">
                 <div class="prod-slides">
                   @foreach($slides as $sIdx => $imgSrc)
+                    @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
                     <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
                       <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                        <img src="{{ asset($imgSrc) }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} view {{ $sIdx + 1 }}" width="300" height="300" loading="lazy">
                       </a>
                     </div>
                   @endforeach
                 </div>
               </div>
             @elseif(count($slides) === 1)
+              @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
               <div class="prod-slider">
                 <div class="prod-slides">
                   <div class="prod-slide active">
                     <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                      <img src="{{ asset($slides[0]) }}" alt="{{ $item->title }}" loading="lazy">
+                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" width="300" height="300" loading="lazy">
                     </a>
                   </div>
                 </div>

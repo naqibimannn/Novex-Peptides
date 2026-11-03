@@ -1,5 +1,45 @@
 @extends('frontend.home.index')
 
+@php
+$allProducts = \Illuminate\Support\Facades\DB::select(
+    "SELECT * FROM products 
+     WHERE (page_type NOT IN ('skin', 'accessory', 'premium', 'performance') OR page_type IS NULL OR page_type = '') 
+       AND (category NOT IN ('Skin Lab', 'Accessory', 'Injection Kit', 'Syringes', 'Premium Supplements', 'Supplements', 'Performance Apparel') OR category IS NULL) 
+       AND (slug NOT IN ('nx-polo-navy', 'polo', 'half-zip-polo') OR slug IS NULL)
+     ORDER BY id DESC"
+);
+
+$itemListElements = [];
+foreach ($allProducts as $index => $prod) {
+    $pSlug = !empty($prod->slug) ? $prod->slug : \Illuminate\Support\Str::slug($prod->title ?? ('product-' . $prod->id));
+    $itemListElements[] = [
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => $prod->title,
+        'url' => url('/products/' . $pSlug)
+    ];
+}
+@endphp
+
+@section('seo')
+<x-seo 
+    title="Shop Research Peptides Catalog | Novex Peptides"
+    description="Browse certified high-purity peptides, metabolic research compounds, and laboratory solutions. Batch-level verification with third-party HPLC assay testing."
+    :canonical="route('products.index')"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => 'Novex Peptides Catalog',
+        'url' => route('products.index'),
+        'description' => 'Browse certified high-purity peptides, metabolic research compounds, and laboratory solutions.',
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'itemListElement' => $itemListElements
+        ]
+    ]"
+/>
+@endsection
+
 @section('content')
 @php
 $resolveImageUrl = function($path) {
@@ -52,16 +92,6 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
     </div>
     
     <div class="catalog-grid" id="pg">
-      @php
-          $allProducts = \Illuminate\Support\Facades\DB::select(
-              "SELECT * FROM products 
-               WHERE (page_type NOT IN ('skin', 'accessory', 'premium', 'performance') OR page_type IS NULL OR page_type = '') 
-                 AND (category NOT IN ('Skin Lab', 'Accessory', 'Injection Kit', 'Syringes', 'Premium Supplements', 'Supplements', 'Performance Apparel') OR category IS NULL) 
-                 AND (slug NOT IN ('nx-polo-navy', 'polo', 'half-zip-polo') OR slug IS NULL)
-               ORDER BY id DESC"
-          );
-      @endphp
-
       @forelse($allProducts as $item)
         @php
             $slides = [];
@@ -78,7 +108,7 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
             }
 
             $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
-                ? $itemSlug = $item->slug
+                ? $item->slug
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
             $detailUrl = url('/products/' . $itemSlug);
@@ -93,7 +123,7 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
                     @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
                     <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
                       <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }} {{ $sIdx + 1 }}" loading="lazy">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" width="300" height="300" loading="lazy">
                       </a>
                     </div>
                   @endforeach
@@ -105,7 +135,7 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
                 <div class="prod-slides">
                   <div class="prod-slide active">
                     <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title }}">
-                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" loading="lazy">
+                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title }}" width="300" height="300" loading="lazy">
                     </a>
                   </div>
                 </div>

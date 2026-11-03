@@ -1,6 +1,5 @@
 @extends('frontend.home.index')
 
-@section('content')
 @php
 $resolveImageUrl = function($path) {
     if (empty($path)) return asset('assets/website/skin/info.webp');
@@ -27,6 +26,7 @@ $resolveImageUrl = function($path) {
 $skinProducts = \Illuminate\Support\Facades\DB::select(
     "SELECT * FROM products 
      WHERE page_type = 'skin' 
+        OR category IN ('Skin Lab', 'Skincare', 'Novex Skincare', 'Skin', 'Skincare Peptides', 'Skincare Collection') 
      ORDER BY id DESC"
 );
 
@@ -35,8 +35,44 @@ $skinShowCssVer = file_exists(public_path($skinShowCssPath)) ? filemtime(public_
 
 $skinShowJsPath = 'frontend/skin/show.js';
 $skinShowJsVer = file_exists(public_path($skinShowJsPath)) ? filemtime(public_path($skinShowJsPath)) : time();
+
+$itemListElements = [];
+foreach ($skinProducts as $index => $item) {
+    $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
+        ? $item->slug
+        : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
+
+    $itemListElements[] = [
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => $item->title ?? 'Formula',
+        'url' => url('/skin/show/' . $itemSlug),
+    ];
+}
+
+$canonicalUrl = url('/skin/show');
 @endphp
 
+@section('seo')
+<x-seo 
+    title="Skin Lab Formulations &amp; Dermatological Care | Novex Peptides"
+    description="Explore Novex Skin Lab formulations. Dermatology-inspired skincare, deep-cleansing mud foams, and cellular rejuvenation treatments crafted for Asian skin."
+    :canonical="$canonicalUrl"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => 'Novex Skin Lab Formulas Catalog',
+        'url' => $canonicalUrl,
+        'description' => 'Explore Novex Skin Lab formulations. Dermatology-inspired skincare, deep-cleansing mud foams, and cellular rejuvenation treatments crafted for Asian skin.',
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'itemListElement' => $itemListElements
+        ]
+    ]"
+/>
+@endsection
+
+@section('content')
 <link rel="stylesheet" href="{{ asset($skinShowCssPath) }}?v={{ $skinShowCssVer }}">
 
 <section class="catalog-sec" id="cat">
@@ -92,7 +128,7 @@ $skinShowJsVer = file_exists(public_path($skinShowJsPath)) ? filemtime(public_pa
                     @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
                     <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
                       <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Formula' }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Formula' }} {{ $sIdx + 1 }}" loading="lazy">
+                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Formula' }} {{ $sIdx + 1 }}" width="300" height="300" loading="lazy">
                       </a>
                     </div>
                   @endforeach
@@ -104,7 +140,7 @@ $skinShowJsVer = file_exists(public_path($skinShowJsPath)) ? filemtime(public_pa
                 <div class="prod-slides">
                   <div class="prod-slide active">
                     <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Formula' }}">
-                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Formula' }}" loading="lazy">
+                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Formula' }}" width="300" height="300" loading="lazy">
                     </a>
                   </div>
                 </div>

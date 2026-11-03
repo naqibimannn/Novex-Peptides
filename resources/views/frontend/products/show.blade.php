@@ -1,6 +1,5 @@
 @extends('frontend.home.index')
 
-@section('content')
 @php
 $resolveImageUrl = function($path) {
     if (empty($path)) return asset('reta1.webp');
@@ -161,8 +160,87 @@ $showCssVer = file_exists(public_path($showCssPath)) ? filemtime(public_path($sh
 
 $showJsPath = 'frontend/products/show.js';
 $showJsVer = file_exists(public_path($showJsPath)) ? filemtime(public_path($showJsPath)) : time();
+
+$seoImages = [];
+foreach ($currProd['imgs'] as $imgItem) {
+    $seoImages[] = $resolveImageUrl($imgItem);
+}
+$mainOgImage = $seoImages[0] ?? asset('reta1.webp');
+
+$cleanDescription = \Illuminate\Support\Str::limit(trim(preg_replace('/\s+/', ' ', strip_tags($currProd['desc'] ?? ''))), 155);
+if (empty($cleanDescription)) {
+    $cleanDescription = $currProd['name'] . ' - High-purity laboratory formulation verified with strict quality control standards.';
+}
+
+$productPrice = (float)($currProd['val'] ?? 0);
+if ($productPrice <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $currProd['price'] ?? '', $pm)) {
+    $productPrice = (float)$pm[1];
+}
+
+$isStockAvailable = ($currProd['stock'] ?? 0) > 0;
+
+$productSchema = [
+    '@context' => 'https://schema.org',
+    '@graph' => [
+        [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => url('/')
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Catalog',
+                    'item' => route('products.index')
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
+                    'name' => $currProd['name'],
+                    'item' => url()->current()
+                ]
+            ]
+        ],
+        [
+            '@type' => 'Product',
+            'name' => $currProd['name'],
+            'image' => $seoImages,
+            'description' => $cleanDescription,
+            'category' => $currProd['category'],
+            'sku' => 'NVX-' . ($currProd['db_id'] ?? $currProd['id']),
+            'offers' => [
+                '@type' => 'Offer',
+                'url' => url()->current(),
+                'priceCurrency' => 'MYR',
+                'price' => number_format($productPrice, 2, '.', ''),
+                'priceValidUntil' => \Carbon\Carbon::now()->addYear()->format('Y-12-31'),
+                'availability' => $isStockAvailable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                'itemCondition' => 'https://schema.org/NewCondition',
+                'seller' => [
+                    '@type' => 'Organization',
+                    'name' => 'Novex Peptides'
+                ]
+            ]
+        ]
+    ]
+];
 @endphp
 
+@section('seo')
+<x-seo 
+    :title="$currProd['name'] . ' | Novex Peptides'"
+    :description="$cleanDescription"
+    :og-image="$mainOgImage"
+    :type="'product'"
+    :schema="$productSchema"
+/>
+@endsection
+
+@section('content')
 <link rel="stylesheet" href="{{ asset($showCssPath) }}?v={{ $showCssVer }}">
 
 <section class="product-detail-sec" id="productDetailSec">
@@ -188,7 +266,9 @@ $showJsVer = file_exists(public_path($showJsPath)) ? filemtime(public_path($show
             @foreach($currProd['imgs'] as $idx => $imgFile)
               <div class="prod-slide contain-slide {{ $idx === 0 ? 'active' : '' }}">
                 <img src="{{ $resolveImageUrl($imgFile) }}" 
-                     alt="{{ $currProd['name'] }} Slide {{ $idx + 1 }}" 
+                     alt="{{ $currProd['name'] }} formulation view {{ $idx + 1 }}" 
+                     width="600"
+                     height="600"
                      loading="lazy"
                      onload="fitRoundedImg(this)"
                      onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000'">

@@ -78,14 +78,29 @@
             <span>Performance Page</span>
           </button>
 
+          <button type="button" onclick="filterAudienceByPage('performance_show', 'Performance (Catalog)')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Performance (Catalog)</span>
+          </button>
+
           <button type="button" onclick="filterAudienceByPage('premium', 'Premium Supplements Page')"
             class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
             <span>Premium Supplements Page</span>
           </button>
 
+          <button type="button" onclick="filterAudienceByPage('premium_show', 'Premium Supplements (Catalog)')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Premium Supplements (Catalog)</span>
+          </button>
+
           <button type="button" onclick="filterAudienceByPage('skin', 'Skin Lab Page')"
             class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
             <span>Skin Lab Page</span>
+          </button>
+
+          <button type="button" onclick="filterAudienceByPage('skin_show', 'Skin Lab (Catalog)')"
+            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors">
+            <span>Skin Lab (Catalog)</span>
           </button>
 
           <button type="button" onclick="filterAudienceByPage('resources', 'Resources Page')"
@@ -406,7 +421,7 @@
         html += `<div class="h-9 flex items-center justify-center text-xs text-slate-300 font-medium">${d}</div>`;
       }
 
-      const curDate = new Date(audCalYear, audCalMonth, audSelectedDay);
+      const curDate = new Date(audCalYear, audCalMonth, endDay => audSelectedDay);
       const startDateObj = new Date(curDate);
       startDateObj.setDate(curDate.getDate() - 6);
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\Backend\Admin\AudienceController;
 use App\Http\Controllers\Backend\Admin\OrganizationController;
 use App\Http\Controllers\Backend\Admin\ResourcesController;
 use App\Http\Controllers\Frontend\PageRouterController;
+use App\Http\Controllers\SitemapController;
 
 Route::any('/login', fn() => abort(404));
 Route::any('/admin', fn() => abort(404));
@@ -405,3 +406,5 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
 });
 
 Route::fallback([PageRouterController::class, 'handle']);
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');

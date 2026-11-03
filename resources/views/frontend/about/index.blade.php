@@ -1,5 +1,19 @@
 @extends('frontend.home.index')
 
+@section('seo')
+<x-seo 
+    title="About Our Story &amp; Standards | Novex Peptides"
+    description="Learn how Novex Peptides was built around certified batch purity, third-party laboratory assay verification, and cold-chain integrity."
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'AboutPage',
+        'name' => 'About Novex Peptides',
+        'url' => route('about'),
+        'description' => 'Learn how Novex Peptides was built around certified batch purity, third-party laboratory assay verification, and cold-chain integrity.'
+    ]"
+/>
+@endsection
+
 @section('content')
 @php
   $aboutPath = public_path('assets/website/about/about.webp');
@@ -16,7 +30,7 @@
 <link rel="stylesheet" href="{{ asset($aboutCssPath) }}?v={{ $aboutCssVer }}">
 
 <section class="about-hero">
-  <img id="heroImage" src="{{ asset('assets/website/about/hero.webp') }}" href="{{ asset('assets/website/about/hero.webp') }}" data-desktop="{{ asset('assets/website/about/hero.webp') }}" data-phone="{{ asset('assets/website/about/hero-phone.webp') }}" alt="Our story" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1800&q=85'">
+  <img id="heroImage" src="{{ asset('assets/website/about/hero.webp') }}" data-desktop="{{ asset('assets/website/about/hero.webp') }}" data-phone="{{ asset('assets/website/about/hero-phone.webp') }}" alt="Our story - Novex Laboratory Research" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1800&q=85'">
   <div class="wrap">
     <div class="in">
       <span class="eyebrow">Our story</span>

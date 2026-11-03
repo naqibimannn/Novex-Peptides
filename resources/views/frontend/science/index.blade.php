@@ -1,5 +1,37 @@
 @extends('frontend.home.index')
 
+@section('seo')
+<x-seo 
+    title="Quality Control &amp; HPLC Lab Testing | Novex Peptides"
+    description="Explore third-party laboratory COA reports, HPLC purity assays exceeding 99%, mass spectrometry identity confirmation, and scientific peptide glossaries."
+    :canonical="route('science')"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => 'Novex Peptides Science & Quality Control',
+        'url' => route('science'),
+        'description' => 'Explore third-party laboratory COA reports, HPLC purity assays exceeding 99%, mass spectrometry identity confirmation, and scientific peptide glossaries.',
+        'breadcrumb' => [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => url('/')
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Science & Quality Control',
+                    'item' => route('science')
+                ]
+            ]
+        ]
+    ]"
+/>
+@endsection
+
 @section('content')
 @php
   $lab1Ver = file_exists(public_path('lab1.webp')) ? filemtime(public_path('lab1.webp')) : time();
@@ -19,10 +51,11 @@
 <section class="science-hero">
   <img id="heroImage" 
        src="{{ asset('assets/website/science/hero.webp') }}" 
-       href="{{ asset('assets/website/science/hero.webp') }}" 
        data-desktop="{{ asset('assets/website/science/hero.webp') }}" 
        data-phone="{{ asset('assets/website/science/hero-phone.webp') }}" 
-       alt="Science and Research" 
+       alt="Science and Quality Control Laboratory" 
+       width="1800"
+       height="700"
        onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
   <div class="wrap">
     <div class="in">
@@ -37,7 +70,7 @@
   <div class="wrap">
     <div class="head">
       <div>
-        <h1 class="sec-title">Our Science &amp; Quality Control</h1>
+        <h2 class="sec-title">Our Science &amp; Quality Control</h2>
         <p class="sec-desc">Complete laboratory analytical reports (COA), HPLC purity assays, and strict mass spectrometry identification.</p>
       </div>
     </div>
@@ -45,7 +78,7 @@
     <div class="lab-grid">
       <div class="lab-item">
         <div class="lab-img-wrap" onclick="openLightboxModal('{{ $lab1Url }}', 'Janoshik Test Report #123459 — Retatrutide 10 MG (Batch NXP-RT-001)')">
-          <img src="{{ $lab1Url }}" alt="Janoshik Test Report Retatrutide 10 MG" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
+          <img src="{{ $lab1Url }}" alt="Janoshik Test Report Retatrutide 10 MG" width="800" height="1100" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>
@@ -60,7 +93,7 @@
 
       <div class="lab-item">
         <div class="lab-img-wrap" onclick="openLightboxModal('{{ $lab2Url }}', 'Janoshik Test Report #122238 — GHK-Cu (Copper Peptide)')">
-          <img src="{{ $lab2Url }}" alt="Janoshik Test Report GHK-Cu Copper Peptide" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
+          <img src="{{ $lab2Url }}" alt="Janoshik Test Report GHK-Cu Copper Peptide" width="800" height="1100" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>

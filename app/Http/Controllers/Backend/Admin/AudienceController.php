@@ -62,15 +62,30 @@ class AudienceController extends Controller
                     $q->where('page_url', 'performance')
                       ->orWhere('page_url', 'LIKE', 'performance/%');
                 });
+            } elseif ($page === 'performance_show') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'performance/show')
+                      ->orWhere('page_url', 'LIKE', 'performance/show/%');
+                });
             } elseif ($page === 'premium') {
                 $query->where(function ($q) {
                     $q->where('page_url', 'premium')
                       ->orWhere('page_url', 'LIKE', 'premium/%');
                 });
+            } elseif ($page === 'premium_show') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'premium/show')
+                      ->orWhere('page_url', 'LIKE', 'premium/show/%');
+                });
             } elseif ($page === 'skin') {
                 $query->where(function ($q) {
                     $q->where('page_url', 'skin')
                       ->orWhere('page_url', 'LIKE', 'skin/%');
+                });
+            } elseif ($page === 'skin_show') {
+                $query->where(function ($q) {
+                    $q->where('page_url', 'skin/show')
+                      ->orWhere('page_url', 'LIKE', 'skin/show/%');
                 });
             } elseif ($page === 'resources') {
                 $query->where(function ($q) {

@@ -1,5 +1,20 @@
 @extends('frontend.home.index')
 
+@section('seo')
+<x-seo 
+    title="Novex Skin Lab | Dermatology Crafted for Asian Skin"
+    description="Science-backed skincare and dermatology-inspired treatments crafted for Asian skin. Advanced mud foams, glutathione, and gentle daily exfoliating formulas."
+    :canonical="url('/skin')"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => 'Novex Skin Lab',
+        'url' => url('/skin'),
+        'description' => 'Science-backed skincare and dermatology-inspired treatments crafted for Asian skin. Advanced mud foams, glutathione, and gentle daily exfoliating formulas.'
+    ]"
+/>
+@endsection
+
 @section('content')
 @php
     $img = fn ($f) => file_exists(public_path("images/skin-lab/$f")) ? asset("images/skin-lab/$f") : null;
@@ -67,10 +82,11 @@
       <source media="(orientation: portrait)" srcset="{{ asset('assets/website/skin/hero-phone.webp') }}">
       <img id="heroImage" 
            src="{{ asset('assets/website/skin/hero.webp') }}" 
-           href="{{ asset('assets/website/skin/hero.webp') }}" 
            data-desktop="{{ asset('assets/website/skin/hero.webp') }}" 
            data-phone="{{ asset('assets/website/skin/hero-phone.webp') }}" 
            alt="Novex Skin Lab" 
+           width="1800"
+           height="700"
            onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1800&q=80'">
     </picture>
     <div class="wrap">
@@ -78,7 +94,7 @@
         <span class="skin-eyebrow">NOVEX SKIN LAB</span>
         <h1>Dermatology<br>crafted for<br>Asian skin</h1>
         <div>
-          <a class="btn-hero-explore" href="#products">Explore Our Products</a>
+          <a class="btn-hero-explore" href="{{ url('/skin/show') }}">Explore Our Products</a>
         </div>
       </div>
     </div>
@@ -100,7 +116,7 @@
   <section id="products" class="skin-feature-sec">
     <div class="wrap skin-feature-grid">
       <div class="skin-feature-media">
-        <img src="{{ asset('assets/website/skin/info.webp') }}" href="{{ asset('assets/website/skin/info.webp') }}" alt="Novex Extra Bright Mud Foam" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1000&q=80'">
+        <img src="{{ asset('assets/website/skin/info.webp') }}" alt="Novex Extra Bright Mud Foam" width="800" height="600" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1000&q=80'">
       </div>
 
       <div class="skin-feature-content">
@@ -134,11 +150,11 @@
         <div class="skin-compare-card">
           <div class="skin-compare-images">
             <div class="skin-compare-pane">
-              <img src="{{ $transform1Url }}" href="{{ $transform1Url }}" alt="Before: Dull & Uneven Skin" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('transform1.webp') }}'">
+              <img src="{{ $transform1Url }}" alt="Before: Dull &amp; Uneven Skin" width="400" height="400" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('transform1.webp') }}'">
             </div>
 
             <div class="skin-compare-pane">
-              <img src="{{ $transform2Url }}" href="{{ $transform2Url }}" alt="After: Clean, Smoother & Brighter" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('transform2.webp') }}'">
+              <img src="{{ $transform2Url }}" alt="After: Clean, Smoother &amp; Brighter" width="400" height="400" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('transform2.webp') }}'">
             </div>
 
             <span class="skin-compare-badge" aria-hidden="true">&rsaquo;</span>
@@ -185,7 +201,7 @@
       </div>
 
       <div class="skin-benefits-media">
-        <img src="{{ asset('assets/website/skin/benefits.webp') }}" href="{{ asset('assets/website/skin/benefits.webp') }}" alt="Novex Skin Lab Key Benefits" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('benefits.webp') }}'">
+        <img src="{{ asset('assets/website/skin/benefits.webp') }}" alt="Novex Skin Lab Key Benefits" width="800" height="600" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('benefits.webp') }}'">
       </div>
     </div>
   </section>

@@ -1,5 +1,20 @@
 @extends('frontend.home.index')
 
+@section('seo')
+<x-seo 
+    title="Novex Performance Division | Technical Athletic Apparel"
+    description="Sport, discipline, and performance lifestyle. Explore technical sportswear, signature unisex half zip polos, and athletic apparel engineered for movement."
+    :canonical="url('/performance')"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => 'Novex Performance Division',
+        'url' => url('/performance'),
+        'description' => 'Sport, discipline, and performance lifestyle. Explore technical sportswear, signature unisex half zip polos, and athletic apparel engineered for movement.'
+    ]"
+/>
+@endsection
+
 @section('content')
 @php
 $resolveImageUrl = function($path) {
@@ -40,14 +55,14 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
   <section class="performance-hero">
     <picture>
       <source media="(orientation: portrait)" srcset="{{ asset('assets/website/performance/hero-phone.webp') }}">
-      <img src="{{ asset('assets/website/performance/hero.webp') }}" alt="Novex Performance Division" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1800&q=80'">
+      <img src="{{ asset('assets/website/performance/hero.webp') }}" alt="Novex Performance Division" width="1800" height="700" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1800&q=80'">
     </picture>
     <div class="wrap">
       <div class="in">
         <h1>Novex Performance<br>Division</h1>
         <p>Sport. Discipline. Performance. Lifestyle. Designed for movement, built for a higher standard.</p>
         <div>
-          <a class="btn-hero-explore" href="#perf-info">Explore Collection</a>
+          <a class="btn-hero-explore" href="{{ url('/performance/show') }}">Explore Collection</a>
         </div>
       </div>
     </div>
@@ -98,7 +113,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
             @if($gIdx < 4)
               <figure class="nxg-fig">
                 <div class="nxg-ph rA">
-                  <img src="{{ $resolveImageUrl($gImg) }}" alt="{{ $viewCaps[$gIdx] ?? ('View ' . ($gIdx + 1)) }}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+                  <img src="{{ $resolveImageUrl($gImg) }}" alt="{{ $viewCaps[$gIdx] ?? ('View ' . ($gIdx + 1)) }}" width="400" height="400" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
                 </div>
                 <figcaption class="nxg-cap">
                   <b>{{ $viewCaps[$gIdx] ?? ('View ' . ($gIdx + 1)) }}</b>
@@ -111,7 +126,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
         <div class="nxg-grid c3">
           <figure class="nxg-fig">
             <div class="nxg-ph rB">
-              <img src="{{ asset('assets/website/performance/collar.webp') }}" alt="Half zip collar" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/collar.webp') }}" alt="Half zip collar" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Half zip collar</b>
@@ -120,7 +135,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rB">
-              <img src="{{ asset('assets/website/performance/embroidery.webp') }}" alt="Signature embroidery" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/embroidery.webp') }}" alt="Signature embroidery" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Signature embroidery</b>
@@ -129,7 +144,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rB">
-              <img src="{{ asset('assets/website/performance/sleeve-label.webp') }}" alt="Sleeve label" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/sleeve-label.webp') }}" alt="Sleeve label" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Sleeve label</b>
@@ -138,7 +153,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rB">
-              <img src="{{ asset('assets/website/performance/fabric.webp') }}" alt="Premium polo fabric" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/fabric.webp') }}" alt="Premium polo fabric" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Premium polo fabric</b>
@@ -147,7 +162,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rB">
-              <img src="{{ asset('assets/website/performance/shoulder-panel.webp') }}" alt="Shoulder panel" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/shoulder-panel.webp') }}" alt="Shoulder panel" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Shoulder panel</b>
@@ -156,7 +171,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rB">
-              <img src="{{ asset('assets/website/performance/side-panel.webp') }}" alt="Side panel" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/side-panel.webp') }}" alt="Side panel" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Side panel</b>
@@ -172,7 +187,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
         <div class="nxg-grid c3">
           <figure class="nxg-fig">
             <div class="nxg-ph rC">
-              <img src="{{ asset('assets/website/performance/collar-top.webp') }}" alt="Collar top view" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/collar-top.webp') }}" alt="Collar top view" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Collar top view</b>
@@ -180,7 +195,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rC">
-              <img src="{{ asset('assets/website/performance/collar-back.webp') }}" alt="Collar back view" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/collar-back.webp') }}" alt="Collar back view" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Collar back view</b>
@@ -188,7 +203,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rC">
-              <img src="{{ asset('assets/website/performance/sleeve-left.webp') }}" alt="Sleeve left (flat)" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/sleeve-left.webp') }}" alt="Sleeve left (flat)" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Sleeve left (flat)</b>
@@ -196,7 +211,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rC">
-              <img src="{{ asset('assets/website/performance/sleeve-right.webp') }}" alt="Sleeve right (flat)" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/sleeve-right.webp') }}" alt="Sleeve right (flat)" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Sleeve right (flat)</b>
@@ -204,7 +219,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rC">
-              <img src="{{ asset('assets/website/performance/side-panel-left.webp') }}" alt="Side panel left (flat)" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/side-panel-left.webp') }}" alt="Side panel left (flat)" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Side panel left (flat)</b>
@@ -212,7 +227,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
           </figure>
           <figure class="nxg-fig">
             <div class="nxg-ph rC">
-              <img src="{{ asset('assets/website/performance/side-panel-right.webp') }}" alt="Side panel right (flat)" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
+              <img src="{{ asset('assets/website/performance/side-panel-right.webp') }}" alt="Side panel right (flat)" width="400" height="300" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600'">
             </div>
             <figcaption class="nxg-cap">
               <b>Side panel right (flat)</b>
@@ -227,7 +242,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
     <div class="wrap">
       <div class="perf-info-grid">
         <div class="perf-info-media">
-          <img src="{{ asset('assets/website/performance/info.webp') }}" href="{{ asset('assets/website/performance/info.webp') }}" alt="Performance Apparel Quality" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1000&q=80'">
+          <img src="{{ asset('assets/website/performance/info.webp') }}" alt="Performance Apparel Quality" width="800" height="600" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1000&q=80'">
         </div>
         <div class="perf-info-body">
           <span class="perf-eyebrow">Engineered Performance</span>
@@ -245,7 +260,7 @@ $perfJsVer = file_exists(public_path($perfJsPath)) ? filemtime(public_path($perf
 
   <section class="nx-cta">
     <div class="nx-cta-img">
-      <img src="{{ asset('assets/website/performance/cta.webp') }}" alt="More than sport" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1800&q=80'">
+      <img src="{{ asset('assets/website/performance/cta.webp') }}" alt="More than sport" width="1800" height="600" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1800&q=80'">
     </div>
     <div class="nx-cta-panel">
       <span class="eyebrow">Novex Performance Division</span>

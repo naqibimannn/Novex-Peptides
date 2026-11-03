@@ -359,6 +359,18 @@ class ProductsController extends Controller
         }
         $product = $current[0];
 
+        $currentSlug = $product->slug ?? '';
+        if (empty($currentSlug)) {
+            $baseSlug = Str::slug($validated['title']);
+            $currentSlug = $baseSlug;
+            $counter = 1;
+
+            while (!empty(DB::select("SELECT id FROM products WHERE slug = ? AND id != ? LIMIT 1", [$currentSlug, $id]))) {
+                $currentSlug = "{$baseSlug}-{$counter}";
+                $counter++;
+            }
+        }
+
         $destination = public_path('uploads/products');
         if (!File::isDirectory($destination)) {
             File::makeDirectory($destination, 0755, true, true);
@@ -418,13 +430,14 @@ class ProductsController extends Controller
 
         DB::update(
             "UPDATE products 
-             SET title = ?, subtitle = ?, price = ?, price_val = ?, dosage_spec = ?, stock = ?, 
+             SET title = ?, subtitle = ?, slug = ?, price = ?, price_val = ?, dosage_spec = ?, stock = ?, 
                  badge_category = ?, category = ?, page_type = ?, keywords = ?, description = ?, 
                  has_variants = ?, variant_title = ?, variants = ?, sizes = ?, image = ?, updated_at = ? 
              WHERE id = ?",
             [
                 $validated['title'],
                 $validated['subtitle'] ?? null,
+                $currentSlug,
                 $validated['price'],
                 $priceVal,
                 $validated['dosage_spec'] ?? null,

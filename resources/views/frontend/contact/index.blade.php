@@ -1,15 +1,28 @@
 @extends('frontend.home.index')
 
-@section('content')
 @php
-    $orgInfo = \Illuminate\Support\Facades\Schema::hasTable('organization_info')
-        ? \Illuminate\Support\Facades\DB::table('organization_info')->first()
-        : null;
+    $orgData = \Illuminate\Support\Facades\Cache::remember('site_organization_info', 86400, function () {
+        if (\Illuminate\Support\Facades\Schema::hasTable('organization_info')) {
+            $data = \Illuminate\Support\Facades\DB::table('organization_info')->first();
+            return $data ? (array) $data : [];
+        }
+        return [];
+    });
 
-    $orgPhone = $orgInfo->phone_number ?? '+60 11-2549 0484';
+    $orgInfo = !empty($orgData) ? (object) $orgData : null;
+
     $companyName = $orgInfo->company_name ?? 'Novex Peptides';
+    $orgPhone = $orgInfo->phone_number ?? '+60 11-2549 0484';
+    $orgEmail = $orgInfo->email ?? 'support@novexsupps.com';
+    $orgIg = $orgInfo->instagram_url ?? 'https://www.instagram.com/novexperfomancedivision?rpxt=MWhrc2tlYjFkdXNjaA==';
+    $orgTiktok = $orgInfo->tiktok_url ?? 'https://www.tiktok.com/@fthulaimn?_r=1&_t=ZS-9AigtDpLBg1';
+
     $cleanWaPhone = preg_replace('/[^0-9]/', '', $orgPhone);
     $waText = rawurlencode("Hi {$companyName}, I have an inquiry.");
+
+    $contactUrl = \Illuminate\Support\Facades\Route::has('contact') ? route('contact') : url('/contact');
+
+    $socialLinks = array_values(array_filter([$orgIg, $orgTiktok]));
 
     $contactCssPath = 'frontend/contact/contact.css';
     $contactCssVer = file_exists(public_path($contactCssPath)) ? filemtime(public_path($contactCssPath)) : time();
@@ -18,15 +31,80 @@
     $contactJsVer = file_exists(public_path($contactJsPath)) ? filemtime(public_path($contactJsPath)) : time();
 @endphp
 
+@section('seo')
+<x-seo 
+    :title="'Contact Desk & Direct Support | ' . $companyName"
+    :description="'Contact ' . $companyName . ' desk for order tracking, custom batch certificates, wholesale pricing, and technical support. Direct desk: ' . $orgPhone . ' or email: ' . $orgEmail . '.'"
+    :canonical="$contactUrl"
+    region="MY-10"
+    placename="Selangor, Malaysia"
+    latitude="3.2384"
+    longitude="101.4278"
+    :schema="[
+        '@context' => 'https://schema.org',
+        '@type' => 'ContactPage',
+        'name' => $companyName . ' Contact Desk',
+        'url' => $contactUrl,
+        'description' => 'Get in touch with ' . $companyName . ' for order tracking, certificates of analysis, wholesale, and support.',
+        'mainEntity' => [
+            '@type' => 'Organization',
+            'name' => $companyName,
+            'url' => url('/'),
+            'logo' => asset('logo.png'),
+            'telephone' => $orgPhone,
+            'email' => $orgEmail,
+            'sameAs' => $socialLinks,
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Puncak Alam',
+                'addressRegion' => 'Selangor',
+                'addressCountry' => 'MY'
+            ],
+            'geo' => [
+                '@type' => 'GeoCoordinates',
+                'latitude' => 3.2384,
+                'longitude' => 101.4278
+            ],
+            'contactPoint' => [
+                '@type' => 'ContactPoint',
+                'telephone' => $orgPhone,
+                'email' => $orgEmail,
+                'contactType' => 'customer support',
+                'availableLanguage' => ['English', 'Malay']
+            ]
+        ],
+        'breadcrumb' => [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => url('/')
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Contact Desk',
+                    'item' => $contactUrl
+                ]
+            ]
+        ]
+    ]"
+/>
+@endsection
+
+@section('content')
 <link rel="stylesheet" href="{{ asset($contactCssPath) }}?v={{ $contactCssVer }}">
 
 <section class="contact-hero">
   <img id="heroImage" 
        src="{{ asset('assets/website/contact/hero.webp') }}" 
-       href="{{ asset('assets/website/contact/hero.webp') }}" 
        data-desktop="{{ asset('assets/website/contact/hero.webp') }}" 
        data-phone="{{ asset('assets/website/contact/hero-phone.webp') }}" 
-       alt="Contact Desk" 
+       alt="Contact Desk Support" 
+       width="1800"
+       height="700"
        onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1800&q=85'">
   <div class="wrap">
     <div class="in">
