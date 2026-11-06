@@ -34,10 +34,17 @@
 
 @section('content')
 @php
-  $lab1Ver = file_exists(public_path('lab1.webp')) ? filemtime(public_path('lab1.webp')) : time();
-  $lab2Ver = file_exists(public_path('lab2.webp')) ? filemtime(public_path('lab2.webp')) : time();
-  $lab1Url = asset('lab1.webp') . '?v=' . $lab1Ver;
-  $lab2Url = asset('lab2.webp') . '?v=' . $lab2Ver;
+  $lab1Path = 'assets/website/science/lab1.webp';
+  $lab2Path = 'assets/website/science/lab2.webp';
+  $lab3Path = 'assets/website/science/lab3.webp';
+
+  $lab1Ver = file_exists(public_path($lab1Path)) ? filemtime(public_path($lab1Path)) : time();
+  $lab2Ver = file_exists(public_path($lab2Path)) ? filemtime(public_path($lab2Path)) : time();
+  $lab3Ver = file_exists(public_path($lab3Path)) ? filemtime(public_path($lab3Path)) : time();
+
+  $lab1Url = asset($lab1Path) . '?v=' . $lab1Ver;
+  $lab2Url = asset($lab2Path) . '?v=' . $lab2Ver;
+  $lab3Url = asset($lab3Path) . '?v=' . $lab3Ver;
 
   $sciCssPath = 'frontend/science/science.css';
   $sciCssVer = file_exists(public_path($sciCssPath)) ? filemtime(public_path($sciCssPath)) : time();
@@ -77,13 +84,13 @@
 
     <div class="lab-grid">
       <div class="lab-item">
-        <div class="lab-img-wrap" onclick="openLightboxModal('{{ $lab1Url }}', 'Janoshik Test Report #123459 — Retatrutide 10 MG (Batch NXP-RT-001)')">
+        <a href="{{ $lab1Url }}" class="lab-img-wrap" target="_blank" rel="noopener noreferrer">
           <img src="{{ $lab1Url }}" alt="Janoshik Test Report Retatrutide 10 MG" width="800" height="1100" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>
           </div>
-        </div>
+        </a>
         <div class="lab-meta">
           <span class="lab-meta-tag">Purity: 99.795% • Task #123459</span>
           <h3>Retatrutide 10 MG (Batch NXP-RT-001)</h3>
@@ -92,17 +99,32 @@
       </div>
 
       <div class="lab-item">
-        <div class="lab-img-wrap" onclick="openLightboxModal('{{ $lab2Url }}', 'Janoshik Test Report #122238 — GHK-Cu (Copper Peptide)')">
+        <a href="{{ $lab2Url }}" class="lab-img-wrap" target="_blank" rel="noopener noreferrer">
           <img src="{{ $lab2Url }}" alt="Janoshik Test Report GHK-Cu Copper Peptide" width="800" height="1100" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1000&q=85'">
           <div class="lab-badge">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span>Inspect High-Res Scan</span>
           </div>
-        </div>
+        </a>
         <div class="lab-meta">
           <span class="lab-meta-tag">Purity: 99.717% • Task #122238</span>
           <h3>GHK-Cu (Copper Peptide)</h3>
           <p>Independent Janoshik double-tested analysis conducted on 24 Mar 2026 confirming 71.39 mg GHK-Cu content and 99.717% purity (Unique Key: DTPDDS2WWWAH).</p>
+        </div>
+      </div>
+
+      <div class="lab-item">
+        <a href="{{ $lab3Url }}" class="lab-img-wrap" target="_blank" rel="noopener noreferrer">
+          <img src="{{ $lab3Url }}" alt="Certificate of Analysis VYREX5 (Batch VXR051024A)" width="800" height="1100" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=85'">
+          <div class="lab-badge">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Inspect High-Res Scan</span>
+          </div>
+        </a>
+        <div class="lab-meta">
+          <span class="lab-meta-tag">Purity: 99.821% • Batch #VXR051024A</span>
+          <h3>VYREX⁵ — Research Peptide Blend</h3>
+          <p>Analytical laboratory Certificate of Analysis issued by Novex Peptides USA on 03 Oct 2025, confirming 99.821% RP-HPLC purity, 10.02 mg active peptide content, and LC-MS molecular confirmation [M+H]⁺ at 1687.4.</p>
         </div>
       </div>
     </div>

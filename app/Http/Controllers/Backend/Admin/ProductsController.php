@@ -164,7 +164,7 @@ class ProductsController extends Controller
         if ($explicitVal !== null && $explicitVal !== '' && is_numeric($explicitVal) && (float)$explicitVal > 0) {
             return (float)$explicitVal;
         }
-        if (preg_match('/([0-9]+(?:\.[0-9]+)?)/', $priceString, $matches)) {
+        if (preg_match('/([0-9]+(?:\.[0-9]+)?)/', (string)$priceString, $matches)) {
             return (float)$matches[1];
         }
         return 0.00;
@@ -177,6 +177,7 @@ class ProductsController extends Controller
             return [0, null, null];
         }
 
+        $isComingSoon = ($request->input('stock_status') === 'coming_soon');
         $variantTitle = $request->input('variant_title') ?: 'Select Vial Concentration / Dosage:';
         $labels = $request->input('variant_label', []);
         $prices = $request->input('variant_price', []);
@@ -193,8 +194,13 @@ class ProductsController extends Controller
                 ? (float)$vals[$idx]
                 : $this->extractNumericPrice($rawPrice);
 
-            if ($rawPrice === '' && $numVal > 0) {
+            if ($rawPrice === '' && $numVal > 0 && !$isComingSoon) {
                 $rawPrice = 'RM' . number_format($numVal, 2);
+            }
+
+            if ($isComingSoon) {
+                $rawPrice = '';
+                $numVal = 0.00;
             }
 
             $vStock = isset($stocks[$idx]) && is_numeric($stocks[$idx]) ? (int)$stocks[$idx] : 0;
@@ -244,10 +250,11 @@ class ProductsController extends Controller
         $validated = $request->validate([
             'title'          => 'required|string|max:255',
             'subtitle'       => 'nullable|string|max:255',
-            'price'          => 'required|string|max:100',
+            'price'          => 'required_unless:stock_status,coming_soon|nullable|string|max:100',
             'price_val'      => 'nullable|numeric',
             'dosage_spec'    => 'nullable|string|max:100',
             'stock'          => 'nullable|integer|min:0',
+            'stock_status'   => 'nullable|in:in_stock,out_of_stock,coming_soon',
             'badge_category' => 'nullable|string|max:100',
             'category'       => 'nullable|string|max:100',
             'page_type'      => 'nullable|in:products,skin,accessory,premium,performance',
@@ -256,6 +263,9 @@ class ProductsController extends Controller
             'images'         => 'nullable|array',
             'images.*'       => 'file|max:12288|mimes:jpeg,png,webp,jpg|mimetypes:image/jpeg,image/png,image/webp',
         ]);
+
+        $category = $validated['category'] ?? 'Weight Management';
+        $subtitle = $validated['subtitle'] ?? $category;
 
         $slug = Str::slug($validated['title']);
         $originalSlug = $slug;
@@ -284,7 +294,11 @@ class ProductsController extends Controller
         $finalImageJson = !empty($imagePaths) ? json_encode($imagePaths) : null;
         [$hasVariants, $variantTitle, $variantsJson] = $this->processVariants($request);
         $sizesJson = $this->processSizes($request, $variantsJson);
-        $priceVal = $this->extractNumericPrice($validated['price'], $validated['price_val'] ?? null);
+
+        $stockStatus = $validated['stock_status'] ?? 'in_stock';
+        $isComingSoon = ($stockStatus === 'coming_soon');
+        $finalPrice = $isComingSoon ? '' : ($validated['price'] ?? '');
+        $priceVal = $isComingSoon ? 0.00 : $this->extractNumericPrice($finalPrice, $validated['price_val'] ?? null);
 
         $totalStock = (int)($validated['stock'] ?? 0);
         if ($hasVariants && $variantsJson) {
@@ -296,17 +310,18 @@ class ProductsController extends Controller
         }
 
         $nowKl = Carbon::now('Asia/Kuala_Lumpur')->format('Y-m-d H:i:s');
+        $hasStockStatusCol = Schema::hasColumn('products', 'stock_status');
 
-        $productId = DB::table('products')->insertGetId([
+        $insertData = [
             'title'          => $validated['title'],
-            'subtitle'       => $validated['subtitle'] ?? null,
+            'subtitle'       => $subtitle,
             'slug'           => $slug,
-            'price'          => $validated['price'],
+            'price'          => $finalPrice,
             'price_val'      => $priceVal,
             'dosage_spec'    => $validated['dosage_spec'] ?? null,
             'stock'          => $totalStock,
             'badge_category' => $validated['badge_category'] ?? null,
-            'category'       => $validated['category'] ?? 'Weight Management',
+            'category'       => $category,
             'page_type'      => $validated['page_type'] ?? 'products',
             'keywords'       => $validated['keywords'] ?? strtolower($validated['title']),
             'description'    => $validated['description'] ?? null,
@@ -317,15 +332,21 @@ class ProductsController extends Controller
             'image'          => $finalImageJson,
             'created_at'     => $nowKl,
             'updated_at'     => $nowKl,
-        ]);
+        ];
+
+        if ($hasStockStatusCol) {
+            $insertData['stock_status'] = $stockStatus;
+        }
+
+        $productId = DB::table('products')->insertGetId($insertData);
 
         Cache::forget('frontend_products_list');
 
         $this->recordAuditLog($request, 'product_created', [
             'product_id' => $productId,
             'title'      => $validated['title'],
-            'category'   => $validated['category'] ?? 'Weight Management',
-            'price'      => $validated['price'],
+            'category'   => $category,
+            'price'      => $finalPrice,
             'stock'      => $totalStock,
         ]);
 
@@ -337,10 +358,11 @@ class ProductsController extends Controller
         $validated = $request->validate([
             'title'             => 'required|string|max:255',
             'subtitle'          => 'nullable|string|max:255',
-            'price'             => 'required|string|max:100',
+            'price'             => 'required_unless:stock_status,coming_soon|nullable|string|max:100',
             'price_val'         => 'nullable|numeric',
             'dosage_spec'       => 'nullable|string|max:100',
             'stock'             => 'nullable|integer|min:0',
+            'stock_status'      => 'nullable|in:in_stock,out_of_stock,coming_soon',
             'badge_category'    => 'nullable|string|max:100',
             'category'          => 'nullable|string|max:100',
             'page_type'         => 'nullable|in:products,skin,accessory,premium,performance',
@@ -358,6 +380,9 @@ class ProductsController extends Controller
             return back()->withErrors(['msg' => 'Product formulation not found.']);
         }
         $product = $current[0];
+
+        $category = $validated['category'] ?? 'Weight Management';
+        $subtitle = $validated['subtitle'] ?? $category;
 
         $currentSlug = $product->slug ?? '';
         if (empty($currentSlug)) {
@@ -415,7 +440,11 @@ class ProductsController extends Controller
         $imagePathJson = !empty($finalImageList) ? json_encode(array_values($finalImageList)) : null;
         [$hasVariants, $variantTitle, $variantsJson] = $this->processVariants($request);
         $sizesJson = $this->processSizes($request, $variantsJson);
-        $priceVal = $this->extractNumericPrice($validated['price'], $validated['price_val'] ?? null);
+
+        $stockStatus = $validated['stock_status'] ?? 'in_stock';
+        $isComingSoon = ($stockStatus === 'coming_soon');
+        $finalPrice = $isComingSoon ? '' : ($validated['price'] ?? '');
+        $priceVal = $isComingSoon ? 0.00 : $this->extractNumericPrice($finalPrice, $validated['price_val'] ?? null);
 
         $totalStock = (int)($validated['stock'] ?? 0);
         if ($hasVariants && $variantsJson) {
@@ -427,43 +456,76 @@ class ProductsController extends Controller
         }
 
         $nowKl = Carbon::now('Asia/Kuala_Lumpur')->format('Y-m-d H:i:s');
+        $hasStockStatusCol = Schema::hasColumn('products', 'stock_status');
 
-        DB::update(
-            "UPDATE products 
-             SET title = ?, subtitle = ?, slug = ?, price = ?, price_val = ?, dosage_spec = ?, stock = ?, 
-                 badge_category = ?, category = ?, page_type = ?, keywords = ?, description = ?, 
-                 has_variants = ?, variant_title = ?, variants = ?, sizes = ?, image = ?, updated_at = ? 
-             WHERE id = ?",
-            [
-                $validated['title'],
-                $validated['subtitle'] ?? null,
-                $currentSlug,
-                $validated['price'],
-                $priceVal,
-                $validated['dosage_spec'] ?? null,
-                $totalStock,
-                $validated['badge_category'] ?? null,
-                $validated['category'] ?? 'Weight Management',
-                $validated['page_type'] ?? 'products',
-                $validated['keywords'] ?? strtolower($validated['title']),
-                $validated['description'] ?? null,
-                $hasVariants,
-                $variantTitle,
-                $variantsJson,
-                $sizesJson,
-                $imagePathJson,
-                $nowKl,
-                $id,
-            ]
-        );
+        if ($hasStockStatusCol) {
+            DB::update(
+                "UPDATE products 
+                 SET title = ?, subtitle = ?, slug = ?, price = ?, price_val = ?, dosage_spec = ?, stock = ?, stock_status = ?,
+                     badge_category = ?, category = ?, page_type = ?, keywords = ?, description = ?, 
+                     has_variants = ?, variant_title = ?, variants = ?, sizes = ?, image = ?, updated_at = ? 
+                 WHERE id = ?",
+                [
+                    $validated['title'],
+                    $subtitle,
+                    $currentSlug,
+                    $finalPrice,
+                    $priceVal,
+                    $validated['dosage_spec'] ?? null,
+                    $totalStock,
+                    $stockStatus,
+                    $validated['badge_category'] ?? null,
+                    $category,
+                    $validated['page_type'] ?? 'products',
+                    $validated['keywords'] ?? strtolower($validated['title']),
+                    $validated['description'] ?? null,
+                    $hasVariants,
+                    $variantTitle,
+                    $variantsJson,
+                    $sizesJson,
+                    $imagePathJson,
+                    $nowKl,
+                    $id,
+                ]
+            );
+        } else {
+            DB::update(
+                "UPDATE products 
+                 SET title = ?, subtitle = ?, slug = ?, price = ?, price_val = ?, dosage_spec = ?, stock = ?, 
+                     badge_category = ?, category = ?, page_type = ?, keywords = ?, description = ?, 
+                     has_variants = ?, variant_title = ?, variants = ?, sizes = ?, image = ?, updated_at = ? 
+                 WHERE id = ?",
+                [
+                    $validated['title'],
+                    $subtitle,
+                    $currentSlug,
+                    $finalPrice,
+                    $priceVal,
+                    $validated['dosage_spec'] ?? null,
+                    $totalStock,
+                    $validated['badge_category'] ?? null,
+                    $category,
+                    $validated['page_type'] ?? 'products',
+                    $validated['keywords'] ?? strtolower($validated['title']),
+                    $validated['description'] ?? null,
+                    $hasVariants,
+                    $variantTitle,
+                    $variantsJson,
+                    $sizesJson,
+                    $imagePathJson,
+                    $nowKl,
+                    $id,
+                ]
+            );
+        }
 
         Cache::forget('frontend_products_list');
 
         $this->recordAuditLog($request, 'product_updated', [
             'product_id' => $id,
             'title'      => $validated['title'],
-            'category'   => $validated['category'] ?? 'Weight Management',
-            'price'      => $validated['price'],
+            'category'   => $category,
+            'price'      => $finalPrice,
             'stock'      => $totalStock,
         ]);
 

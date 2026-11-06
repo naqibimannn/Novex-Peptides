@@ -115,7 +115,14 @@ $canonicalUrl = url('/performance/show');
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
             $detailUrl = url('/performance/show/' . $itemSlug);
-            $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
+
+            $itemStock = (int)($item->stock ?? 0);
+            $stockStatus = property_exists($item, 'stock_status') && !empty($item->stock_status) 
+                ? $item->stock_status 
+                : ($itemStock > 0 ? 'in_stock' : 'out_of_stock');
+            $isComingSoon = ($stockStatus === 'coming_soon');
+
+            $displayPrice = $isComingSoon ? '' : (!empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2)));
         @endphp
 
         <div class="catalog-card card pc" data-category="Performance" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -164,7 +171,13 @@ $canonicalUrl = url('/performance/show');
             @if(!empty($item->subtitle))
               <p class="card-subtitle">{{ $item->subtitle }}</p>
             @endif
-            <div class="card-price">{{ $displayPrice }}</div>
+
+            @if($isComingSoon)
+              <div class="card-price coming-soon">Coming Soon</div>
+            @else
+              <div class="card-price">{{ $displayPrice }}</div>
+            @endif
+
             <div class="card-meta">
               <span class="meta-tag">{{ $item->dosage_spec ?? 'Adult Fit' }}</span>
               <span class="meta-tag">{{ $item->badge_category ?? $item->category ?? 'Performance' }}</span>

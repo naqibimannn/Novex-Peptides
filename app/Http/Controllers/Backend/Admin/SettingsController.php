@@ -36,14 +36,12 @@ class SettingsController extends Controller
 
     public function sendOtp(Request $request)
     {
-        $requestedEmail = trim((string) $request->input('email'));
-        $activeEmail = $this->getActiveAdminEmail();
-        $targetEmail = filter_var($requestedEmail, FILTER_VALIDATE_EMAIL) ? $requestedEmail : $activeEmail;
+        $targetEmail = $this->getActiveAdminEmail();
 
         $code = (string) random_int(100000, 999999);
         $hashedCode = Hash::make($code);
 
-        DB::table('password_reset_tokens')->whereIn('email', [$targetEmail, $activeEmail])->delete();
+        DB::table('password_reset_tokens')->where('email', $targetEmail)->delete();
         DB::table('password_reset_tokens')->insert([
             'email'      => $targetEmail,
             'token'      => $hashedCode,
@@ -149,7 +147,7 @@ class SettingsController extends Controller
         $currentEmail = $this->getActiveAdminEmail();
 
         $resetEntry = DB::table('password_reset_tokens')
-            ->whereIn('email', [$newEmail, $currentEmail])
+            ->where('email', $currentEmail)
             ->orderBy('created_at', 'desc')
             ->first();
 
@@ -158,7 +156,7 @@ class SettingsController extends Controller
         }
 
         if (Carbon::parse($resetEntry->created_at)->addMinutes(15)->isPast()) {
-            DB::table('password_reset_tokens')->whereIn('email', [$newEmail, $currentEmail])->delete();
+            DB::table('password_reset_tokens')->where('email', $currentEmail)->delete();
             return back()->with('settings_tab', 'email')->withErrors(['code' => 'Verification code has expired. Please request a new one.'])->withInput();
         }
 

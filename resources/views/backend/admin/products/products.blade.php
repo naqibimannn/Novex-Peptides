@@ -2,19 +2,6 @@
     $rawProducts = $products ?? \Illuminate\Support\Facades\DB::select("SELECT * FROM products ORDER BY id DESC");
     $secretKey = $secret ?? config('admin.secret_key') ?? env('ADMIN_SECRET_KEY') ?? 'default_secret_key';
     $secretPrefix = 'admin/' . $secretKey;
-
-    $categories = [
-        'Skin Lab',
-        'Weight Management',
-        'Skincare Peptides',
-        'Skincare Collection',
-        'Performance',
-        'Apparel',
-        'Accessory',
-        'Injection Kit',
-        'Syringes',
-        'Supplements'
-    ];
 @endphp
 
 <div class="flex flex-col gap-8">
@@ -79,22 +66,6 @@
         </button>
 
         <div id="categoryDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 p-1.5 flex flex-col gap-1 max-h-72 overflow-y-auto">
-          <button type="button" onclick="switchCategoryFilter('all', 'All Categories')"
-            class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
-            <span>All Categories</span>
-            <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">{{ count($rawProducts) }}</span>
-          </button>
-
-          @foreach($categories as $cat)
-            @php
-              $catCount = collect($rawProducts)->where('category', $cat)->count();
-            @endphp
-            <button type="button" onclick="switchCategoryFilter('{{ strtolower($cat) }}', '{{ $cat }}')"
-              class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer">
-              <span class="truncate pr-2">{{ $cat }}</span>
-              <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">{{ $catCount }}</span>
-            </button>
-          @endforeach
         </div>
       </div>
 
@@ -122,16 +93,33 @@
         }
         $validImages = array_values(array_filter($imgList, fn($p) => !empty($p) && (file_exists(public_path($p)) || file_exists(public_path('uploads/products/' . basename($p))))));
 
-        $pagePlacement = strtolower($product->page_type ?? (($product->category ?? '') === 'Accessory' ? 'accessory' : 'products'));
+        $catName = trim($product->category ?? '');
+        $pagePlacement = strtolower(trim($product->page_type ?? ''));
+        if (empty($pagePlacement)) {
+            if ($catName === 'Skin Lab') {
+                $pagePlacement = 'skin';
+            } elseif (in_array($catName, ['Accessory', 'Injection Kit', 'Syringes'])) {
+                $pagePlacement = 'accessory';
+            } elseif ($catName === 'Supplements') {
+                $pagePlacement = 'premium';
+            } else {
+                $pagePlacement = 'products';
+            }
+        }
+
         $stockCount = (int) ($product->stock ?? 0);
+        $prodStockStatus = property_exists($product, 'stock_status') && !empty($product->stock_status) 
+            ? $product->stock_status 
+            : ($stockCount > 0 ? 'in_stock' : 'out_of_stock');
       @endphp
 
       <div class="product-vault-card group bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-brand/40 transition-all duration-200 flex flex-col justify-between"
         data-title="{{ strtolower($product->title) }}"
         data-subtitle="{{ strtolower($product->subtitle ?? '') }}"
-        data-category="{{ strtolower($product->category ?? 'weight management') }}"
+        data-category="{{ strtolower($catName ?: 'weight management') }}"
         data-pagetype="{{ $pagePlacement }}"
         data-stock="{{ $stockCount }}"
+        data-stockstatus="{{ $prodStockStatus }}"
         data-dosage="{{ strtolower($product->dosage_spec ?? '') }}"
         data-keywords="{{ strtolower($product->keywords ?? '') }}">
         
@@ -174,11 +162,22 @@
             <div>
               <div class="flex items-center justify-between gap-2 mb-1">
                 <span class="text-[11px] font-extrabold text-brand uppercase tracking-wider truncate">
-                  {{ $product->category ?? 'Laboratory' }}
+                  {{ !empty($product->badge_category) ? $product->badge_category : ($product->category ?? 'Laboratory') }}
                 </span>
-                <span class="text-[11px] font-bold text-slate-400 shrink-0">
-                  Stock: <strong class="text-slate-800 font-bold">{{ $stockCount }}</strong>
-                </span>
+                
+                @if($prodStockStatus === 'coming_soon')
+                  <span class="text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-md shrink-0">
+                    Coming Soon
+                  </span>
+                @elseif($prodStockStatus === 'out_of_stock' || $stockCount <= 0)
+                  <span class="text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-md shrink-0">
+                    Out of Stock
+                  </span>
+                @else
+                  <span class="text-[11px] font-bold text-slate-400 shrink-0">
+                    Stock: <strong class="text-slate-800 font-bold">{{ $stockCount }}</strong>
+                  </span>
+                @endif
               </div>
 
               <h3 class="font-bold text-sm sm:text-base text-slate-900 truncate" title="{{ $product->title }}">
@@ -192,7 +191,7 @@
 
             <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
               <span class="text-sm font-extrabold text-slate-900 tracking-tight">
-                {{ $product->price ?? 'RM0.00' }}
+                {{ $prodStockStatus === 'coming_soon' ? 'Coming Soon' : ($product->price ?? 'RM0.00') }}
               </span>
             </div>
           </div>
@@ -226,7 +225,6 @@
     @endforelse
   </div>
 
-  {{-- Reka Bentuk Paginasi Bulat (Audit Logs Style) --}}
   <div id="paginationWrapper" class="pt-4 border-t border-slate-200/60">
     <div class="flex items-center justify-between bg-white rounded-full px-5 sm:px-7 py-3 border border-slate-200 shadow-2xs">
       <div class="flex items-center gap-3 sm:gap-6" id="paginationControls">
@@ -239,7 +237,6 @@
   </div>
 </div>
 
-{{-- Modal Create Product --}}
 <div id="createProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -265,25 +262,25 @@
             </svg>
           </button>
           <div id="createPageTypeMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1">
-            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'products', 'Products Catalog Page')"
+            <button type="button" onclick="onModalPageTypeChange('create', 'products', 'Products Catalog Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Products Catalog Page
             </button>
-            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'skin', 'Skin Lab Page')"
+            <button type="button" onclick="onModalPageTypeChange('create', 'skin', 'Skin Lab Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Skin Lab Page
             </button>
-            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'accessory', 'Accessory Page')"
+            <button type="button" onclick="onModalPageTypeChange('create', 'accessory', 'Accessory Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Accessory Page
             </button>
-            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'premium', 'Premium Supplements Page')"
-              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
-              Premium Supplements Page
-            </button>
-            <button type="button" onclick="selectDropdownOption('create_page_type', 'createPageTypeText', 'createPageTypeMenu', 'createPageTypeArrow', 'performance', 'Performance Division Page')"
+            <button type="button" onclick="onModalPageTypeChange('create', 'performance', 'Performance Division Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Performance Division Page
+            </button>
+            <button type="button" onclick="onModalPageTypeChange('create', 'premium', 'Premium Supplements Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Premium Supplements Page
             </button>
           </div>
         </div>
@@ -299,12 +296,6 @@
             </svg>
           </button>
           <div id="createCategoryMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1 max-h-56 overflow-y-auto">
-            @foreach($categories as $cat)
-              <button type="button" onclick="selectDropdownOption('create_category', 'createCategoryText', 'createCategoryMenu', 'createCategoryArrow', '{{ $cat }}', '{{ $cat }}')"
-                class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
-                {{ $cat }}
-              </button>
-            @endforeach
           </div>
         </div>
       </div>
@@ -316,13 +307,14 @@
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Subtitle / Tagline</label>
-          <input type="text" name="subtitle" placeholder="e.g. Advanced Weight Management"
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Badge Label</label>
+          <input type="text" name="badge_category" placeholder="e.g. Research grade"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
+          <input type="hidden" name="subtitle" id="create_subtitle" value="Weight Management">
         </div>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Price (RM) *</label>
           <input type="text" name="price" id="create_price" required placeholder="RM0.00"
@@ -337,14 +329,38 @@
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Badge Label</label>
-          <input type="text" name="badge_category" placeholder="e.g. Research grade"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Total Stock *</label>
-          <input type="number" name="stock" id="create_stock" value="25" min="0" required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand">
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Stock Status &amp; Qty *</label>
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1" id="createStockStatusWrapper">
+              <input type="hidden" name="stock_status" id="create_stock_status" value="in_stock">
+              <button type="button" onclick="toggleCustomDropdown('createStockStatusMenu', 'createStockStatusArrow')"
+                class="w-full bg-slate-50 border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
+                <span id="createStockStatusText" class="truncate">In Stock</span>
+                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="createStockStatusArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+              <div id="createStockStatusMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1">
+                <button type="button" onclick="selectStockStatusOption('create', 'in_stock', 'In Stock')"
+                  class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                  In Stock
+                </button>
+                <button type="button" onclick="selectStockStatusOption('create', 'out_of_stock', 'Out of Stock')"
+                  class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                  Out of Stock
+                </button>
+                <button type="button" onclick="selectStockStatusOption('create', 'coming_soon', 'Coming Soon')"
+                  class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                  Coming Soon
+                </button>
+              </div>
+            </div>
+
+            <div id="create_stock_qty_col" class="w-24">
+              <input type="number" name="stock" id="create_stock" value="25" min="0" required
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -427,7 +443,6 @@
   </div>
 </div>
 
-{{-- Modal Edit Product --}}
 <div id="editProductModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center p-4">
   <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 flex flex-col gap-5 max-h-[92vh] overflow-y-auto">
     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -454,25 +469,25 @@
             </svg>
           </button>
           <div id="editPageTypeMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1">
-            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'products', 'Products Catalog Page')"
+            <button type="button" onclick="onModalPageTypeChange('edit', 'products', 'Products Catalog Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Products Catalog Page
             </button>
-            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'skin', 'Skin Lab Page')"
+            <button type="button" onclick="onModalPageTypeChange('edit', 'skin', 'Skin Lab Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Skin Lab Page
             </button>
-            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'accessory', 'Accessory Page')"
+            <button type="button" onclick="onModalPageTypeChange('edit', 'accessory', 'Accessory Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Accessory Page
             </button>
-            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'premium', 'Premium Supplements Page')"
-              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
-              Premium Supplements Page
-            </button>
-            <button type="button" onclick="selectDropdownOption('edit_page_type', 'editPageTypeText', 'editPageTypeMenu', 'editPageTypeArrow', 'performance', 'Performance Division Page')"
+            <button type="button" onclick="onModalPageTypeChange('edit', 'performance', 'Performance Division Page')"
               class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
               Performance Division Page
+            </button>
+            <button type="button" onclick="onModalPageTypeChange('edit', 'premium', 'Premium Supplements Page')"
+              class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+              Premium Supplements Page
             </button>
           </div>
         </div>
@@ -488,12 +503,6 @@
             </svg>
           </button>
           <div id="editCategoryMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1 max-h-56 overflow-y-auto">
-            @foreach($categories as $cat)
-              <button type="button" onclick="selectDropdownOption('edit_category', 'editCategoryText', 'editCategoryMenu', 'editCategoryArrow', '{{ $cat }}', '{{ $cat }}')"
-                class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
-                {{ $cat }}
-              </button>
-            @endforeach
           </div>
         </div>
       </div>
@@ -505,13 +514,14 @@
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Subtitle / Tagline</label>
-          <input type="text" id="edit_subtitle" name="subtitle"
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Badge Label</label>
+          <input type="text" id="edit_badge_category" name="badge_category"
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-800">
+          <input type="hidden" name="subtitle" id="edit_subtitle" value="">
         </div>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Price (RM) *</label>
           <input type="text" id="edit_price" name="price" required placeholder="RM0.00"
@@ -526,14 +536,38 @@
             class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Badge Label</label>
-          <input type="text" id="edit_badge_category" name="badge_category"
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-semibold text-slate-800">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Total Stock *</label>
-          <input type="number" id="edit_stock" name="stock" min="0" required
-            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900">
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Stock Status &amp; Qty *</label>
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1" id="editStockStatusWrapper">
+              <input type="hidden" name="stock_status" id="edit_stock_status" value="in_stock">
+              <button type="button" onclick="toggleCustomDropdown('editStockStatusMenu', 'editStockStatusArrow')"
+                class="w-full bg-slate-50 border border-slate-200 hover:border-brand/50 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs font-bold text-slate-800 shadow-2xs transition-all cursor-pointer">
+                <span id="editStockStatusText" class="truncate">In Stock</span>
+                <svg class="w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0" id="editStockStatusArrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+              <div id="editStockStatusMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-50 p-1.5 flex flex-col gap-1">
+                <button type="button" onclick="selectStockStatusOption('edit', 'in_stock', 'In Stock')"
+                  class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                  In Stock
+                </button>
+                <button type="button" onclick="selectStockStatusOption('edit', 'out_of_stock', 'Out of Stock')"
+                  class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                  Out of Stock
+                </button>
+                <button type="button" onclick="selectStockStatusOption('edit', 'coming_soon', 'Coming Soon')"
+                  class="w-full text-left px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer">
+                  Coming Soon
+                </button>
+              </div>
+            </div>
+
+            <div id="edit_stock_qty_col" class="w-24">
+              <input type="number" id="edit_stock" name="stock" min="0" required
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -628,6 +662,14 @@
     document.head.appendChild(kfStyle);
   }
 
+  const PAGE_CATEGORY_MAP = {
+    'products': ['Weight Management', 'Skincare Peptides', 'Skincare Collection', 'Performance', 'Apparel'],
+    'skin': ['Skin Lab'],
+    'accessory': ['Accessory', 'Injection Kit', 'Syringes'],
+    'performance': ['Performance'],
+    'premium': ['Supplements']
+  };
+
   let activeCategoryFilter = 'all';
   let activePageTypeFilter = 'all';
   
@@ -698,6 +740,11 @@
   }
 
   function syncMultiOptionPricingAndStock(prefix) {
+    const statusInput = document.getElementById(`${prefix}_stock_status`);
+    if (statusInput && statusInput.value === 'coming_soon') {
+      return;
+    }
+
     const chk = document.getElementById(`${prefix}_has_variants`);
     if (!chk || !chk.checked) return;
 
@@ -765,8 +812,169 @@
     if (arrow) arrow.classList.remove('rotate-180');
   }
 
+  function selectStockStatusOption(prefix, statusVal, statusText) {
+    selectDropdownOption(`${prefix}_stock_status`, `${prefix}StockStatusText`, `${prefix}StockStatusMenu`, `${prefix}StockStatusArrow`, statusVal, statusText);
+    applyStockStatusLayout(prefix, statusVal);
+  }
+
+  function applyStockStatusLayout(prefix, statusVal) {
+    const qtyCol = document.getElementById(`${prefix}_stock_qty_col`);
+    const stockInput = document.getElementById(`${prefix}_stock`);
+    const priceInput = document.getElementById(`${prefix}_price`);
+    const priceValInput = document.getElementById(`${prefix}_price_val`);
+    const modal = document.getElementById(`${prefix}ProductModal`);
+
+    if (statusVal === 'in_stock') {
+      if (qtyCol) qtyCol.classList.remove('hidden');
+      if (stockInput) {
+        stockInput.required = true;
+        if (!stockInput.value || parseInt(stockInput.value, 10) <= 0) {
+          stockInput.value = 25;
+        }
+      }
+    } else {
+      if (qtyCol) qtyCol.classList.add('hidden');
+      if (stockInput) {
+        stockInput.required = false;
+        stockInput.value = 0;
+      }
+    }
+
+    if (statusVal === 'coming_soon') {
+      if (priceInput) {
+        priceInput.value = '';
+        priceInput.disabled = true;
+        priceInput.required = false;
+        priceInput.placeholder = 'Coming Soon (Price Disabled)';
+        priceInput.classList.add('bg-slate-200/70', 'cursor-not-allowed', 'text-slate-400', 'select-none');
+        priceInput.classList.remove('bg-slate-50', 'text-slate-900');
+      }
+      if (priceValInput) {
+        priceValInput.value = '';
+      }
+      if (modal) {
+        modal.querySelectorAll('input[name="variant_price[]"]').forEach(vp => {
+          vp.value = '';
+          vp.disabled = true;
+          vp.placeholder = 'N/A';
+          vp.classList.add('bg-slate-200/70', 'cursor-not-allowed');
+        });
+      }
+    } else {
+      if (priceInput) {
+        priceInput.disabled = false;
+        priceInput.required = true;
+        priceInput.placeholder = 'RM0.00';
+        priceInput.classList.remove('bg-slate-200/70', 'cursor-not-allowed', 'text-slate-400', 'select-none');
+        priceInput.classList.add('bg-slate-50', 'text-slate-900');
+      }
+      if (modal) {
+        modal.querySelectorAll('input[name="variant_price[]"]').forEach(vp => {
+          vp.disabled = false;
+          vp.placeholder = 'RM0.00';
+          vp.classList.remove('bg-slate-200/70', 'cursor-not-allowed');
+        });
+      }
+      syncMultiOptionPricingAndStock(prefix);
+    }
+  }
+
+  function onModalPageTypeChange(prefix, pageType, pageText, targetCategory = null) {
+    selectDropdownOption(`${prefix}_page_type`, `${prefix}PageTypeText`, `${prefix}PageTypeMenu`, `${prefix}PageTypeArrow`, pageType, pageText);
+
+    const categories = PAGE_CATEGORY_MAP[pageType] || [];
+    const menu = document.getElementById(`${prefix}CategoryMenu`);
+    if (menu) {
+      menu.innerHTML = '';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full text-left px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-brand transition-colors cursor-pointer';
+        btn.innerText = cat;
+        btn.onclick = () => {
+          selectDropdownOption(`${prefix}_category`, `${prefix}CategoryText`, `${prefix}CategoryMenu`, `${prefix}CategoryArrow`, cat, cat);
+          const subInput = document.getElementById(`${prefix}_subtitle`);
+          if (subInput) subInput.value = cat;
+        };
+        menu.appendChild(btn);
+      });
+    }
+
+    const chosenCat = (targetCategory && categories.includes(targetCategory)) ? targetCategory : (categories[0] || 'Weight Management');
+    const catInput = document.getElementById(`${prefix}_category`);
+    const catText = document.getElementById(`${prefix}CategoryText`);
+    const subInput = document.getElementById(`${prefix}_subtitle`);
+
+    if (catInput) catInput.value = chosenCat;
+    if (catText) catText.innerText = chosenCat;
+    if (subInput) subInput.value = chosenCat;
+  }
+
   function toggleCategoryDropdown() {
     toggleCustomDropdown('categoryDropdownMenu', 'categoryDropdownArrow');
+  }
+
+  function refreshCategoryFilterDropdown() {
+    const menu = document.getElementById('categoryDropdownMenu');
+    if (!menu) return;
+    menu.innerHTML = '';
+
+    const cards = Array.from(document.querySelectorAll('.product-vault-card'));
+    let availableCategories = [];
+
+    if (activePageTypeFilter === 'all') {
+      availableCategories = Array.from(new Set(Object.values(PAGE_CATEGORY_MAP).flat()));
+    } else {
+      availableCategories = PAGE_CATEGORY_MAP[activePageTypeFilter] || [];
+    }
+
+    let allCount = 0;
+    cards.forEach(card => {
+      const pageType = (card.dataset.pagetype || 'products').toLowerCase().trim();
+      if (activePageTypeFilter === 'all' || pageType === activePageTypeFilter) {
+        allCount++;
+      }
+    });
+
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer';
+    allBtn.innerHTML = `<span>All Categories</span><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">${allCount}</span>`;
+    allBtn.onclick = () => switchCategoryFilter('all', 'All Categories');
+    menu.appendChild(allBtn);
+
+    let activeCategoryFound = false;
+
+    availableCategories.forEach(cat => {
+      const catLower = cat.toLowerCase().trim();
+      let count = 0;
+
+      cards.forEach(card => {
+        const cardCat = (card.dataset.category || '').toLowerCase().trim();
+        const cardPage = (card.dataset.pagetype || 'products').toLowerCase().trim();
+        const pageMatches = (activePageTypeFilter === 'all') || (cardPage === activePageTypeFilter);
+        if (pageMatches && cardCat === catLower) {
+          count++;
+        }
+      });
+
+      if (activeCategoryFilter === catLower) {
+        activeCategoryFound = true;
+      }
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-brand flex items-center justify-between transition-colors cursor-pointer';
+      btn.innerHTML = `<span class="truncate pr-2">${cat}</span><span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded-md font-semibold text-slate-500">${count}</span>`;
+      btn.onclick = () => switchCategoryFilter(catLower, cat);
+      menu.appendChild(btn);
+    });
+
+    if (activeCategoryFilter !== 'all' && !activeCategoryFound) {
+      activeCategoryFilter = 'all';
+      const labelEl = document.getElementById('selectedCategoryText');
+      if (labelEl) labelEl.innerText = 'All Categories';
+    }
   }
 
   function switchPageTypeFilter(pageType, btnEl) {
@@ -777,6 +985,7 @@
     });
     btnEl.className = 'page-type-tab px-4 py-1.5 rounded-full transition-all bg-white text-slate-900 font-semibold shadow-xs cursor-pointer';
 
+    refreshCategoryFilterDropdown();
     currentPage = 1;
     filterProducts();
   }
@@ -810,8 +1019,8 @@
     cards.forEach(card => {
       const title = card.dataset.title || '';
       const subtitle = card.dataset.subtitle || '';
-      const category = card.dataset.category || '';
-      const pageType = card.dataset.pagetype || 'products';
+      const category = (card.dataset.category || '').toLowerCase().trim();
+      const pageType = (card.dataset.pagetype || 'products').toLowerCase().trim();
       const dosage = card.dataset.dosage || '';
       const keywords = card.dataset.keywords || '';
 
@@ -868,7 +1077,6 @@
 
     let html = '';
 
-    // Butang Previous
     if (currentPage > 1) {
       html += `
         <button type="button" onclick="goToPage(${currentPage - 1})" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer select-none">
@@ -889,7 +1097,6 @@
       `;
     }
 
-    // Nombor Muka Surat (Bulat mengikut reka bentuk Audit Logs)
     html += `<div class="flex items-center gap-1 sm:gap-2">`;
     const pages = getPaginationPageList(currentPage, totalPages);
     pages.forEach(p => {
@@ -911,13 +1118,12 @@
     });
     html += `</div>`;
 
-    // Butang Next
     if (currentPage < totalPages) {
       html += `
         <button type="button" onclick="goToPage(${currentPage + 1})" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors cursor-pointer select-none">
           <span>Next</span>
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5-7.5" />
           </svg>
         </button>
       `;
@@ -926,7 +1132,7 @@
         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-300 cursor-not-allowed select-none">
           <span>Next</span>
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5" />
           </svg>
         </span>
       `;
@@ -979,6 +1185,9 @@
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    const statusInput = document.getElementById(`${prefix}_stock_status`);
+    const isComingSoon = statusInput && statusInput.value === 'coming_soon';
+
     const labelVal = data.label || '';
     let priceVal = data.price ? formatRmString(data.price) : '';
     const numVal = (data.val !== undefined && data.val !== '') ? data.val : (priceVal.match(/([0-9]+(?:\.[0-9]+)?)/) || ['',''])[1];
@@ -993,11 +1202,11 @@
           class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand">
       </div>
       <div class="col-span-4 relative">
-        <input type="text" name="variant_price[]" value="${priceVal}" placeholder="RM0.00"
+        <input type="text" name="variant_price[]" value="${isComingSoon ? '' : priceVal}" placeholder="${isComingSoon ? 'N/A' : 'RM0.00'}" ${isComingSoon ? 'disabled' : ''}
           oninput="handlePriceOnlyInput(this, '', '${prefix}'); this.nextElementSibling.value = (this.value.match(/([0-9]+(?:\\.[0-9]+)?)/) || ['',''])[1];"
           onkeypress="return isNumberOrPeriod(event)"
-          class="w-full bg-slate-50 focus:bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand">
-        <input type="hidden" name="variant_val[]" value="${numVal}">
+          class="w-full ${isComingSoon ? 'bg-slate-200/70 cursor-not-allowed' : 'bg-slate-50 focus:bg-white'} border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand">
+        <input type="hidden" name="variant_val[]" value="${isComingSoon ? '0' : numVal}">
       </div>
       <div class="col-span-2">
         <input type="number" name="variant_stock[]" value="${stockVal}" placeholder="Qty" min="0"
@@ -1045,7 +1254,6 @@
     const files = Array.from(event.target.files);
     if (!files || files.length === 0) return;
 
-    // Sekatan peringkat klien: Singkirkan fail SVG
     const validFiles = files.filter(f => {
       const isSvg = f.name.toLowerCase().endsWith('.svg') || f.type.toLowerCase().includes('svg');
       if (isSvg) {
@@ -1321,6 +1529,8 @@
   function openCreateProductModal() {
     createUploadFiles = [];
     renderCreateUploadPreview();
+    onModalPageTypeChange('create', 'products', 'Products Catalog Page');
+    selectStockStatusOption('create', 'in_stock', 'In Stock');
     const modal = document.getElementById('createProductModal');
     if (modal) {
       modal.classList.remove('hidden');
@@ -1350,7 +1560,6 @@
     if (modal && form) {
       form.action = `{{ url('') }}/${secretPrefix}/products/${product.id}`;
       document.getElementById('edit_title').value = product.title || '';
-      document.getElementById('edit_subtitle').value = product.subtitle || '';
       
       const priceInput = document.getElementById('edit_price');
       if (priceInput) {
@@ -1361,24 +1570,46 @@
       document.getElementById('edit_dosage_spec').value = product.dosage_spec || '';
       document.getElementById('edit_badge_category').value = product.badge_category || '';
       document.getElementById('edit_stock').value = product.stock !== null && product.stock !== undefined ? product.stock : 25;
+      
+      const currentStockVal = parseInt(product.stock, 10);
+      let currentStatus = product.stock_status || '';
+      if (!currentStatus) {
+        currentStatus = currentStockVal > 0 ? 'in_stock' : 'out_of_stock';
+      }
+
+      const statusLabels = {
+        'in_stock': 'In Stock',
+        'out_of_stock': 'Out of Stock',
+        'coming_soon': 'Coming Soon'
+      };
+
+      selectStockStatusOption('edit', currentStatus, statusLabels[currentStatus] || 'In Stock');
+
       document.getElementById('edit_description').value = product.description || '';
 
-      const targetPageVal = product.page_type || (product.category === 'Accessory' ? 'accessory' : 'products');
-      const targetCategoryVal = product.category || 'Weight Management';
+      const targetCategoryVal = trimString(product.category || 'Weight Management');
+      let targetPageVal = trimString(product.page_type || '');
+      if (!targetPageVal) {
+        if (targetCategoryVal === 'Skin Lab') {
+          targetPageVal = 'skin';
+        } else if (['Accessory', 'Injection Kit', 'Syringes'].includes(targetCategoryVal)) {
+          targetPageVal = 'accessory';
+        } else if (targetCategoryVal === 'Supplements') {
+          targetPageVal = 'premium';
+        } else {
+          targetPageVal = 'products';
+        }
+      }
 
       const pageLabels = {
         'products': 'Products Catalog Page',
         'skin': 'Skin Lab Page',
         'accessory': 'Accessory Page',
-        'premium': 'Premium Supplements Page',
-        'performance': 'Performance Division Page'
+        'performance': 'Performance Division Page',
+        'premium': 'Premium Supplements Page'
       };
 
-      document.getElementById('edit_page_type').value = targetPageVal;
-      document.getElementById('editPageTypeText').innerText = pageLabels[targetPageVal] || 'Products Catalog Page';
-
-      document.getElementById('edit_category').value = targetCategoryVal;
-      document.getElementById('editCategoryText').innerText = targetCategoryVal;
+      onModalPageTypeChange('edit', targetPageVal, pageLabels[targetPageVal] || 'Products Catalog Page', targetCategoryVal);
 
       let sizesText = '';
       if (product.sizes) {
@@ -1416,9 +1647,17 @@
         varSection.classList.add('hidden');
       }
 
+      if (currentStatus === 'coming_soon') {
+        applyStockStatusLayout('edit', 'coming_soon');
+      }
+
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
+  }
+
+  function trimString(str) {
+    return (str || '').toString().trim();
   }
 
   function closeEditProductModal() {
@@ -1483,8 +1722,10 @@
     const modalDropdowns = [
       { wrapper: 'createPageTypeWrapper', menu: 'createPageTypeMenu', arrow: 'createPageTypeArrow' },
       { wrapper: 'createCategoryWrapper', menu: 'createCategoryMenu', arrow: 'createCategoryArrow' },
+      { wrapper: 'createStockStatusWrapper', menu: 'createStockStatusMenu', arrow: 'createStockStatusArrow' },
       { wrapper: 'editPageTypeWrapper', menu: 'editPageTypeMenu', arrow: 'editPageTypeArrow' },
       { wrapper: 'editCategoryWrapper', menu: 'editCategoryMenu', arrow: 'editCategoryArrow' },
+      { wrapper: 'editStockStatusWrapper', menu: 'editStockStatusMenu', arrow: 'editStockStatusArrow' },
     ];
 
     modalDropdowns.forEach(item => {
@@ -1499,6 +1740,7 @@
   });
 
   document.addEventListener('DOMContentLoaded', () => {
+    refreshCategoryFilterDropdown();
     startAdminProdAutoSlide();
     filterProducts();
   });

@@ -13,7 +13,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     tailwind.config = {
@@ -86,6 +85,11 @@
     $currentSection = $section ?? 'dashboard';
     $secretKey = $secret ?? config('admin.secret_key', env('ADMIN_SECRET_KEY'));
     $secretPrefix = 'admin/' . $secretKey;
+
+    $adminUserId = auth()->id();
+    $currentAdminEmail = ($adminUserId ? \Illuminate\Support\Facades\DB::table('users')->where('id', $adminUserId)->value('email') : null)
+      ?? \Illuminate\Support\Facades\DB::table('users')->orderBy('id', 'asc')->value('email')
+      ?? (auth()->user()->email ?? 'admin@novexsupps.com');
 
     $randomHeroes = [
       [
@@ -274,13 +278,13 @@
         </button>
 
         <div class="flex items-center gap-2.5 shrink-0 pl-1">
-          <div
-            class="h-8 w-8 rounded-lg bg-brand text-white font-bold flex items-center justify-center text-xs shadow-xs">
-            NP
+          <div class="h-8 w-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-xs overflow-hidden shrink-0">
+            <img src="{{ asset('assets/admin/logo.png') }}" onerror="this.src='{{ asset('logo.png') }}'"
+              alt="Admin Novex" class="w-full h-full object-contain">
           </div>
           <div class="flex flex-col text-left">
             <span class="font-bold text-xs text-slate-900 leading-tight">Admin Novex</span>
-            <span class="text-[11px] text-slate-400 font-medium leading-tight">admin@novexsupps.com</span>
+            <span class="text-[11px] text-slate-400 font-medium leading-tight" id="headerAdminEmail">{{ $currentAdminEmail }}</span>
           </div>
         </div>
       </div>
@@ -333,7 +337,6 @@
               </svg>
             </button>
 
-            <!-- DATE / MONTH PICKER POPOVER -->
             <div class="relative inline-block" id="heroDatePickerWrapper">
               <div onclick="toggleHeroDatePicker()"
                 class="inline-flex items-center justify-between gap-3 bg-white border-0 rounded-2xl px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm cursor-pointer hover:bg-slate-50/80 transition-all shrink-0">
@@ -385,10 +388,8 @@
           </div>
         </div>
 
-        <!-- STATS CARDS -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-          <!-- CARD 1: Total Products (Real-time Connect ke Products Admin) -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
             <div>
               <span class="text-xs font-semibold text-slate-500">Total Products</span>
@@ -401,7 +402,6 @@
             </div>
           </div>
 
-          <!-- CARD 2: Security Events (Dinamik mengikut penapis masa) -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
             <div>
               <span class="text-xs font-semibold text-slate-500" id="cardSecurityLabel">Security Events</span>
@@ -414,7 +414,6 @@
             </div>
           </div>
 
-          <!-- CARD 3: Audience Views (Dinamik mengikut penapis tarikh) -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
             <div>
               <span class="text-xs font-semibold text-slate-500" id="cardAudienceLabel">Audience Views</span>
@@ -428,7 +427,6 @@
             </div>
           </div>
 
-          <!-- CARD 4: Total Pages (Ditetapkan kepada 11) -->
           <div class="bg-white border-0 rounded-2xl p-4 flex flex-col justify-between min-h-[100px] shadow-sm">
             <div>
               <span class="text-xs font-semibold text-slate-500">Total Pages</span>
@@ -444,7 +442,6 @@
 
           <div class="xl:col-span-8 flex flex-col gap-6 justify-between h-full">
 
-            <!-- Graf Audience Views & Performance -->
             <div class="bg-white border-0 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
               <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div>
@@ -463,7 +460,6 @@
               </div>
             </div>
 
-            <!-- 2 LATEST ARTICLES DARI JADUAL RESOURCES -->
             <div class="bg-white border-0 rounded-2xl p-5 flex flex-col justify-between flex-1 shadow-sm">
               <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
@@ -530,7 +526,6 @@
 
           <div class="xl:col-span-4 flex flex-col gap-6 justify-between h-full">
 
-            <!-- QUICK ACTIONS -->
             <div class="bg-white border-0 rounded-2xl p-5 shadow-sm">
               <div class="pb-3 border-b border-slate-100 mb-4 flex items-center justify-between">
                 <div>
@@ -589,7 +584,6 @@
               </div>
             </div>
 
-            <!-- Recent Activity Log -->
             <div class="bg-white border-0 rounded-2xl p-5 flex flex-col justify-between flex-1 shadow-sm">
               <div>
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
@@ -759,9 +753,6 @@
   @endphp
 
   <script>
-    /* =========================================================================
-     * SECTION: CORE DASHBOARD & REAL-TIME DYNAMIC DATE SYSTEM
-     * ========================================================================= */
     function triggerRefreshAnimation(btn) {
       const icon = document.getElementById('refreshIcon');
       if (icon) {
@@ -1080,7 +1071,6 @@
           if (metricVal) metricVal.innerText = Number(displayedCount).toLocaleString();
           if (impresstionsText) impresstionsText.innerText = `${Number(displayedCount).toLocaleString()} sessions`;
 
-          // Kemas kini kad Security Events secara automatik mengikut tarikh pilihan
           if (secMetricVal && resData.securityEvents !== undefined) {
             secMetricVal.innerText = Number(resData.securityEvents).toLocaleString();
           }

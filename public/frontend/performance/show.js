@@ -6,8 +6,8 @@ function setCategoryFilter(cat, btn) {
   activeCategory = cat;
   currentPage = 1;
   document.querySelectorAll('#flt button').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  filterProducts();
+  if (btn) btn.classList.add('on');
+  filterProducts(true);
 }
 
 function setCardSlideCatalog(dot, idx) {
@@ -32,18 +32,19 @@ function filterProducts(resetPage = false) {
   const cards = Array.from(document.querySelectorAll('#pg .catalog-card'));
 
   const matchingCards = cards.filter(card => {
-    const cardCat = card.getAttribute('data-category') || '';
-    const cardKeywords = card.getAttribute('data-keywords') || '';
+    const cardCat = (card.getAttribute('data-category') || '').trim();
+    const cardKeywords = (card.getAttribute('data-keywords') || '').trim().toLowerCase();
     const textContent = card.innerText.toLowerCase();
 
-    const matchesCategory = (activeCategory === 'All') || (cardCat === activeCategory);
+    const matchesCategory = (activeCategory === 'All') || (cardCat.toLowerCase() === activeCategory.toLowerCase());
     const matchesSearch = !query || cardKeywords.includes(query) || textContent.includes(query);
 
     return matchesCategory && matchesSearch;
   });
 
   const totalPages = Math.ceil(matchingCards.length / ITEMS_PER_PAGE) || 1;
-  if (currentPage > totalPages) currentPage = 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -54,7 +55,7 @@ function filterProducts(resetPage = false) {
 
   matchingCards.forEach((card, index) => {
     if (index >= startIndex && index < endIndex) {
-      card.style.display = 'flex';
+      card.style.display = '';
     }
   });
 
@@ -66,46 +67,54 @@ function filterProducts(resetPage = false) {
   renderPagination(totalPages, matchingCards.length);
 }
 
+function getPaginationList(current, total) {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 3) {
+    return [1, 2, 3, '...', total - 1, total];
+  }
+  if (current >= total - 2) {
+    return [1, 2, '...', total - 2, total - 1, total];
+  }
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
 function renderPagination(totalPages, totalItems) {
   const container = document.getElementById('pagination');
   if (!container) return;
 
   if (totalPages <= 1 || totalItems === 0) {
     container.innerHTML = '';
+    container.style.display = 'none';
     return;
   }
 
+  container.style.display = 'flex';
   let html = '';
 
-  html += `<button type="button" class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})" aria-label="Previous Page">&larr;</button>`;
+  html += `
+    <button type="button" class="page-btn page-btn-nav" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})" aria-label="Previous Page">
+      &larr; <span>Prev</span>
+    </button>
+  `;
 
-  const maxButtons = 5;
-  let start = Math.max(1, currentPage - 2);
-  let end = Math.min(totalPages, start + maxButtons - 1);
-
-  if (end - start < maxButtons - 1) {
-    start = Math.max(1, end - maxButtons + 1);
-  }
-
-  if (start > 1) {
-    html += `<button type="button" class="page-btn ${currentPage === 1 ? 'active' : ''}" onclick="goToPage(1)">1</button>`;
-    if (start > 2) {
+  const pages = getPaginationList(currentPage, totalPages);
+  pages.forEach(p => {
+    if (p === '...') {
       html += `<span class="page-dots">...</span>`;
+    } else if (p === currentPage) {
+      html += `<button type="button" class="page-btn active">${p}</button>`;
+    } else {
+      html += `<button type="button" class="page-btn" onclick="goToPage(${p})">${p}</button>`;
     }
-  }
+  });
 
-  for (let i = start; i <= end; i++) {
-    html += `<button type="button" class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-  }
-
-  if (end < totalPages) {
-    if (end < totalPages - 1) {
-      html += `<span class="page-dots">...</span>`;
-    }
-    html += `<button type="button" class="page-btn ${currentPage === totalPages ? 'active' : ''}" onclick="goToPage(${totalPages})">${totalPages}</button>`;
-  }
-
-  html += `<button type="button" class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})" aria-label="Next Page">&rarr;</button>`;
+  html += `
+    <button type="button" class="page-btn page-btn-nav" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})" aria-label="Next Page">
+      <span>Next</span> &rarr;
+    </button>
+  `;
 
   container.innerHTML = html;
 }
@@ -113,9 +122,9 @@ function renderPagination(totalPages, totalItems) {
 function goToPage(page) {
   currentPage = page;
   filterProducts(false);
-  const anchor = document.getElementById('cat');
+  const anchor = document.getElementById('cat') || document.getElementById('pg');
   if (anchor) {
-    anchor.scrollIntoView({ behavior: 'smooth' });
+    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 

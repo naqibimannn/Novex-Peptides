@@ -41,6 +41,14 @@ try {
             $imgs = ['reta1.webp'];
         }
 
+        $itemStock = (int)($row->stock ?? 0);
+        $rawStatus = property_exists($row, 'stock_status') && !empty($row->stock_status) ? $row->stock_status : null;
+        if (empty($rawStatus)) {
+            $rawStatus = $itemStock > 0 ? 'in_stock' : 'out_of_stock';
+        }
+
+        $isComingSoon = ($rawStatus === 'coming_soon');
+
         $variants = [];
         if (!empty($row->has_variants) && !empty($row->variants)) {
             $decodedVar = is_string($row->variants) ? json_decode($row->variants, true) : $row->variants;
@@ -52,8 +60,8 @@ try {
                     }
                     $variants[] = [
                         'label' => $v['label'] ?? '',
-                        'val'   => $vVal,
-                        'p'     => !empty($v['price']) ? $v['price'] : ('RM' . number_format($vVal, 2)),
+                        'val'   => $isComingSoon ? 0.00 : $vVal,
+                        'p'     => $isComingSoon ? '' : (!empty($v['price']) ? $v['price'] : ('RM' . number_format($vVal, 2))),
                         'stock' => (int)($v['stock'] ?? 0),
                     ];
                 }
@@ -84,12 +92,14 @@ try {
             'name'          => $row->title ?? 'Untitled Formulation',
             'title'         => $row->subtitle ?? '',
             'spec'          => !empty($row->dosage_spec) ? $row->dosage_spec : '',
-            'val'           => $numericVal,
-            'price'         => !empty($row->price) ? $row->price : ('RM' . number_format($numericVal, 2)),
+            'val'           => $isComingSoon ? 0.00 : $numericVal,
+            'price'         => $isComingSoon ? '' : (!empty($row->price) ? $row->price : ('RM' . number_format($numericVal, 2))),
             'category'      => !empty($row->category) ? $row->category : 'General Catalog',
             'page_type'     => $row->page_type ?? 'products',
             'imgs'          => $imgs,
-            'stock'         => (int)($row->stock ?? 0),
+            'stock'         => $itemStock,
+            'stock_status'  => $rawStatus,
+            'badge_category'=> $row->badge_category ?? null,
             'variant_title' => !empty($row->variant_title) ? $row->variant_title : 'Select Formulation / Dosage:',
             'variants'      => $variants,
             'sizes'         => $sizes,
@@ -119,11 +129,13 @@ $currProd = $allProducts[$reqKey]
         'title'         => 'No details available',
         'spec'          => '',
         'val'           => 0,
-        'price'         => 'RM0.00',
+        'price'         => '',
         'category'      => 'Catalog',
         'page_type'     => 'products',
         'imgs'          => ['reta1.webp'],
         'stock'         => 0,
+        'stock_status'  => 'out_of_stock',
+        'badge_category'=> null,
         'variant_title' => 'Select Option:',
         'variants'      => [],
         'sizes'         => [],
@@ -133,27 +145,29 @@ $currProd = $allProducts[$reqKey]
 $hasVariants = !empty($currProd['variants']) && count($currProd['variants']) > 0;
 $isApparel   = ($currProd['category'] === 'Apparel') || (!empty($currProd['sizes']) && count($currProd['sizes']) > 0);
 
-$firstSegment = request()->segment(1);
+$firstSegment = strtolower((string) request()->segment(1));
 
-$isSkin = ($firstSegment === 'skin') 
-    || request()->is('skin*') 
-    || (($currProd['page_type'] ?? '') === 'skin') 
-    || in_array($currProd['category'] ?? '', ['Skin Lab', 'Skincare', 'Novex Skincare', 'Skin', 'Skincare Peptides', 'Skincare Collection']);
+$isSkin        = ($firstSegment === 'skin') || request()->is('skin*');
+$isPremium     = ($firstSegment === 'premium') || request()->is('premium*');
+$isPerformance = ($firstSegment === 'performance') || request()->is('performance*');
+$isAccessory   = ($firstSegment === 'accessory') || request()->is('accessory*');
 
-$isPremium = ($firstSegment === 'premium') 
-    || request()->is('premium*') 
-    || (($currProd['page_type'] ?? '') === 'premium') 
-    || in_array($currProd['category'] ?? '', ['Premium Supplements', 'Supplements']);
-
-$isPerformance = ($firstSegment === 'performance') 
-    || request()->is('performance*') 
-    || (($currProd['page_type'] ?? '') === 'performance') 
-    || in_array($currProd['category'] ?? '', ['Performance', 'Performance Apparel']);
-
-$isAccessory = ($firstSegment === 'accessory') 
-    || request()->is('accessory*') 
-    || (($currProd['page_type'] ?? '') === 'accessory') 
-    || in_array($currProd['category'] ?? '', ['Accessory', 'Injection Kit', 'Syringes']);
+if ($isSkin) {
+    $backUrl  = url('/skin/show');
+    $backText = '← Back to Novex Skin Lab';
+} elseif ($isPremium) {
+    $backUrl  = url('/premium/show');
+    $backText = '← Back to Premium Supplements';
+} elseif ($isPerformance) {
+    $backUrl  = url('/performance/show');
+    $backText = '← Back to Performance Division';
+} elseif ($isAccessory) {
+    $backUrl  = route('accessory');
+    $backText = '← Back to Accessories';
+} else {
+    $backUrl  = route('products.index');
+    $backText = '← Back to Catalog';
+}
 
 $showCssPath = 'frontend/products/show.css';
 $showCssVer = file_exists(public_path($showCssPath)) ? filemtime(public_path($showCssPath)) : time();
@@ -172,12 +186,13 @@ if (empty($cleanDescription)) {
     $cleanDescription = $currProd['name'] . ' - High-purity laboratory formulation verified with strict quality control standards.';
 }
 
+$stockStatus = $currProd['stock_status'] ?? (($currProd['stock'] ?? 0) > 0 ? 'in_stock' : 'out_of_stock');
+$canAddToCart = ($stockStatus === 'in_stock') && (($currProd['stock'] ?? 0) > 0);
+
 $productPrice = (float)($currProd['val'] ?? 0);
-if ($productPrice <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $currProd['price'] ?? '', $pm)) {
+if ($stockStatus !== 'coming_soon' && $productPrice <= 0 && preg_match('/([0-9]+(?:\.[0-9]+)?)/', $currProd['price'] ?? '', $pm)) {
     $productPrice = (float)$pm[1];
 }
-
-$isStockAvailable = ($currProd['stock'] ?? 0) > 0;
 
 $productSchema = [
     '@context' => 'https://schema.org',
@@ -195,7 +210,7 @@ $productSchema = [
                     '@type' => 'ListItem',
                     'position' => 2,
                     'name' => 'Catalog',
-                    'item' => route('products.index')
+                    'item' => $backUrl
                 ],
                 [
                     '@type' => 'ListItem',
@@ -218,7 +233,7 @@ $productSchema = [
                 'priceCurrency' => 'MYR',
                 'price' => number_format($productPrice, 2, '.', ''),
                 'priceValidUntil' => \Carbon\Carbon::now()->addYear()->format('Y-12-31'),
-                'availability' => $isStockAvailable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                'availability' => $canAddToCart ? 'https://schema.org/InStock' : ($stockStatus === 'coming_soon' ? 'https://schema.org/PreOrder' : 'https://schema.org/OutOfStock'),
                 'itemCondition' => 'https://schema.org/NewCondition',
                 'seller' => [
                     '@type' => 'Organization',
@@ -246,17 +261,7 @@ $productSchema = [
 <section class="product-detail-sec" id="productDetailSec">
   <div class="wrap">
     <div class="detail-back-nav">
-      @if($isSkin)
-        <a href="{{ url('/skin/show') }}" class="detail-back-link">&larr; Back to Novex Skin Lab</a>
-      @elseif($isPremium)
-        <a href="{{ url('/premium/show') }}" class="detail-back-link">&larr; Back to Premium Supplements</a>
-      @elseif($isPerformance)
-        <a href="{{ url('/performance/show') }}" class="detail-back-link">&larr; Back to Performance Division</a>
-      @elseif($isAccessory)
-        <a href="{{ route('accessory') }}" class="detail-back-link">&larr; Back to Accessories</a>
-      @else
-        <a href="{{ route('products.index') }}" class="detail-back-link">&larr; Back to Catalog</a>
-      @endif
+      <a href="{{ $backUrl }}" class="detail-back-link" id="detailBackLink">{{ $backText }}</a>
     </div>
 
     <div class="detail-grid">
@@ -287,14 +292,25 @@ $productSchema = [
       </div>
 
       <div class="detail-info">
-        <span class="detail-badge">{{ $currProd['category'] }}</span>
+        <span class="detail-badge">{{ !empty($currProd['badge_category']) ? $currProd['badge_category'] : $currProd['category'] }}</span>
         <h1 class="detail-title">{{ $currProd['name'] }}</h1>
         <p id="detailSubDisplay" class="detail-subtitle">
           {{ $currProd['title'] }}{{ !empty($currProd['spec']) ? ' (' . $currProd['spec'] . ')' : '' }}
         </p>
-        <div id="detailPriceDisplay" class="detail-price">{{ $currProd['price'] }}</div>
+
+        @if($stockStatus === 'coming_soon')
+          <div id="detailPriceDisplay" class="detail-price" style="display: none !important;"></div>
+        @else
+          <div id="detailPriceDisplay" class="detail-price">{{ $currProd['price'] }}</div>
+        @endif
         
-        <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
+        @if($stockStatus === 'in_stock')
+          <div id="detailStockDisplay" class="stock-badge">In Stock ({{ $currProd['stock'] }} units available)</div>
+        @elseif($stockStatus === 'out_of_stock')
+          <div id="detailStockDisplay" class="stock-badge" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5;">Out of Stock</div>
+        @elseif($stockStatus === 'coming_soon')
+          <div id="detailStockDisplay" class="stock-badge" style="background:#fef3c7; color:#d97706; border-color:#fcd34d;">Coming Soon</div>
+        @endif
 
         @if($hasVariants)
         <div class="variant-panel">
@@ -308,9 +324,11 @@ $productSchema = [
               </button>
             @endforeach
           </div>
+          @if($stockStatus !== 'coming_soon')
           <small id="varHint" class="variant-hint">
             Select a dosage above to display the exact price.
           </small>
+          @endif
         </div>
         @endif
 
@@ -336,12 +354,18 @@ $productSchema = [
         </div>
 
         <div class="qty-row">
-          <div class="qty-box">
-            <button type="button" onclick="changeDetailQty(-1, {{ (int)$currProd['stock'] }})">-</button>
-            <input type="text" id="detailQtyInput" readonly value="1">
-            <button type="button" onclick="changeDetailQty(1, {{ (int)$currProd['stock'] }})">+</button>
-          </div>
-          <button type="button" class="btn-add-cart" onclick="triggerAddToCart()">Add to Cart</button>
+          @if($canAddToCart)
+            <div class="qty-box">
+              <button type="button" onclick="changeDetailQty(-1, {{ (int)$currProd['stock'] }})">-</button>
+              <input type="text" id="detailQtyInput" readonly value="1">
+              <button type="button" onclick="changeDetailQty(1, {{ (int)$currProd['stock'] }})">+</button>
+            </div>
+            <button type="button" class="btn-add-cart" onclick="triggerAddToCart()">Add to Cart</button>
+          @elseif($stockStatus === 'coming_soon')
+            <button type="button" class="btn-add-cart" disabled style="background:#94a3b8; cursor:not-allowed; opacity:0.8; width:100%;">Coming Soon</button>
+          @else
+            <button type="button" class="btn-add-cart" disabled style="background:#94a3b8; cursor:not-allowed; opacity:0.8; width:100%;">Out of Stock</button>
+          @endif
         </div>
 
         <div class="detail-guarantees">
@@ -425,4 +449,17 @@ window.PROD_FLAGS = {
 };
 </script>
 <script src="{{ asset($showJsPath) }}?v={{ $showJsVer }}"></script>
+<script>
+(function() {
+  var syncBackLink = function() {
+    var el = document.getElementById('detailBackLink') || document.querySelector('.detail-back-link');
+    if (el) {
+      el.setAttribute('href', @json($backUrl));
+      el.textContent = @json($backText);
+    }
+  };
+  syncBackLink();
+  document.addEventListener('DOMContentLoaded', syncBackLink);
+})();
+</script>
 @endsection

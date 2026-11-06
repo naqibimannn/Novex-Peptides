@@ -257,13 +257,7 @@
     const notice = document.getElementById(isEmailMode ? 'noticeOtpEmail' : 'noticeOtpPassword');
     const otpInput = document.getElementById(isEmailMode ? 'email_otp_code' : 'pwd_otp_code');
 
-    let targetEmail = '{{ $currentAdminEmail }}';
-    if (isEmailMode) {
-      const emailField = document.getElementById('email_new_address');
-      if (emailField && emailField.value.trim()) {
-        targetEmail = emailField.value.trim();
-      }
-    }
+    const targetEmail = '{{ $currentAdminEmail }}';
 
     btn.disabled = true;
     text.innerText = 'Dispatching...';

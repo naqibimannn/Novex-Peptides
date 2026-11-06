@@ -408,3 +408,5 @@ Route::prefix("admin/{$adminSecret}")->name('admin.')->group(function () use ($a
 Route::fallback([PageRouterController::class, 'handle']);
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+Route::view('/privacy-policy', 'frontend.privacy-policy.index')->name('privacy');

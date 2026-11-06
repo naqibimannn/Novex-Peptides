@@ -137,12 +137,13 @@ header {
 }
 
 .dnav > a {
+  position: relative;
   display: inline-flex;
   align-items: center;
   height: 100%;
   padding: 0 2px;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
+  border-bottom: none;
+  transition: color 0.2s;
   cursor: pointer;
   color: var(--text);
   font-size: 13px;
@@ -150,10 +151,29 @@ header {
   text-decoration: none;
 }
 
+.dnav > a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  height: 2px;
+  background-color: var(--primary-light);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+
 .dnav > a:hover,
 .dnav > a.active {
-  border-bottom-color: var(--primary-light);
   color: var(--primary);
+  border-bottom: none;
+}
+
+.dnav > a:hover::after,
+.dnav > a.active::after {
+  transform: scaleX(1);
 }
 
 .dd {
@@ -164,21 +184,33 @@ header {
 }
 
 .dd-trigger {
+  position: relative;
   height: 100%;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 0 2px;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
+  border: none;
+  background: none;
+  transition: color 0.2s;
   cursor: pointer;
   color: var(--text);
   font-size: 13px;
   font-weight: 500;
-  background: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
+}
+
+.dd-trigger::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 18px;
+  bottom: 24px;
+  height: 2px;
+  background-color: var(--primary-light);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+  pointer-events: none;
 }
 
 .dd-trigger svg {
@@ -193,9 +225,16 @@ header {
 }
 
 .dd:hover .dd-trigger,
-.dd.open .dd-trigger {
+.dd.open .dd-trigger,
+.dd-trigger.active {
   color: var(--primary);
-  border-bottom-color: var(--primary-light);
+  border-bottom: none;
+}
+
+.dd:hover .dd-trigger::after,
+.dd.open .dd-trigger::after,
+.dd-trigger.active::after {
+  transform: scaleX(1);
 }
 
 .dd:hover .dd-trigger svg,
@@ -203,7 +242,6 @@ header {
   transform: rotate(180deg);
 }
 
-/* Sub-Bar Dropdown Horizontal Penuh */
 .dd-menu {
   display: none;
   position: absolute;
@@ -223,7 +261,6 @@ header {
   box-shadow: 0 16px 30px -8px rgba(0, 0, 0, 0.5);
 }
 
-/* Jambatan halimunan: sambung rapat antara header & bar supaya mouse tidak terputus */
 .dd-menu::before {
   content: '';
   position: absolute;
@@ -255,7 +292,6 @@ header {
   gap: 8px;
 }
 
-/* Butang Menu Teks Bersih Dengan Ruang Selesa */
 .dd-link {
   display: inline-flex;
   align-items: center;
@@ -282,7 +318,6 @@ header {
   background-color: var(--bg-alt) !important;
 }
 
-/* Garisan Pemisah (Divider) Kemas */
 .dd-sep {
   display: inline-block;
   width: 1px;
@@ -1920,4 +1955,15 @@ footer a:hover {
 [data-theme="dark"] .copy {
   border-color: var(--border);
   color: #8EA4B8;
+}
+
+.hero .in h2.slide-title-fix {
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 5.5vw, 72px);
+  font-weight: 500;
+  line-height: 1.15;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  text-transform: none;
 }

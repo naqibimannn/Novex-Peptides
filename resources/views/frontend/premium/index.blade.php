@@ -1,195 +1,133 @@
 @extends('frontend.home.index')
 
-@php
-$resolveImageUrl = function($path) {
-    if (empty($path)) return asset('assets/website/premium/product1.webp');
-    if (filter_var($path, FILTER_VALIDATE_URL)) return $path;
-
-    $clean = ltrim($path, '/');
-    $checkPaths = [
-        $clean,
-        'uploads/products/' . basename($clean),
-        'storage/' . $clean,
-        'assets/website/premium/' . basename($clean),
-    ];
-
-    foreach ($checkPaths as $p) {
-        $realPath = public_path($p);
-        if (file_exists($realPath)) {
-            return asset($p) . '?v=' . filemtime($realPath);
-        }
-    }
-    return asset($clean) . '?v=' . time();
-};
-
-$premiumProducts = \Illuminate\Support\Facades\DB::select(
-    "SELECT * FROM products 
-     WHERE page_type = 'premium' 
-        OR category IN ('Premium Supplements', 'Supplements') 
-     ORDER BY id DESC"
-);
-
-$premShowCssPath = 'frontend/premium/show.css';
-$premShowCssVer = file_exists(public_path($premShowCssPath)) ? filemtime(public_path($premShowCssPath)) : time();
-
-$premShowJsPath = 'frontend/premium/show.js';
-$premShowJsVer = file_exists(public_path($premShowJsPath)) ? filemtime(public_path($premShowJsPath)) : time();
-
-$itemListElements = [];
-foreach ($premiumProducts as $index => $item) {
-    $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
-        ? $item->slug
-        : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
-
-    $itemListElements[] = [
-        '@type' => 'ListItem',
-        'position' => $index + 1,
-        'name' => $item->title ?? 'Formula',
-        'url' => url('/premium/show/' . $itemSlug),
-    ];
-}
-
-$canonicalUrl = url('/premium/show');
-@endphp
-
 @section('seo')
 <x-seo 
-    title="Premium Dietary Supplements &amp; Formulas | Novex Peptides"
-    description="Browse Novex Premium Supplements. Science-driven nutrition, antioxidant capsules, and metabolic wellness formulas tested for high purity."
-    :canonical="$canonicalUrl"
+    title="Novex Premium Supplements | Science-Driven Nutrition"
+    description="Science-driven nutrition for a healthier, stronger, and better you. High purity dietary supplements, antioxidant formulas, and daily wellness support."
+    :canonical="route('premium')"
     :schema="[
         '@context' => 'https://schema.org',
-        '@type' => 'CollectionPage',
-        'name' => 'Novex Premium Formulas Catalog',
-        'url' => $canonicalUrl,
-        'description' => 'Browse Novex Premium Supplements. Science-driven nutrition, antioxidant capsules, and metabolic wellness formulas tested for high purity.',
-        'mainEntity' => [
-            '@type' => 'ItemList',
-            'itemListElement' => $itemListElements
-        ]
+        '@type' => 'WebPage',
+        'name' => 'Novex Premium Supplements',
+        'url' => route('premium'),
+        'description' => 'Science-driven nutrition for a healthier, stronger, and better you. High purity dietary supplements, antioxidant formulas, and daily wellness support.'
     ]"
 />
 @endsection
 
 @section('content')
-<link rel="stylesheet" href="{{ asset($premShowCssPath) }}?v={{ $premShowCssVer }}">
+@php
+  $premCssPath = 'frontend/premium/premium.css';
+  $premCssVer = file_exists(public_path($premCssPath)) ? filemtime(public_path($premCssPath)) : time();
 
-<section class="catalog-sec" id="cat">
-  <div class="wrap">
-    <div class="catalog-head">
-      <div class="catalog-head-text">
-        <a href="{{ url('/premium') }}" class="catalog-back-link">
-          &larr; Back to Premium Supplements
-        </a>
-        <h1 class="catalog-title">Premium Formulas</h1>
-        <p class="catalog-desc">Select any formula to view its dietary specifications, capsule count, stock availability, and complete details.</p>
+  $premJsPath = 'frontend/premium/premium.js';
+  $premJsVer = file_exists(public_path($premJsPath)) ? filemtime(public_path($premJsPath)) : time();
+@endphp
+
+<link rel="stylesheet" href="{{ asset($premCssPath) }}?v={{ $premCssVer }}">
+
+<div id="view-premium-supplements">
+  <section class="premium-hero">
+    <picture>
+      <source media="(orientation: portrait)" srcset="{{ asset('assets/website/premium/hero-phone.webp') }}">
+      <img src="{{ asset('assets/website/premium/hero.webp') }}" alt="Novex Premium Supplements" width="1800" height="700" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1800&q=80'">
+    </picture>
+    <div class="wrap">
+      <div class="in">
+        <h1>Novex Premium<br>Supplements</h1>
+        <p>Science-driven nutrition for a healthier, stronger and better you.</p>
+        <div>
+          <a class="btn-hero-shop" href="{{ route('premium.show') }}">Explore Supplements</a>
+        </div>
       </div>
     </div>
+  </section>
 
-    <input id="q" class="catalog-search" type="search" placeholder="Search formulas, supplements..." oninput="filterProducts(true)">
-
-    <div class="catalog-filters" id="flt">
-      <button type="button" class="filter-btn on" onclick="setCategoryFilter('All', this)">All</button>
-      <button type="button" class="filter-btn" onclick="setCategoryFilter('Premium Supplements', this)">Premium Supplements</button>
+  <div class="mq">
+    <div class="mq-inner">
+      <span>Science-driven nutrition</span>
+      <span>High purity ingredients</span>
+      <span>Quality assured</span>
+      <span>Manufactured with care</span>
+      <span>30 capsules</span>
+      <span>Dietary supplement</span>
+      <span>Science-driven nutrition</span>
+      <span>High purity ingredients</span>
+      <span>Quality assured</span>
+      <span>Manufactured with care</span>
+      <span>30 capsules</span>
+      <span>Dietary supplement</span>
     </div>
-    
-    <div class="catalog-grid" id="pg">
-      @forelse($premiumProducts as $item)
-        @php
-            $slides = [];
-            if (!empty($item->image)) {
-                $decoded = json_decode($item->image, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    $slides = array_values(array_filter($decoded, fn($p) => !empty($p)));
-                } elseif (is_string($item->image) && !empty($item->image)) {
-                    $slides = [$item->image];
-                }
-            }
-            if (empty($slides)) {
-                $slides = ['assets/website/premium/product1.webp'];
-            }
-
-            $itemSlug = (property_exists($item, 'slug') && !empty($item->slug))
-                ? $item->slug
-                : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
-
-            $detailUrl = url('/premium/show/' . $itemSlug);
-            $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
-            $itemCategory = $item->category ?? 'Premium Supplements';
-        @endphp
-
-        <div class="catalog-card card pc" data-category="{{ $itemCategory }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
-          <div class="card-ph">
-            @if(count($slides) > 1)
-              <div class="prod-slider">
-                <div class="prod-slides">
-                  @foreach($slides as $sIdx => $imgSrc)
-                    @php $currentImgUrl = $resolveImageUrl($imgSrc); @endphp
-                    <div class="prod-slide {{ $sIdx === 0 ? 'active' : '' }}">
-                      <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Formula' }}">
-                        <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Formula' }} {{ $sIdx + 1 }}" width="300" height="300" loading="lazy">
-                      </a>
-                    </div>
-                  @endforeach
-                </div>
-              </div>
-            @elseif(count($slides) === 1)
-              @php $currentImgUrl = $resolveImageUrl($slides[0]); @endphp
-              <div class="prod-slider">
-                <div class="prod-slides">
-                  <div class="prod-slide active">
-                    <a href="{{ $detailUrl }}" class="prod-slide-link" title="{{ $item->title ?? 'Formula' }}">
-                      <img src="{{ $currentImgUrl }}" alt="{{ $item->title ?? 'Formula' }}" width="300" height="300" loading="lazy">
-                    </a>
-                  </div>
-                </div>
-              </div>
-            @else
-              <div class="card-ph-empty">
-                N
-              </div>
-            @endif
-          </div>
-
-          @if(count($slides) > 1)
-            <div class="ps-dots">
-              @foreach($slides as $sIdx => $imgSrc)
-                <span class="ps-dot {{ $sIdx === 0 ? 'active' : '' }}" onclick="setCardSlideCatalog(this, {{ $sIdx }})"></span>
-              @endforeach
-            </div>
-          @endif
-
-          <div class="card-b">
-            <h3 class="card-title">{{ $item->title ?? 'Formula' }}</h3>
-            @if(!empty($item->subtitle))
-              <p class="card-subtitle">{{ $item->subtitle }}</p>
-            @endif
-            <div class="card-price">{{ $displayPrice }}</div>
-            <div class="card-meta">
-              <span class="meta-tag">{{ $item->dosage_spec ?? '30 Capsules' }}</span>
-              <span class="meta-tag">{{ $itemCategory }}</span>
-            </div>
-            <a class="btn-details" href="{{ $detailUrl }}">See Details</a>
-          </div>
-        </div>
-      @empty
-        <div style="grid-column: 1 / -1; text-align: center; padding: 48px 0; color: var(--text-muted, #5A6F82);">
-          No formulas currently available in catalog.
-        </div>
-      @endforelse
-    </div>
-
-    <div id="noMatchMsg" class="no-match">
-      <p>No formulas match your search or filter.</p>
-    </div>
-
-    <div id="pagination" class="catalog-pagination"></div>
-
-    <p class="catalog-disclaimer">
-      Novex Premium Supplements are manufactured under strict laboratory standards for health, antioxidant, and everyday wellness support.
-    </p>
   </div>
-</section>
 
-<script src="{{ asset($premShowJsPath) }}?v={{ $premShowJsVer }}"></script>
+  <section class="sec" id="sup-formulas">
+    <div class="wrap">
+      <div class="formula-block">
+        <div class="formula-header-row">
+          <div class="formula-text">
+            <span class="formula-eyebrow">Science-Driven Nutrition</span>
+            <h2 class="formula-title">Our Formulas</h2>
+            <p class="formula-desc">Premium formulas and specialized nutritional bundles for metabolic support, antioxidant care, and everyday wellness.</p>
+          </div>
+          <div class="formula-action">
+            <a href="{{ route('premium.show') }}" class="btn-formula-shop">
+              Shop Now
+            </a>
+          </div>
+        </div>
+
+        <div class="formula-gallery-grid">
+          <div class="formula-img-container">
+            <img src="{{ asset('assets/website/premium/info1.webp') }}" alt="Novex Premium Formulas - Antioxidant" width="800" height="600" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80'">
+          </div>
+          <div class="formula-img-container">
+            <img src="{{ asset('assets/website/premium/info2.webp') }}" alt="Novex Premium Formulas - Wellness" width="800" height="600" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80'">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec alt">
+    <div class="wrap">
+      <div class="nx-quality">
+        <div class="quality-media">
+          <img src="{{ asset('assets/website/premium/info.webp') }}" alt="Quality controlled laboratory" width="800" height="600" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1000&q=80'">
+        </div>
+        <div class="nx-q-body">
+          <span class="formula-eyebrow">Quality Promise</span>
+          <h2 class="formula-title">Premium Quality You Can Trust</h2>
+          <p class="formula-desc">Manufactured under strict quality control standards to ensure purity, safety and consistent performance.</p>
+          <div class="nx-q-list">
+            <div class="quality-item">
+              <span class="quality-check">&#10003;</span>
+              <b>High Purity Ingredients</b>
+            </div>
+            <div class="quality-item">
+              <span class="quality-check">&#10003;</span>
+              <b>Quality Assured</b>
+            </div>
+            <div class="quality-item">
+              <span class="quality-check">&#10003;</span>
+              <b>Manufactured With Care</b>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="nx-cta">
+    <div class="nx-cta-img">
+      <img src="{{ asset('assets/website/premium/cta.webp') }}" alt="A Healthier, Stronger You" width="1800" height="600" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=1800&q=80'">
+    </div>
+    <div class="nx-cta-panel">
+      <span class="eyebrow">Novex Premium Supplements</span>
+      <h3>A Healthier, Stronger You</h3>
+      <p>Support your daily wellness, look better, feel better and perform at your best.</p>
+    </div>
+  </section>
+</div>
+
+<script src="{{ asset($premJsPath) }}?v={{ $premJsVer }}"></script>
 @endsection

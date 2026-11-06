@@ -145,7 +145,7 @@
                 </svg>
               </div>
               <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus
-                placeholder="admin@novexsupps.com"
+                placeholder="admin@example.com"
                 class="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-11 pr-4 text-xs font-semibold text-slate-900 placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all">
             </div>
           </div>

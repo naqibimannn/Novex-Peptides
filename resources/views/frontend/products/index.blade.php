@@ -112,6 +112,12 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
             $detailUrl = url('/products/' . $itemSlug);
+
+            $itemStock = (int)($item->stock ?? 0);
+            $stockStatus = property_exists($item, 'stock_status') && !empty($item->stock_status) 
+                ? $item->stock_status 
+                : ($itemStock > 0 ? 'in_stock' : 'out_of_stock');
+            $isComingSoon = ($stockStatus === 'coming_soon');
         @endphp
 
         <div class="catalog-card card pc" data-category="{{ $item->category ?? 'Weight Management' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -160,7 +166,13 @@ $prodJsVer = file_exists(public_path($prodJsPath)) ? filemtime(public_path($prod
             @if(!empty($item->subtitle))
               <p class="card-subtitle">{{ $item->subtitle }}</p>
             @endif
-            <div class="card-price">{{ $item->price }}</div>
+
+            @if($isComingSoon)
+              <div class="card-price" style="color: #d97706; font-weight: 700; letter-spacing: 0.02em;">Coming Soon</div>
+            @else
+              <div class="card-price">{{ $item->price }}</div>
+            @endif
+
             <div class="card-meta">
               <span class="meta-tag">{{ $item->dosage_spec ?? 'Research grade' }}</span>
               <span class="meta-tag">{{ $item->badge_category ?? 'Research grade' }}</span>

@@ -120,6 +120,12 @@ $accJsVer = file_exists(public_path($accJsPath)) ? filemtime(public_path($accJsP
             $detailUrl = \Illuminate\Support\Facades\Route::has('accessory.show') 
                 ? route('accessory.show', $itemSlug) 
                 : url('/accessory/' . $itemSlug);
+
+            $itemStock = (int)($item->stock ?? 0);
+            $stockStatus = property_exists($item, 'stock_status') && !empty($item->stock_status) 
+                ? $item->stock_status 
+                : ($itemStock > 0 ? 'in_stock' : 'out_of_stock');
+            $isComingSoon = ($stockStatus === 'coming_soon');
         @endphp
 
         <div class="catalog-card card pc" data-category="{{ $item->category ?? 'Accessory' }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -168,7 +174,13 @@ $accJsVer = file_exists(public_path($accJsPath)) ? filemtime(public_path($accJsP
             @if(!empty($item->subtitle))
               <p class="card-subtitle">{{ $item->subtitle }}</p>
             @endif
-            <div class="card-price">{{ $item->price }}</div>
+
+            @if($isComingSoon)
+              <div class="card-price coming-soon">Coming Soon</div>
+            @else
+              <div class="card-price">{{ $item->price }}</div>
+            @endif
+
             <div class="card-meta">
               <span class="meta-tag">{{ $item->dosage_spec ?? 'Laboratory Standard' }}</span>
               <span class="meta-tag">{{ $item->badge_category ?? $item->category ?? 'Accessory' }}</span>

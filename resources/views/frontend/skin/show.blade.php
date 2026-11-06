@@ -25,8 +25,8 @@ $resolveImageUrl = function($path) {
 
 $skinProducts = \Illuminate\Support\Facades\DB::select(
     "SELECT * FROM products 
-     WHERE page_type = 'skin' 
-        OR category IN ('Skin Lab', 'Skincare', 'Novex Skincare', 'Skin', 'Skincare Peptides', 'Skincare Collection') 
+     WHERE (page_type = 'skin' OR category = 'Skin Lab')
+       AND category NOT IN ('Skincare Peptides', 'Skincare Collection', 'Performance', 'Weight Management', 'Accessory', 'Supplements')
      ORDER BY id DESC"
 );
 
@@ -115,8 +115,15 @@ $canonicalUrl = url('/skin/show');
                 : \Illuminate\Support\Str::slug($item->title ?? ('product-' . $item->id));
 
             $detailUrl = url('/skin/show/' . $itemSlug);
-            $displayPrice = !empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2));
-            $itemCategory = $item->category ?? 'Skin Lab';
+
+            $itemStock = (int)($item->stock ?? 0);
+            $stockStatus = property_exists($item, 'stock_status') && !empty($item->stock_status) 
+                ? $item->stock_status 
+                : ($itemStock > 0 ? 'in_stock' : 'out_of_stock');
+            $isComingSoon = ($stockStatus === 'coming_soon');
+
+            $displayPrice = $isComingSoon ? '' : (!empty($item->price) ? $item->price : ('RM' . number_format($item->price_val ?? 0, 2)));
+            $itemCategory = 'Skin Lab';
         @endphp
 
         <div class="catalog-card card pc" data-category="{{ $itemCategory }}" data-keywords="{{ strtolower(($item->keywords ?? '') . ' ' . ($item->title ?? '') . ' ' . ($item->subtitle ?? '')) }}">
@@ -165,7 +172,13 @@ $canonicalUrl = url('/skin/show');
             @if(!empty($item->subtitle))
               <p class="card-subtitle">{{ $item->subtitle }}</p>
             @endif
-            <div class="card-price">{{ $displayPrice }}</div>
+
+            @if($isComingSoon)
+              <div class="card-price coming-soon">Coming Soon</div>
+            @else
+              <div class="card-price">{{ $displayPrice }}</div>
+            @endif
+
             <div class="card-meta">
               <span class="meta-tag">{{ $item->dosage_spec ?? '100ml' }}</span>
               <span class="meta-tag">{{ $itemCategory }}</span>

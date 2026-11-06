@@ -381,6 +381,17 @@
   color: #327BB3;
 }
 
+.card-price.coming-soon {
+  color: #D97706 !important;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="dark"] .card-price.coming-soon {
+  color: #FBBF24 !important;
+}
+
 .card-meta {
   display: flex;
   gap: 6px;
@@ -466,12 +477,18 @@
   border: 1px solid var(--border, #D2E2EF);
   background-color: var(--bg-card, #ffffff);
   color: var(--text, #1E2D3B);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease-out;
   font-family: inherit;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.page-btn.page-btn-nav {
+  padding: 0 16px;
+  gap: 6px;
+  font-size: 12px;
 }
 
 [data-theme="dark"] .page-btn {
